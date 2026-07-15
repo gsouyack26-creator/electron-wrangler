@@ -189,6 +189,43 @@ const T = {
       <text x="26" y="27" class="comp-sub">${esc(((c.preset||2000)/1000)+'s')}</text>
       <circle class="sym coilind" cx="26" cy="44" r="5"/>`,
     links:c=>(!c.fault&&c._out)?[['o1','o2']]:[] },
+  plc:{ name:'PLC / Controller', w:58,h:66, sw:false, load:true,
+    terms:()=>[{id:'L+',x:0,y:16},{id:'M',x:0,y:50},{id:'net',x:58,y:33}],
+    body:c=>`<rect class="sym fillbody" x="6" y="4" width="46" height="58" rx="4"/>
+      <text x="29" y="22" class="comp-label">PLC</text>
+      <text x="29" y="34" class="comp-sub" style="font-size:6.5px">${esc(c.label||'CPU')}</text>
+      <text x="3" y="19" class="comp-sub" style="font-size:7px">L+</text><text x="3" y="53" class="comp-sub" style="font-size:7px">M</text>
+      <circle cx="29" cy="46" r="4" style="fill:${c._on?'var(--live)':'none'};stroke:var(--edge)"/>
+      <text x="29" y="60" class="comp-sub" style="font-size:6px;fill:${c._on?'var(--live)':'var(--dim)'}">${c._on?'RUN':'\u2014'}</text>`,
+    links:()=>[] },
+  netdev:{ name:'Comms / Network Device', w:54,h:50, sw:false, load:true,
+    terms:()=>[{id:'L+',x:0,y:14},{id:'M',x:0,y:38},{id:'P1',x:54,y:14},{id:'P2',x:54,y:38}],
+    body:c=>`<rect class="sym fillbody" x="6" y="4" width="42" height="42" rx="4"/>
+      <text x="27" y="19" class="comp-label" style="font-size:9px">NET</text>
+      <text x="27" y="30" class="comp-sub" style="font-size:6px">${esc(c.label||'COMMS')}</text>
+      <circle cx="14" cy="41" r="3" style="fill:${c._on?'var(--live)':'#33415580'};stroke:none"/>
+      <text x="3" y="17" class="comp-sub" style="font-size:6px">L+</text><text x="3" y="41" class="comp-sub" style="font-size:6px">M</text>`,
+    links:()=>[] },
+  diode:{ name:'Diode', w:40,h:22, sw:true, states:['ok','open'],
+    terms:()=>[{id:'a',x:0,y:11},{id:'b',x:40,y:11}],
+    body:c=>{ const ok=c.state!=='open'&&!c.fault; return `<line class="sym" x1="0" y1="11" x2="14" y2="11"/><line class="sym" x1="26" y1="11" x2="40" y2="11"/>
+      <path class="sym fillbody" d="M14 4 L14 18 L26 11 Z" style="fill:${ok?'var(--edge)':'none'}"/>
+      <line class="sym" x1="26" y1="4" x2="26" y2="18"/>
+      <text x="20" y="21" class="comp-sub" style="font-size:6px">${esc(c.label||'D')}</text>`; },
+    links:c=>(c.state!=='open'&&!c.fault)?[['a','b']]:[] },
+  resistor:{ name:'Resistor', w:46,h:20, sw:false, load:true,
+    terms:()=>[{id:'a',x:0,y:10},{id:'b',x:46,y:10}],
+    body:c=>`<line class="sym" x1="0" y1="10" x2="8" y2="10"/><line class="sym" x1="38" y1="10" x2="46" y2="10"/>
+      <path class="sym" d="M8 10 l3 -6 l4 12 l4 -12 l4 12 l4 -12 l4 12 l3 -6" style="fill:none"/>
+      <text x="23" y="19" class="comp-sub" style="font-size:6px">${esc(c.label||'R')}</text>`,
+    links:()=>[] },
+  horn:{ name:'Alarm Horn', w:36,h:34, sw:false, load:true,
+    terms:()=>[{id:'a',x:18,y:0},{id:'b',x:18,y:34}],
+    body:c=>`<path class="sym fillbody" d="M8 12 h8 l10 -7 v24 l-10 -7 h-8 z" style="fill:${c._on?'var(--live)':'#374151'}"/>
+      <line class="sym" x1="18" y1="0" x2="18" y2="5"/><line class="sym" x1="18" y1="29" x2="18" y2="34"/>
+      ${c._on?'<path class="sym" d="M30 10 q5 7 0 14" style="fill:none"/>':''}
+      <text x="18" y="20" class="comp-sub" style="font-size:6px">${esc(c.label||'AH')}</text>`,
+    links:()=>[] },
 };
 function polePairs(n,w,h){const ar=[];for(let i=0;i<n;i++){const y=10+i*((h-14)/Math.max(1,n-1||1));ar.push({id:'in'+i,x:0,y:n===1?h/2:y});ar.push({id:'out'+i,x:w,y:n===1?h/2:y});}return ar;}
 function poleLinks(n){const l=[];for(let i=0;i<n;i++)l.push(['in'+i,'out'+i]);return l;}
@@ -332,6 +369,7 @@ function diagnose(loadComp){
     else if(['estop','pbNO','pbNC','selector','sensor'].includes(c.type)) ideal=[['a','b']];
     else if(c.type==='vfd') ideal=[['L1','U'],['L2','V'],['L3','W']];
     else if(c.type==='plcOut') ideal=[['c','out']];
+    else if(c.type==='diode') ideal=[['a','b']];
     else if(c.type==='term') ideal=[['a','b'],['a','t'],['a','bt']];
     else if(c.type==='timerON'||c.type==='timerOFF') ideal=[['o1','o2']];
     if(c.type==='relay'){ add(key(c,'11'),key(c,'14'),{kind:'comp',c,contact:'NO'}); add(key(c,'21'),key(c,'22'),{kind:'comp',c,contact:'NC'}); }
@@ -665,7 +703,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
 function flash(id){ const g=svg.querySelector(`[data-comp="${id}"]`); if(g){g.classList.add('faulted');setTimeout(()=>render(),1200);} }
 
 /* ---------- palette / modes ---------- */
-const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','plcInCard','plcOutCard','psu','term','tstrip','ftb','gndbar','safetyRelay'];
+const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','plcInCard','plcOutCard','psu','term','tstrip','ftb','gndbar','safetyRelay','plc','netdev','diode','resistor','horn'];
 function buildPalette(){ $('#palette').innerHTML=PAL.map(t=>`<button data-t="${t}"><svg viewBox="0 0 ${T[t].w} ${T[t].h}">${T[t].body(demoStub(t))}</svg>${T[t].name}</button>`).join('');
   $('#palette').querySelectorAll('button').forEach(b=>b.onclick=()=>setTool(b.dataset.t)); }
 function demoStub(t){const c={type:t,label:'',poles:3,phases:3,state:T[t].states?T[t].states[0]:undefined,volts:'480V'};return c;}

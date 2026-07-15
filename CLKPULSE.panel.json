@@ -1,0 +1,266 @@
+{
+  "name": "LS4000 Clock Pulse Unit \u2014 9 Photoeyes to PLC (M-16-00264 CLKPULSE sh140)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 240,
+      "label": "24VDC",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 520,
+      "y": 560,
+      "label": "0VDC"
+    },
+    {
+      "id": "card",
+      "type": "plcInCard",
+      "x": 560,
+      "y": 60,
+      "label": "TB17D DI"
+    },
+    {
+      "id": "sync",
+      "type": "sensor",
+      "x": 300,
+      "y": 60,
+      "state": "closed",
+      "label": "PE-SYNC"
+    },
+    {
+      "id": "jb1",
+      "type": "tstrip",
+      "x": 180,
+      "y": 120,
+      "label": "JB1"
+    },
+    {
+      "id": "pe0",
+      "type": "sensor",
+      "x": 300,
+      "y": 150,
+      "state": "closed",
+      "label": "PE 0"
+    },
+    {
+      "id": "pe1",
+      "type": "sensor",
+      "x": 300,
+      "y": 205,
+      "state": "open",
+      "label": "PE 1"
+    },
+    {
+      "id": "pe2",
+      "type": "sensor",
+      "x": 300,
+      "y": 260,
+      "state": "closed",
+      "label": "PE 2"
+    },
+    {
+      "id": "pe3",
+      "type": "sensor",
+      "x": 300,
+      "y": 315,
+      "state": "open",
+      "label": "PE 3"
+    },
+    {
+      "id": "pe4",
+      "type": "sensor",
+      "x": 300,
+      "y": 370,
+      "state": "closed",
+      "label": "PE 4"
+    },
+    {
+      "id": "pe5",
+      "type": "sensor",
+      "x": 300,
+      "y": 425,
+      "state": "open",
+      "label": "PE 5"
+    },
+    {
+      "id": "pe6",
+      "type": "sensor",
+      "x": 300,
+      "y": 480,
+      "state": "closed",
+      "label": "PE 6"
+    },
+    {
+      "id": "pe7",
+      "type": "sensor",
+      "x": 300,
+      "y": 535,
+      "state": "open",
+      "label": "PE 7"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "sync|a",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "sync|b",
+      "b": "card|in0",
+      "net": "ctrl"
+    },
+    {
+      "id": "w3",
+      "a": "src|L",
+      "b": "pe0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w4",
+      "a": "pe0|b",
+      "b": "jb1|L1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w5",
+      "a": "jb1|R1",
+      "b": "card|in1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w6",
+      "a": "src|L",
+      "b": "pe1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w7",
+      "a": "pe1|b",
+      "b": "jb1|L2",
+      "net": "ctrl"
+    },
+    {
+      "id": "w8",
+      "a": "jb1|R2",
+      "b": "card|in2",
+      "net": "ctrl"
+    },
+    {
+      "id": "w9",
+      "a": "src|L",
+      "b": "pe2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w10",
+      "a": "pe2|b",
+      "b": "jb1|L3",
+      "net": "ctrl"
+    },
+    {
+      "id": "w11",
+      "a": "jb1|R3",
+      "b": "card|in3",
+      "net": "ctrl"
+    },
+    {
+      "id": "w12",
+      "a": "src|L",
+      "b": "pe3|a",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "pe3|b",
+      "b": "jb1|L4",
+      "net": "ctrl"
+    },
+    {
+      "id": "w14",
+      "a": "jb1|R4",
+      "b": "card|in4",
+      "net": "ctrl"
+    },
+    {
+      "id": "w15",
+      "a": "src|L",
+      "b": "pe4|a",
+      "net": "dc"
+    },
+    {
+      "id": "w16",
+      "a": "pe4|b",
+      "b": "jb1|L5",
+      "net": "ctrl"
+    },
+    {
+      "id": "w17",
+      "a": "jb1|R5",
+      "b": "card|in5",
+      "net": "ctrl"
+    },
+    {
+      "id": "w18",
+      "a": "src|L",
+      "b": "pe5|a",
+      "net": "dc"
+    },
+    {
+      "id": "w19",
+      "a": "pe5|b",
+      "b": "jb1|L6",
+      "net": "ctrl"
+    },
+    {
+      "id": "w20",
+      "a": "jb1|R6",
+      "b": "card|in6",
+      "net": "ctrl"
+    },
+    {
+      "id": "w21",
+      "a": "src|L",
+      "b": "pe6|a",
+      "net": "dc"
+    },
+    {
+      "id": "w22",
+      "a": "pe6|b",
+      "b": "jb1|L7",
+      "net": "ctrl"
+    },
+    {
+      "id": "w23",
+      "a": "jb1|R7",
+      "b": "card|in7",
+      "net": "ctrl"
+    },
+    {
+      "id": "w24",
+      "a": "src|L",
+      "b": "pe7|a",
+      "net": "dc"
+    },
+    {
+      "id": "w25",
+      "a": "pe7|b",
+      "b": "jb1|L8",
+      "net": "ctrl"
+    },
+    {
+      "id": "w26",
+      "a": "card|C",
+      "b": "gnd|g0",
+      "net": "ret"
+    }
+  ]
+}

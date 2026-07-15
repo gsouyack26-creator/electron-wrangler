@@ -1,0 +1,273 @@
+{
+  "name": "LS4000 Profibus Networks \u2014 repeater power + topology (M-16-00264 PROFIBUS sh02-07)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 260,
+      "label": "24VDC",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 160,
+      "y": 250,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB 24VDC"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 680,
+      "y": 540,
+      "label": "0VDC"
+    },
+    {
+      "id": "plc",
+      "type": "plcOut",
+      "x": 300,
+      "y": 240,
+      "state": "on",
+      "label": "CP#3 DP MASTER"
+    },
+    {
+      "id": "rep0",
+      "type": "netdev",
+      "x": 460,
+      "y": 60,
+      "label": "REP NET-01B"
+    },
+    {
+      "id": "fn0",
+      "type": "plcIn",
+      "x": 640,
+      "y": 60,
+      "label": "NET-01B nodes"
+    },
+    {
+      "id": "rep1",
+      "type": "netdev",
+      "x": 460,
+      "y": 155,
+      "label": "REP NET-02A"
+    },
+    {
+      "id": "fn1",
+      "type": "plcIn",
+      "x": 640,
+      "y": 155,
+      "label": "NET-02A nodes"
+    },
+    {
+      "id": "rep2",
+      "type": "netdev",
+      "x": 460,
+      "y": 250,
+      "label": "REP NET-2B"
+    },
+    {
+      "id": "fn2",
+      "type": "plcIn",
+      "x": 640,
+      "y": 250,
+      "label": "NET-2B nodes"
+    },
+    {
+      "id": "rep3",
+      "type": "netdev",
+      "x": 460,
+      "y": 345,
+      "label": "REP NET-03"
+    },
+    {
+      "id": "fn3",
+      "type": "plcIn",
+      "x": 640,
+      "y": 345,
+      "label": "NET-03 nodes"
+    },
+    {
+      "id": "rep4",
+      "type": "netdev",
+      "x": 460,
+      "y": 440,
+      "label": "REP NET-04"
+    },
+    {
+      "id": "fn4",
+      "type": "plcIn",
+      "x": 640,
+      "y": 440,
+      "label": "NET-04 nodes"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "cb|out0",
+      "b": "plc|c",
+      "net": "dc"
+    },
+    {
+      "id": "w3",
+      "a": "cb|out0",
+      "b": "rep0|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w4",
+      "a": "rep0|M",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w5",
+      "a": "plc|out",
+      "b": "rep0|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w6",
+      "a": "rep0|L+",
+      "b": "fn0|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w7",
+      "a": "fn0|c",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w8",
+      "a": "cb|out0",
+      "b": "rep1|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w9",
+      "a": "rep1|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "rep0|P1",
+      "b": "rep1|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w11",
+      "a": "rep1|L+",
+      "b": "fn1|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w12",
+      "a": "fn1|c",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w13",
+      "a": "cb|out0",
+      "b": "rep2|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w14",
+      "a": "rep2|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w15",
+      "a": "rep1|P1",
+      "b": "rep2|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w16",
+      "a": "rep2|L+",
+      "b": "fn2|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w17",
+      "a": "fn2|c",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "cb|out0",
+      "b": "rep3|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w19",
+      "a": "rep3|M",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w20",
+      "a": "rep2|P1",
+      "b": "rep3|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w21",
+      "a": "rep3|L+",
+      "b": "fn3|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w22",
+      "a": "fn3|c",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w23",
+      "a": "cb|out0",
+      "b": "rep4|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w24",
+      "a": "rep4|M",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "rep3|P1",
+      "b": "rep4|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w26",
+      "a": "rep4|L+",
+      "b": "fn4|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w27",
+      "a": "fn4|c",
+      "b": "gnd|g5",
+      "net": "ret"
+    }
+  ]
+}

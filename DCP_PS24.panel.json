@@ -1,0 +1,264 @@
+{
+  "name": "DCP 24VDC Distributed Control \u2014 3x PS + monitor relays (M-16-00264 DCP_PS24 sh061)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 220,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 200,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06105 30A/3x10Af"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 470,
+      "y": 470,
+      "label": "0VDC/PE"
+    },
+    {
+      "id": "ps0",
+      "type": "psu",
+      "x": 320,
+      "y": 50,
+      "dcv": 24,
+      "label": "PWS06105 24VDC 4A"
+    },
+    {
+      "id": "cr0",
+      "type": "relay",
+      "x": 470,
+      "y": 40,
+      "label": "CR06105"
+    },
+    {
+      "id": "z0",
+      "type": "light",
+      "x": 620,
+      "y": 60,
+      "color": "#22d3ee",
+      "label": "24VDC ZONE 1"
+    },
+    {
+      "id": "ps1",
+      "type": "psu",
+      "x": 320,
+      "y": 190,
+      "dcv": 24,
+      "label": "PWS06205 24VDC 4A"
+    },
+    {
+      "id": "cr1",
+      "type": "relay",
+      "x": 470,
+      "y": 180,
+      "label": "CR06205"
+    },
+    {
+      "id": "z1",
+      "type": "light",
+      "x": 620,
+      "y": 200,
+      "color": "#22d3ee",
+      "label": "24VDC ZONE 2"
+    },
+    {
+      "id": "ps2",
+      "type": "psu",
+      "x": 320,
+      "y": 330,
+      "dcv": 24,
+      "label": "PWS06305 24VDC 4A"
+    },
+    {
+      "id": "cr2",
+      "type": "relay",
+      "x": 470,
+      "y": 320,
+      "label": "CR06305"
+    },
+    {
+      "id": "z2",
+      "type": "light",
+      "x": 620,
+      "y": 340,
+      "color": "#22d3ee",
+      "label": "24VDC ZONE 3"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "ps0|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "ps0|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ps0|Vp",
+      "b": "cr0|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w7",
+      "a": "cr0|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w8",
+      "a": "ps0|Vp",
+      "b": "cr0|11",
+      "net": "dc"
+    },
+    {
+      "id": "w9",
+      "a": "cr0|14",
+      "b": "z0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w10",
+      "a": "z0|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w11",
+      "a": "ds|out1",
+      "b": "ps1|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "ds|out2",
+      "b": "ps1|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "ps1|Vp",
+      "b": "cr1|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w14",
+      "a": "cr1|A2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w15",
+      "a": "ps1|Vp",
+      "b": "cr1|11",
+      "net": "dc"
+    },
+    {
+      "id": "w16",
+      "a": "cr1|14",
+      "b": "z1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w17",
+      "a": "z1|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "ds|out2",
+      "b": "ps2|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "ds|out0",
+      "b": "ps2|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "ps2|Vp",
+      "b": "cr2|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w21",
+      "a": "cr2|A2",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w22",
+      "a": "ps2|Vp",
+      "b": "cr2|11",
+      "net": "dc"
+    },
+    {
+      "id": "w23",
+      "a": "cr2|14",
+      "b": "z2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w24",
+      "a": "z2|b",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "ps0|Vn",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w26",
+      "a": "ps1|Vn",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w27",
+      "a": "ps2|Vn",
+      "b": "gnd|g0",
+      "net": "ret"
+    }
+  ]
+}

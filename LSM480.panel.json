@@ -1,0 +1,169 @@
+{
+  "name": "LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 120,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 100,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103 30A"
+    },
+    {
+      "id": "vfd",
+      "type": "vfd",
+      "x": 320,
+      "y": 90,
+      "label": "VFD06114 5.5kW"
+    },
+    {
+      "id": "lsm",
+      "type": "motor",
+      "x": 480,
+      "y": 90,
+      "phases": 3,
+      "hp": 7,
+      "volts": 480,
+      "label": "LSM LINEAR MOTOR"
+    },
+    {
+      "id": "s24",
+      "type": "source",
+      "x": 40,
+      "y": 340,
+      "label": "24VDC CTRL",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb703",
+      "type": "breaker",
+      "x": 170,
+      "y": 330,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB06703 4A"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 470,
+      "y": 470,
+      "label": "0VDC"
+    },
+    {
+      "id": "sel",
+      "type": "selector",
+      "x": 320,
+      "y": 340,
+      "state": "closed",
+      "label": "AUTO/MAN"
+    },
+    {
+      "id": "fan",
+      "type": "motor",
+      "x": 430,
+      "y": 330,
+      "phases": 1,
+      "volts": 24,
+      "label": "FAN06708"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "vfd|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "vfd|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "vfd|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "vfd|U",
+      "b": "lsm|U",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "vfd|V",
+      "b": "lsm|V",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "vfd|W",
+      "b": "lsm|W",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "s24|L",
+      "b": "cb703|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "cb703|out0",
+      "b": "sel|a",
+      "net": "dc"
+    },
+    {
+      "id": "w12",
+      "a": "sel|b",
+      "b": "vfd|EN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w13",
+      "a": "cb703|out0",
+      "b": "fan|a",
+      "net": "dc"
+    },
+    {
+      "id": "w14",
+      "a": "fan|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    }
+  ]
+}

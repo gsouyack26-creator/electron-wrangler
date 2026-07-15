@@ -1,0 +1,136 @@
+{
+  "name": "LS4000 E-Stop Junction Box \u2014 dual-channel loop (M-16-00264 ESTOPJB sh121)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 200,
+      "label": "24VDC SAFETY",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 620,
+      "y": 470,
+      "label": "0VDC"
+    },
+    {
+      "id": "pb1",
+      "type": "estop",
+      "x": 200,
+      "y": 80,
+      "state": "closed",
+      "label": "PB12111"
+    },
+    {
+      "id": "pb2",
+      "type": "estop",
+      "x": 340,
+      "y": 80,
+      "state": "closed",
+      "label": "PB12121"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 470,
+      "y": 120,
+      "label": "SR loop-monitor"
+    },
+    {
+      "id": "plc",
+      "type": "plcIn",
+      "x": 640,
+      "y": 120,
+      "label": "I0 ESTOP-OK"
+    },
+    {
+      "id": "lt1",
+      "type": "light",
+      "x": 200,
+      "y": 240,
+      "color": "#f87171",
+      "label": "LT12117"
+    },
+    {
+      "id": "lt2",
+      "type": "light",
+      "x": 340,
+      "y": 240,
+      "color": "#f87171",
+      "label": "LT12127"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "pb1|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w2",
+      "a": "pb1|b",
+      "b": "pb2|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w3",
+      "a": "pb2|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w4",
+      "a": "sr|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w5",
+      "a": "src|L",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w6",
+      "a": "sr|13",
+      "b": "plc|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w7",
+      "a": "plc|c",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w8",
+      "a": "src|L",
+      "b": "lt1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w9",
+      "a": "lt1|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "src|L",
+      "b": "lt2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "lt2|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    }
+  ]
+}

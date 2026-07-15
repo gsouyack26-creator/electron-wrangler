@@ -1,0 +1,301 @@
+{
+  "name": "LS4000 Safety Gate Junction Box \u2014 6-gate safety loop (M-16-00264 SAFEGATE sh01121-27)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 220,
+      "label": "24VDC",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 160,
+      "y": 210,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB0112101 4A"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 760,
+      "y": 540,
+      "label": "0VDC"
+    },
+    {
+      "id": "g0",
+      "type": "sensor",
+      "x": 280,
+      "y": 60,
+      "state": "closed",
+      "label": "Gate1 lock"
+    },
+    {
+      "id": "g1",
+      "type": "sensor",
+      "x": 430,
+      "y": 60,
+      "state": "closed",
+      "label": "Gate2 lock"
+    },
+    {
+      "id": "g2",
+      "type": "sensor",
+      "x": 580,
+      "y": 60,
+      "state": "closed",
+      "label": "Gate3 lock"
+    },
+    {
+      "id": "g3",
+      "type": "sensor",
+      "x": 280,
+      "y": 140,
+      "state": "closed",
+      "label": "Gate4 lock"
+    },
+    {
+      "id": "g4",
+      "type": "sensor",
+      "x": 430,
+      "y": 140,
+      "state": "closed",
+      "label": "Gate5 lock"
+    },
+    {
+      "id": "g5",
+      "type": "sensor",
+      "x": 580,
+      "y": 140,
+      "state": "closed",
+      "label": "Gate6 lock"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 300,
+      "y": 230,
+      "label": "CR0112158 SR"
+    },
+    {
+      "id": "tmr",
+      "type": "timerON",
+      "x": 470,
+      "y": 230,
+      "preset": 2000,
+      "label": "TDO112147 2s"
+    },
+    {
+      "id": "plc",
+      "type": "plcIn",
+      "x": 620,
+      "y": 240,
+      "label": "CP83 SAFE-ACTIVE"
+    },
+    {
+      "id": "blt0",
+      "type": "light",
+      "x": 300,
+      "y": 380,
+      "color": "#38bdf8",
+      "label": "BLUE Gate1"
+    },
+    {
+      "id": "blt1",
+      "type": "light",
+      "x": 450,
+      "y": 380,
+      "color": "#38bdf8",
+      "label": "BLUE Gate2"
+    },
+    {
+      "id": "blt2",
+      "type": "light",
+      "x": 600,
+      "y": 380,
+      "color": "#38bdf8",
+      "label": "BLUE Gate3"
+    },
+    {
+      "id": "blt3",
+      "type": "light",
+      "x": 300,
+      "y": 450,
+      "color": "#38bdf8",
+      "label": "BLUE Gate4"
+    },
+    {
+      "id": "blt4",
+      "type": "light",
+      "x": 450,
+      "y": 450,
+      "color": "#38bdf8",
+      "label": "BLUE Gate5"
+    },
+    {
+      "id": "blt5",
+      "type": "light",
+      "x": 600,
+      "y": 450,
+      "color": "#38bdf8",
+      "label": "BLUE Gate6"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "cb|out0",
+      "b": "g0|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w3",
+      "a": "g0|b",
+      "b": "g1|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w4",
+      "a": "g1|b",
+      "b": "g2|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w5",
+      "a": "g2|b",
+      "b": "g3|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w6",
+      "a": "g3|b",
+      "b": "g4|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w7",
+      "a": "g4|b",
+      "b": "g5|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w8",
+      "a": "g5|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w9",
+      "a": "sr|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "cb|out0",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "sr|13",
+      "b": "tmr|IN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w12",
+      "a": "tmr|o2",
+      "b": "plc|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w13",
+      "a": "plc|c",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w14",
+      "a": "cb|out0",
+      "b": "blt0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w15",
+      "a": "blt0|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w16",
+      "a": "cb|out0",
+      "b": "blt1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w17",
+      "a": "blt1|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "cb|out0",
+      "b": "blt2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w19",
+      "a": "blt2|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w20",
+      "a": "cb|out0",
+      "b": "blt3|a",
+      "net": "dc"
+    },
+    {
+      "id": "w21",
+      "a": "blt3|b",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w22",
+      "a": "cb|out0",
+      "b": "blt4|a",
+      "net": "dc"
+    },
+    {
+      "id": "w23",
+      "a": "blt4|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w24",
+      "a": "cb|out0",
+      "b": "blt5|a",
+      "net": "dc"
+    },
+    {
+      "id": "w25",
+      "a": "blt5|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    }
+  ]
+}

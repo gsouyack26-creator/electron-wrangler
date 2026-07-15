@@ -1,0 +1,109 @@
+{
+  "name": "LS4000 Profibus Repeater Box (M-16-00264 REPEATER sh061)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 140,
+      "label": "24VDC IN",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "tb10",
+      "type": "tstrip",
+      "x": 160,
+      "y": 90,
+      "label": "TB10"
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 320,
+      "y": 120,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB06103 2P 24VDC"
+    },
+    {
+      "id": "rep",
+      "type": "netdev",
+      "x": 470,
+      "y": 140,
+      "label": "REP06107 Profibus Repeater"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 470,
+      "y": 300,
+      "label": "0VDC/PE"
+    },
+    {
+      "id": "segin",
+      "type": "term",
+      "x": 620,
+      "y": 60,
+      "label": "SEG-1 A/B IN"
+    },
+    {
+      "id": "segout",
+      "type": "term",
+      "x": 620,
+      "y": 200,
+      "label": "SEG-2 A/B OUT"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "tb10|L1",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "src|N",
+      "b": "tb10|L2",
+      "net": "ret"
+    },
+    {
+      "id": "w3",
+      "a": "tb10|R1",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w4",
+      "a": "cb|out0",
+      "b": "rep|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w5",
+      "a": "rep|M",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w6",
+      "a": "tb10|R2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w7",
+      "a": "rep|P1",
+      "b": "segin|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w8",
+      "a": "rep|P1",
+      "b": "segout|a",
+      "net": "ctrl"
+    }
+  ]
+}

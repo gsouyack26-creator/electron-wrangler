@@ -1,0 +1,450 @@
+{
+  "name": "CP83 PLC Panel \u2014 24VDC Distribution + E-Stop Slave (M-16-00264 CP83 sh83080/83130)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 300,
+      "label": "24VDC from CP82",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 150,
+      "y": 560,
+      "label": "0VDC bus"
+    },
+    {
+      "id": "cb0",
+      "type": "breaker",
+      "x": 160,
+      "y": 290,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308002 4A PLC PWR"
+    },
+    {
+      "id": "cb2",
+      "type": "breaker",
+      "x": 300,
+      "y": 40,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308003 4A"
+    },
+    {
+      "id": "plc1",
+      "type": "plc",
+      "x": 470,
+      "y": 36,
+      "label": "AB ControlLogix PLC"
+    },
+    {
+      "id": "cb3",
+      "type": "breaker",
+      "x": 300,
+      "y": 112,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8598006 4A"
+    },
+    {
+      "id": "bk1",
+      "type": "netdev",
+      "x": 470,
+      "y": 108,
+      "label": "Beckhoff I/O -> 8313000"
+    },
+    {
+      "id": "cb4",
+      "type": "breaker",
+      "x": 300,
+      "y": 184,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308006 4A"
+    },
+    {
+      "id": "ps1",
+      "type": "netdev",
+      "x": 470,
+      "y": 180,
+      "label": "Port Server B308023"
+    },
+    {
+      "id": "cb5",
+      "type": "breaker",
+      "x": 300,
+      "y": 256,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308011 4A"
+    },
+    {
+      "id": "lmp",
+      "type": "light",
+      "x": 470,
+      "y": 252,
+      "label": "24VDC LAMPS + AB I/O",
+      "color": "#fbbf24"
+    },
+    {
+      "id": "cb6",
+      "type": "breaker",
+      "x": 300,
+      "y": 328,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308023 4A"
+    },
+    {
+      "id": "sst",
+      "type": "netdev",
+      "x": 470,
+      "y": 324,
+      "label": "SST Profibus Scanner"
+    },
+    {
+      "id": "cb7",
+      "type": "breaker",
+      "x": 300,
+      "y": 400,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308030 4A"
+    },
+    {
+      "id": "fan",
+      "type": "motor",
+      "x": 470,
+      "y": 396,
+      "label": "MOT8308030 Panel Fan",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb8",
+      "type": "breaker",
+      "x": 300,
+      "y": 472,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8308007 4A"
+    },
+    {
+      "id": "bk2",
+      "type": "netdev",
+      "x": 470,
+      "y": 468,
+      "label": "Beckhoff Coupler B319128"
+    },
+    {
+      "id": "e_pblt",
+      "type": "estop",
+      "x": 640,
+      "y": 60,
+      "state": "closed",
+      "label": "PBLT8312102 E-Stop"
+    },
+    {
+      "id": "e_jb",
+      "type": "estop",
+      "x": 760,
+      "y": 60,
+      "state": "closed",
+      "label": "JB.E-STOP loop"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 700,
+      "y": 150,
+      "label": "CR8313001 E-STOP RELAY SLAVE"
+    },
+    {
+      "id": "tmr",
+      "type": "timerON",
+      "x": 700,
+      "y": 270,
+      "preset": 2000,
+      "label": "TD8313106 delay"
+    },
+    {
+      "id": "enable",
+      "type": "plc",
+      "x": 860,
+      "y": 250,
+      "label": "Sorter Enable (to CP41)"
+    },
+    {
+      "id": "estop_lamp",
+      "type": "light",
+      "x": 640,
+      "y": 150,
+      "color": "#ef4444",
+      "label": "PBLT8312102 lamp"
+    },
+    {
+      "id": "ah",
+      "type": "horn",
+      "x": 860,
+      "y": 150,
+      "label": "AH E-Stop Horn"
+    },
+    {
+      "id": "rpb",
+      "type": "pbNO",
+      "x": 640,
+      "y": 270,
+      "state": "open",
+      "label": "PB8313114 Reset"
+    },
+    {
+      "id": "rcr",
+      "type": "relay",
+      "x": 640,
+      "y": 360,
+      "label": "CR8313101 Reset Relay"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|N",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w2",
+      "a": "src|L",
+      "b": "cb0|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w3",
+      "a": "cb0|out0",
+      "b": "cb2|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w4",
+      "a": "cb2|out0",
+      "b": "plc1|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w5",
+      "a": "plc1|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w6",
+      "a": "cb0|out0",
+      "b": "cb3|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w7",
+      "a": "cb3|out0",
+      "b": "bk1|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w8",
+      "a": "bk1|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w9",
+      "a": "cb0|out0",
+      "b": "cb4|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w10",
+      "a": "cb4|out0",
+      "b": "ps1|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "ps1|M",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w12",
+      "a": "cb0|out0",
+      "b": "cb5|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "cb5|out0",
+      "b": "lmp|a",
+      "net": "dc"
+    },
+    {
+      "id": "w14",
+      "a": "lmp|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w15",
+      "a": "cb0|out0",
+      "b": "cb6|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w16",
+      "a": "cb6|out0",
+      "b": "sst|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w17",
+      "a": "sst|M",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "cb0|out0",
+      "b": "cb7|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w19",
+      "a": "cb7|out0",
+      "b": "fan|a",
+      "net": "dc"
+    },
+    {
+      "id": "w20",
+      "a": "fan|b",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w21",
+      "a": "cb0|out0",
+      "b": "cb8|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w22",
+      "a": "cb8|out0",
+      "b": "bk2|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w23",
+      "a": "bk2|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w24",
+      "a": "cb0|out0",
+      "b": "e_pblt|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w25",
+      "a": "e_pblt|b",
+      "b": "e_jb|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w26",
+      "a": "e_jb|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w27",
+      "a": "cb0|out0",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w28",
+      "a": "sr|A2",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w29",
+      "a": "sr|13",
+      "b": "tmr|IN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w30",
+      "a": "tmr|o2",
+      "b": "enable|L+",
+      "net": "ctrl"
+    },
+    {
+      "id": "w31",
+      "a": "enable|M",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w32",
+      "a": "cb0|out0",
+      "b": "estop_lamp|a",
+      "net": "dc"
+    },
+    {
+      "id": "w33",
+      "a": "estop_lamp|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "sr|24",
+      "b": "ah|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w35",
+      "a": "ah|b",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w36",
+      "a": "cb0|out0",
+      "b": "rpb|a",
+      "net": "dc"
+    },
+    {
+      "id": "w37",
+      "a": "rpb|b",
+      "b": "rcr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w38",
+      "a": "rcr|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w39",
+      "a": "cb0|out0",
+      "b": "sr|23",
+      "net": "dc"
+    }
+  ]
+}

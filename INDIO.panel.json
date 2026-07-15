@@ -1,0 +1,158 @@
+{
+  "name": "Standard Induction I/O \u2014 E-Stop Safety Loop (M-16-00264 INDIO sh063/130)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 220,
+      "label": "24VDC",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 160,
+      "y": 210,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB06302 4A"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 600,
+      "y": 430,
+      "label": "0VDC"
+    },
+    {
+      "id": "e_lcp",
+      "type": "estop",
+      "x": 300,
+      "y": 60,
+      "state": "closed",
+      "label": "J13010 LCP E-Stop"
+    },
+    {
+      "id": "e_lpc",
+      "type": "estop",
+      "x": 300,
+      "y": 150,
+      "state": "closed",
+      "label": "Left Pullcord"
+    },
+    {
+      "id": "e_rpc",
+      "type": "estop",
+      "x": 300,
+      "y": 240,
+      "state": "closed",
+      "label": "Right Pullcord"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 470,
+      "y": 120,
+      "label": "SR (dual-ch)"
+    },
+    {
+      "id": "plc",
+      "type": "plcIn",
+      "x": 640,
+      "y": 120,
+      "label": "I0 SAFE"
+    },
+    {
+      "id": "pe",
+      "type": "sensor",
+      "x": 470,
+      "y": 300,
+      "state": "closed",
+      "label": "SYNC PEC"
+    },
+    {
+      "id": "plc2",
+      "type": "plcIn",
+      "x": 640,
+      "y": 300,
+      "label": "I0 SYNC"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "cb|out0",
+      "b": "e_lcp|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w3",
+      "a": "e_lcp|b",
+      "b": "e_lpc|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w4",
+      "a": "e_lpc|b",
+      "b": "e_rpc|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w5",
+      "a": "e_rpc|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w6",
+      "a": "sr|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w7",
+      "a": "cb|out0",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w8",
+      "a": "sr|13",
+      "b": "plc|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w9",
+      "a": "plc|c",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "cb|out0",
+      "b": "pe|a",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "pe|b",
+      "b": "plc2|in",
+      "net": "ctrl"
+    },
+    {
+      "id": "w12",
+      "a": "plc2|c",
+      "b": "gnd|g2",
+      "net": "ret"
+    }
+  ]
+}

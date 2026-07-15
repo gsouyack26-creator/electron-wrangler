@@ -37,10 +37,15 @@ disconnect, breaker, fuse, contactor, overload, relay, **safety relay** (dual-ch
 close only when coil powered *and* the E-stop loop is intact), VFD, motor, pilot light, E-stop,
 start/stop push-buttons, selector, sensor/photo-eye, PLC in/out, **8-ch PLC input card**,
 **8-ch PLC output card**, single terminal, **multi-position terminal strip**, **fused terminal**,
-**ground/PE bar**.
+**ground/PE bar**, safety relay, on/off-delay timers, **PLC/controller**, **comms/network device**
+(Profibus scanner, port server, Ethernet switch, Beckhoff coupler), **diode**, **resistor**,
+**alarm horn**.
 
-Bundled panel library includes the ACY1 13XP33/CC566 set plus representative **BEUMER/Intelligrated
-LS4000 sorter** panels (DCP 24VDC control power, 6-belt induction power, E-stop safety chain).
+Bundled panel library includes the ACY1 13XP33/CC566 set plus the full **BEUMER/Intelligrated
+LS4000 / M-16-00264 sorter** set traced from the source drawings — CP82 & CP83 PLC panels, DCP power
+distribution (15x 30A feeders), 75VDC conductor rail, 24VDC distributed control, vision (IR item
+detection), LSM 480VAC VFD drive + motor wiring, 12/30A induction power, induction I/O safety loop,
+E-stop & safety-gate junction boxes, Profibus networks/repeater, and clock-pulse unit.
 
 ## JSON format (for AI extraction)
 ```json

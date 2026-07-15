@@ -1,0 +1,185 @@
+{
+  "name": "DCP Vision IR Item-Detection Panel (M-16-00264 DCP_VIS sh2-3)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 180,
+      "label": "120VAC",
+      "phases": 1,
+      "volts": 120
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 170,
+      "y": 170,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB14001 5A"
+    },
+    {
+      "id": "ps",
+      "type": "psu",
+      "x": 300,
+      "y": 150,
+      "dcv": 24,
+      "label": "DCPS14001 24VDC 3.9A"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 300,
+      "y": 430,
+      "label": "0VDC/PE"
+    },
+    {
+      "id": "vis",
+      "type": "light",
+      "x": 470,
+      "y": 40,
+      "color": "#a78bfa",
+      "label": "VIS14000 Vision Ctrl"
+    },
+    {
+      "id": "lt29",
+      "type": "light",
+      "x": 470,
+      "y": 120,
+      "color": "#f87171",
+      "label": "LT14029 IR Array 1"
+    },
+    {
+      "id": "lt33",
+      "type": "light",
+      "x": 470,
+      "y": 200,
+      "color": "#f87171",
+      "label": "LT14033 IR Array 2"
+    },
+    {
+      "id": "lt13",
+      "type": "light",
+      "x": 640,
+      "y": 40,
+      "color": "#4ade80",
+      "label": "LT14113 PWR-ON pilot"
+    },
+    {
+      "id": "lt04",
+      "type": "light",
+      "x": 640,
+      "y": 120,
+      "color": "#fbbf24",
+      "label": "LT14104 Zone1 pilot"
+    },
+    {
+      "id": "lt07",
+      "type": "light",
+      "x": 640,
+      "y": 200,
+      "color": "#fbbf24",
+      "label": "LT14107 Zone2 pilot"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "cb|out0",
+      "b": "ps|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|N",
+      "b": "ps|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w4",
+      "a": "ps|Vp",
+      "b": "vis|a",
+      "net": "dc"
+    },
+    {
+      "id": "w5",
+      "a": "vis|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w6",
+      "a": "ps|Vp",
+      "b": "lt29|a",
+      "net": "dc"
+    },
+    {
+      "id": "w7",
+      "a": "lt29|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w8",
+      "a": "ps|Vp",
+      "b": "lt33|a",
+      "net": "dc"
+    },
+    {
+      "id": "w9",
+      "a": "lt33|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "ps|Vp",
+      "b": "lt13|a",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "lt13|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w12",
+      "a": "ps|Vp",
+      "b": "lt04|a",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "lt04|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w14",
+      "a": "ps|Vp",
+      "b": "lt07|a",
+      "net": "dc"
+    },
+    {
+      "id": "w15",
+      "a": "lt07|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w16",
+      "a": "ps|Vn",
+      "b": "gnd|g5",
+      "net": "ret"
+    }
+  ]
+}

@@ -1,0 +1,1274 @@
+{
+  "name": "DCP Induction Power Distribution \u2014 15x 30A Feeders (M-16-00264 DCP_PWR sh5-8)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 540,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "cb0",
+      "type": "breaker",
+      "x": 170,
+      "y": 520,
+      "poles": 3,
+      "state": "closed",
+      "label": "CB8206124 30A MAIN"
+    },
+    {
+      "id": "cbr0",
+      "type": "breaker",
+      "x": 320,
+      "y": 60,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208001 30A"
+    },
+    {
+      "id": "ds0",
+      "type": "disc",
+      "x": 470,
+      "y": 60,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND01 60A/30Af"
+    },
+    {
+      "id": "mo0",
+      "type": "motor",
+      "x": 620,
+      "y": 54,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-01 2HP grp"
+    },
+    {
+      "id": "cbr1",
+      "type": "breaker",
+      "x": 320,
+      "y": 190,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208011 30A"
+    },
+    {
+      "id": "ds1",
+      "type": "disc",
+      "x": 470,
+      "y": 190,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND02 60A/30Af"
+    },
+    {
+      "id": "mo1",
+      "type": "motor",
+      "x": 620,
+      "y": 184,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-02 2HP grp"
+    },
+    {
+      "id": "cbr2",
+      "type": "breaker",
+      "x": 320,
+      "y": 320,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208021 30A"
+    },
+    {
+      "id": "ds2",
+      "type": "disc",
+      "x": 470,
+      "y": 320,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND03 60A/30Af"
+    },
+    {
+      "id": "mo2",
+      "type": "motor",
+      "x": 620,
+      "y": 314,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-03 2HP grp"
+    },
+    {
+      "id": "cbr3",
+      "type": "breaker",
+      "x": 320,
+      "y": 450,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208031 30A"
+    },
+    {
+      "id": "ds3",
+      "type": "disc",
+      "x": 470,
+      "y": 450,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND04 60A/30Af"
+    },
+    {
+      "id": "mo3",
+      "type": "motor",
+      "x": 620,
+      "y": 444,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-04 2HP grp"
+    },
+    {
+      "id": "cbr4",
+      "type": "breaker",
+      "x": 320,
+      "y": 580,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208041 30A"
+    },
+    {
+      "id": "ds4",
+      "type": "disc",
+      "x": 470,
+      "y": 580,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND05 60A/30Af"
+    },
+    {
+      "id": "mo4",
+      "type": "motor",
+      "x": 620,
+      "y": 574,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-05 2HP grp"
+    },
+    {
+      "id": "cbr5",
+      "type": "breaker",
+      "x": 320,
+      "y": 710,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208051 30A"
+    },
+    {
+      "id": "ds5",
+      "type": "disc",
+      "x": 470,
+      "y": 710,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND06 60A/30Af"
+    },
+    {
+      "id": "mo5",
+      "type": "motor",
+      "x": 620,
+      "y": 704,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-06 2HP grp"
+    },
+    {
+      "id": "cbr6",
+      "type": "breaker",
+      "x": 320,
+      "y": 840,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208061 30A"
+    },
+    {
+      "id": "ds6",
+      "type": "disc",
+      "x": 470,
+      "y": 840,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND07 60A/30Af"
+    },
+    {
+      "id": "mo6",
+      "type": "motor",
+      "x": 620,
+      "y": 834,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-07 2HP grp"
+    },
+    {
+      "id": "cbr7",
+      "type": "breaker",
+      "x": 320,
+      "y": 970,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208071 30A"
+    },
+    {
+      "id": "ds7",
+      "type": "disc",
+      "x": 470,
+      "y": 970,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND08 60A/30Af"
+    },
+    {
+      "id": "mo7",
+      "type": "motor",
+      "x": 620,
+      "y": 964,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-08 2HP grp"
+    },
+    {
+      "id": "cbr8",
+      "type": "breaker",
+      "x": 750,
+      "y": 60,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208101 30A"
+    },
+    {
+      "id": "ds8",
+      "type": "disc",
+      "x": 900,
+      "y": 60,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND09 60A/30Af"
+    },
+    {
+      "id": "mo8",
+      "type": "motor",
+      "x": 1050,
+      "y": 54,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-09 2HP grp"
+    },
+    {
+      "id": "cbr9",
+      "type": "breaker",
+      "x": 750,
+      "y": 190,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208111 30A"
+    },
+    {
+      "id": "ds9",
+      "type": "disc",
+      "x": 900,
+      "y": 190,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND10 60A/30Af"
+    },
+    {
+      "id": "mo9",
+      "type": "motor",
+      "x": 1050,
+      "y": 184,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-10 2HP grp"
+    },
+    {
+      "id": "cbr10",
+      "type": "breaker",
+      "x": 750,
+      "y": 320,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208121 30A"
+    },
+    {
+      "id": "ds10",
+      "type": "disc",
+      "x": 900,
+      "y": 320,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND11 60A/30Af"
+    },
+    {
+      "id": "mo10",
+      "type": "motor",
+      "x": 1050,
+      "y": 314,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-11 2HP grp"
+    },
+    {
+      "id": "cbr11",
+      "type": "breaker",
+      "x": 750,
+      "y": 450,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208131 30A"
+    },
+    {
+      "id": "ds11",
+      "type": "disc",
+      "x": 900,
+      "y": 450,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND12 60A/30Af"
+    },
+    {
+      "id": "mo11",
+      "type": "motor",
+      "x": 1050,
+      "y": 444,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-12 2HP grp"
+    },
+    {
+      "id": "cbr12",
+      "type": "breaker",
+      "x": 750,
+      "y": 580,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208141 30A"
+    },
+    {
+      "id": "ds12",
+      "type": "disc",
+      "x": 900,
+      "y": 580,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND13 60A/30Af"
+    },
+    {
+      "id": "mo12",
+      "type": "motor",
+      "x": 1050,
+      "y": 574,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-13 2HP grp"
+    },
+    {
+      "id": "cbr13",
+      "type": "breaker",
+      "x": 750,
+      "y": 710,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208151 30A"
+    },
+    {
+      "id": "ds13",
+      "type": "disc",
+      "x": 900,
+      "y": 710,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND14 60A/30Af"
+    },
+    {
+      "id": "mo13",
+      "type": "motor",
+      "x": 1050,
+      "y": 704,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-14 2HP grp"
+    },
+    {
+      "id": "cbr14",
+      "type": "breaker",
+      "x": 750,
+      "y": 840,
+      "poles": 3,
+      "state": "closed",
+      "label": "CBR208161 30A"
+    },
+    {
+      "id": "ds14",
+      "type": "disc",
+      "x": 900,
+      "y": 840,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103-IND15 60A/30Af"
+    },
+    {
+      "id": "mo14",
+      "type": "motor",
+      "x": 1050,
+      "y": 834,
+      "phases": 3,
+      "hp": 2,
+      "volts": 480,
+      "label": "DCP-IND-15 2HP grp"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "cb0|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "cb0|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "cb0|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "cb0|out0",
+      "b": "cbr0|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "cbr0|out0",
+      "b": "ds0|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds0|out0",
+      "b": "mo0|U",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "cb0|out1",
+      "b": "cbr0|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "cbr0|out1",
+      "b": "ds0|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "ds0|out1",
+      "b": "mo0|V",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "cb0|out2",
+      "b": "cbr0|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "cbr0|out2",
+      "b": "ds0|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "ds0|out2",
+      "b": "mo0|W",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "cb0|out0",
+      "b": "cbr1|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "cbr1|out0",
+      "b": "ds1|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "ds1|out0",
+      "b": "mo1|U",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "cb0|out1",
+      "b": "cbr1|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "cbr1|out1",
+      "b": "ds1|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "ds1|out1",
+      "b": "mo1|V",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "cb0|out2",
+      "b": "cbr1|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "cbr1|out2",
+      "b": "ds1|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w21",
+      "a": "ds1|out2",
+      "b": "mo1|W",
+      "net": "hot"
+    },
+    {
+      "id": "w22",
+      "a": "cb0|out0",
+      "b": "cbr2|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "cbr2|out0",
+      "b": "ds2|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w24",
+      "a": "ds2|out0",
+      "b": "mo2|U",
+      "net": "hot"
+    },
+    {
+      "id": "w25",
+      "a": "cb0|out1",
+      "b": "cbr2|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w26",
+      "a": "cbr2|out1",
+      "b": "ds2|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w27",
+      "a": "ds2|out1",
+      "b": "mo2|V",
+      "net": "hot"
+    },
+    {
+      "id": "w28",
+      "a": "cb0|out2",
+      "b": "cbr2|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w29",
+      "a": "cbr2|out2",
+      "b": "ds2|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w30",
+      "a": "ds2|out2",
+      "b": "mo2|W",
+      "net": "hot"
+    },
+    {
+      "id": "w31",
+      "a": "cb0|out0",
+      "b": "cbr3|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w32",
+      "a": "cbr3|out0",
+      "b": "ds3|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w33",
+      "a": "ds3|out0",
+      "b": "mo3|U",
+      "net": "hot"
+    },
+    {
+      "id": "w34",
+      "a": "cb0|out1",
+      "b": "cbr3|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w35",
+      "a": "cbr3|out1",
+      "b": "ds3|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w36",
+      "a": "ds3|out1",
+      "b": "mo3|V",
+      "net": "hot"
+    },
+    {
+      "id": "w37",
+      "a": "cb0|out2",
+      "b": "cbr3|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w38",
+      "a": "cbr3|out2",
+      "b": "ds3|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w39",
+      "a": "ds3|out2",
+      "b": "mo3|W",
+      "net": "hot"
+    },
+    {
+      "id": "w40",
+      "a": "cb0|out0",
+      "b": "cbr4|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w41",
+      "a": "cbr4|out0",
+      "b": "ds4|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w42",
+      "a": "ds4|out0",
+      "b": "mo4|U",
+      "net": "hot"
+    },
+    {
+      "id": "w43",
+      "a": "cb0|out1",
+      "b": "cbr4|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w44",
+      "a": "cbr4|out1",
+      "b": "ds4|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w45",
+      "a": "ds4|out1",
+      "b": "mo4|V",
+      "net": "hot"
+    },
+    {
+      "id": "w46",
+      "a": "cb0|out2",
+      "b": "cbr4|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w47",
+      "a": "cbr4|out2",
+      "b": "ds4|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w48",
+      "a": "ds4|out2",
+      "b": "mo4|W",
+      "net": "hot"
+    },
+    {
+      "id": "w49",
+      "a": "cb0|out0",
+      "b": "cbr5|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w50",
+      "a": "cbr5|out0",
+      "b": "ds5|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w51",
+      "a": "ds5|out0",
+      "b": "mo5|U",
+      "net": "hot"
+    },
+    {
+      "id": "w52",
+      "a": "cb0|out1",
+      "b": "cbr5|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w53",
+      "a": "cbr5|out1",
+      "b": "ds5|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w54",
+      "a": "ds5|out1",
+      "b": "mo5|V",
+      "net": "hot"
+    },
+    {
+      "id": "w55",
+      "a": "cb0|out2",
+      "b": "cbr5|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w56",
+      "a": "cbr5|out2",
+      "b": "ds5|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w57",
+      "a": "ds5|out2",
+      "b": "mo5|W",
+      "net": "hot"
+    },
+    {
+      "id": "w58",
+      "a": "cb0|out0",
+      "b": "cbr6|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w59",
+      "a": "cbr6|out0",
+      "b": "ds6|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w60",
+      "a": "ds6|out0",
+      "b": "mo6|U",
+      "net": "hot"
+    },
+    {
+      "id": "w61",
+      "a": "cb0|out1",
+      "b": "cbr6|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w62",
+      "a": "cbr6|out1",
+      "b": "ds6|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w63",
+      "a": "ds6|out1",
+      "b": "mo6|V",
+      "net": "hot"
+    },
+    {
+      "id": "w64",
+      "a": "cb0|out2",
+      "b": "cbr6|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w65",
+      "a": "cbr6|out2",
+      "b": "ds6|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w66",
+      "a": "ds6|out2",
+      "b": "mo6|W",
+      "net": "hot"
+    },
+    {
+      "id": "w67",
+      "a": "cb0|out0",
+      "b": "cbr7|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w68",
+      "a": "cbr7|out0",
+      "b": "ds7|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w69",
+      "a": "ds7|out0",
+      "b": "mo7|U",
+      "net": "hot"
+    },
+    {
+      "id": "w70",
+      "a": "cb0|out1",
+      "b": "cbr7|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w71",
+      "a": "cbr7|out1",
+      "b": "ds7|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w72",
+      "a": "ds7|out1",
+      "b": "mo7|V",
+      "net": "hot"
+    },
+    {
+      "id": "w73",
+      "a": "cb0|out2",
+      "b": "cbr7|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w74",
+      "a": "cbr7|out2",
+      "b": "ds7|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w75",
+      "a": "ds7|out2",
+      "b": "mo7|W",
+      "net": "hot"
+    },
+    {
+      "id": "w76",
+      "a": "cb0|out0",
+      "b": "cbr8|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w77",
+      "a": "cbr8|out0",
+      "b": "ds8|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w78",
+      "a": "ds8|out0",
+      "b": "mo8|U",
+      "net": "hot"
+    },
+    {
+      "id": "w79",
+      "a": "cb0|out1",
+      "b": "cbr8|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w80",
+      "a": "cbr8|out1",
+      "b": "ds8|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w81",
+      "a": "ds8|out1",
+      "b": "mo8|V",
+      "net": "hot"
+    },
+    {
+      "id": "w82",
+      "a": "cb0|out2",
+      "b": "cbr8|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w83",
+      "a": "cbr8|out2",
+      "b": "ds8|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w84",
+      "a": "ds8|out2",
+      "b": "mo8|W",
+      "net": "hot"
+    },
+    {
+      "id": "w85",
+      "a": "cb0|out0",
+      "b": "cbr9|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w86",
+      "a": "cbr9|out0",
+      "b": "ds9|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w87",
+      "a": "ds9|out0",
+      "b": "mo9|U",
+      "net": "hot"
+    },
+    {
+      "id": "w88",
+      "a": "cb0|out1",
+      "b": "cbr9|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w89",
+      "a": "cbr9|out1",
+      "b": "ds9|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w90",
+      "a": "ds9|out1",
+      "b": "mo9|V",
+      "net": "hot"
+    },
+    {
+      "id": "w91",
+      "a": "cb0|out2",
+      "b": "cbr9|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w92",
+      "a": "cbr9|out2",
+      "b": "ds9|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w93",
+      "a": "ds9|out2",
+      "b": "mo9|W",
+      "net": "hot"
+    },
+    {
+      "id": "w94",
+      "a": "cb0|out0",
+      "b": "cbr10|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w95",
+      "a": "cbr10|out0",
+      "b": "ds10|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w96",
+      "a": "ds10|out0",
+      "b": "mo10|U",
+      "net": "hot"
+    },
+    {
+      "id": "w97",
+      "a": "cb0|out1",
+      "b": "cbr10|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w98",
+      "a": "cbr10|out1",
+      "b": "ds10|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w99",
+      "a": "ds10|out1",
+      "b": "mo10|V",
+      "net": "hot"
+    },
+    {
+      "id": "w100",
+      "a": "cb0|out2",
+      "b": "cbr10|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w101",
+      "a": "cbr10|out2",
+      "b": "ds10|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w102",
+      "a": "ds10|out2",
+      "b": "mo10|W",
+      "net": "hot"
+    },
+    {
+      "id": "w103",
+      "a": "cb0|out0",
+      "b": "cbr11|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w104",
+      "a": "cbr11|out0",
+      "b": "ds11|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w105",
+      "a": "ds11|out0",
+      "b": "mo11|U",
+      "net": "hot"
+    },
+    {
+      "id": "w106",
+      "a": "cb0|out1",
+      "b": "cbr11|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w107",
+      "a": "cbr11|out1",
+      "b": "ds11|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w108",
+      "a": "ds11|out1",
+      "b": "mo11|V",
+      "net": "hot"
+    },
+    {
+      "id": "w109",
+      "a": "cb0|out2",
+      "b": "cbr11|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w110",
+      "a": "cbr11|out2",
+      "b": "ds11|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w111",
+      "a": "ds11|out2",
+      "b": "mo11|W",
+      "net": "hot"
+    },
+    {
+      "id": "w112",
+      "a": "cb0|out0",
+      "b": "cbr12|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w113",
+      "a": "cbr12|out0",
+      "b": "ds12|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w114",
+      "a": "ds12|out0",
+      "b": "mo12|U",
+      "net": "hot"
+    },
+    {
+      "id": "w115",
+      "a": "cb0|out1",
+      "b": "cbr12|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w116",
+      "a": "cbr12|out1",
+      "b": "ds12|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w117",
+      "a": "ds12|out1",
+      "b": "mo12|V",
+      "net": "hot"
+    },
+    {
+      "id": "w118",
+      "a": "cb0|out2",
+      "b": "cbr12|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w119",
+      "a": "cbr12|out2",
+      "b": "ds12|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w120",
+      "a": "ds12|out2",
+      "b": "mo12|W",
+      "net": "hot"
+    },
+    {
+      "id": "w121",
+      "a": "cb0|out0",
+      "b": "cbr13|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w122",
+      "a": "cbr13|out0",
+      "b": "ds13|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w123",
+      "a": "ds13|out0",
+      "b": "mo13|U",
+      "net": "hot"
+    },
+    {
+      "id": "w124",
+      "a": "cb0|out1",
+      "b": "cbr13|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w125",
+      "a": "cbr13|out1",
+      "b": "ds13|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w126",
+      "a": "ds13|out1",
+      "b": "mo13|V",
+      "net": "hot"
+    },
+    {
+      "id": "w127",
+      "a": "cb0|out2",
+      "b": "cbr13|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w128",
+      "a": "cbr13|out2",
+      "b": "ds13|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w129",
+      "a": "ds13|out2",
+      "b": "mo13|W",
+      "net": "hot"
+    },
+    {
+      "id": "w130",
+      "a": "cb0|out0",
+      "b": "cbr14|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w131",
+      "a": "cbr14|out0",
+      "b": "ds14|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w132",
+      "a": "ds14|out0",
+      "b": "mo14|U",
+      "net": "hot"
+    },
+    {
+      "id": "w133",
+      "a": "cb0|out1",
+      "b": "cbr14|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w134",
+      "a": "cbr14|out1",
+      "b": "ds14|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w135",
+      "a": "ds14|out1",
+      "b": "mo14|V",
+      "net": "hot"
+    },
+    {
+      "id": "w136",
+      "a": "cb0|out2",
+      "b": "cbr14|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w137",
+      "a": "cbr14|out2",
+      "b": "ds14|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w138",
+      "a": "ds14|out2",
+      "b": "mo14|W",
+      "net": "hot"
+    }
+  ]
+}

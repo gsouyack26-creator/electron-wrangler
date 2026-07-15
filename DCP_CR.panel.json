@@ -1,0 +1,190 @@
+{
+  "name": "DCP 75VDC Conductor Rail Power (M-16-00264 DCP_CR sh061/131)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 220,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 200,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06100 30A"
+    },
+    {
+      "id": "ps0",
+      "type": "psu",
+      "x": 320,
+      "y": 60,
+      "dcv": 75,
+      "label": "PWS06110-1 75VDC 40A"
+    },
+    {
+      "id": "ps1",
+      "type": "psu",
+      "x": 320,
+      "y": 190,
+      "dcv": 75,
+      "label": "PWS06110-2 75VDC 40A"
+    },
+    {
+      "id": "ps2",
+      "type": "psu",
+      "x": 320,
+      "y": 320,
+      "dcv": 75,
+      "label": "PWS06110-3 75VDC 40A"
+    },
+    {
+      "id": "dio",
+      "type": "diode",
+      "x": 470,
+      "y": 120,
+      "label": "D06119 OR-diode",
+      "state": "ok"
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 560,
+      "y": 120,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB06127 30A"
+    },
+    {
+      "id": "rail",
+      "type": "light",
+      "x": 700,
+      "y": 160,
+      "color": "#f59e0b",
+      "label": "75VDC CONDUCTOR RAIL"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 640,
+      "y": 360,
+      "label": "0VDC/PE"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "ps0|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "ps0|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out1",
+      "b": "ps1|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "ds|out2",
+      "b": "ps1|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "ds|out2",
+      "b": "ps2|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "ds|out0",
+      "b": "ps2|Nin",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "ps0|Vp",
+      "b": "dio|a",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "ps1|Vp",
+      "b": "dio|a",
+      "net": "dc"
+    },
+    {
+      "id": "w12",
+      "a": "ps2|Vp",
+      "b": "dio|a",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "dio|b",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w14",
+      "a": "cb|out0",
+      "b": "rail|a",
+      "net": "dc"
+    },
+    {
+      "id": "w15",
+      "a": "rail|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w16",
+      "a": "ps0|Vn",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w17",
+      "a": "ps1|Vn",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "ps2|Vn",
+      "b": "gnd|g3",
+      "net": "ret"
+    }
+  ]
+}

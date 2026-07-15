@@ -1,0 +1,126 @@
+{
+  "name": "LS4000 LSM Motor Wiring \u2014 3x Stator (JB 4130207) (M-16-00264 LSMWIRE sh061)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 180,
+      "label": "VFD06114 OUTPUT 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "tb1a",
+      "type": "tstrip",
+      "x": 180,
+      "y": 120,
+      "label": "TB1A"
+    },
+    {
+      "id": "m0",
+      "type": "motor",
+      "x": 400,
+      "y": 60,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "MTR06103 1.5HP"
+    },
+    {
+      "id": "m1",
+      "type": "motor",
+      "x": 400,
+      "y": 190,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "MTR06109 1.5HP"
+    },
+    {
+      "id": "m2",
+      "type": "motor",
+      "x": 400,
+      "y": 320,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "MTR06116 1.5HP"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "tb1a|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "tb1a|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "tb1a|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "tb1a|R1",
+      "b": "m0|U",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "tb1a|R2",
+      "b": "m0|V",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "tb1a|R3",
+      "b": "m0|W",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "tb1a|R1",
+      "b": "m1|U",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "tb1a|R2",
+      "b": "m1|V",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "tb1a|R3",
+      "b": "m1|W",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "tb1a|R1",
+      "b": "m2|U",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "tb1a|R2",
+      "b": "m2|V",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "tb1a|R3",
+      "b": "m2|W",
+      "net": "hot"
+    }
+  ]
+}

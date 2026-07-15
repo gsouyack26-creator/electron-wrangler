@@ -1,0 +1,24 @@
+{
+  "name": "Residential \u2014 3-Way / 4-Way Stairway Light (120V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 170, "label": "PANEL 120V", "phases": 1, "volts": 120 },
+    { "id": "br", "type": "breaker", "x": 140, "y": 146, "poles": 1, "state": "closed", "label": "BR4 STAIR" },
+    { "id": "s1", "type": "sw3", "x": 270, "y": 90, "state": "t1", "label": "S1 (bottom)" },
+    { "id": "s4", "type": "sw4", "x": 400, "y": 88, "state": "straight", "label": "S-mid" },
+    { "id": "s2", "type": "sw3", "x": 540, "y": 90, "state": "t1", "label": "S2 (top)" },
+    { "id": "stair", "type": "light", "x": 660, "y": 110, "color": "#facc15", "label": "STAIR" },
+    { "id": "nbus", "type": "busbar", "x": 270, "y": 280, "taps": 2, "label": "NEUTRAL", "color": "#9aa4af" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L", "b": "br|in0", "net": "hot" },
+    { "id": "w2", "a": "br|out0", "b": "s1|COM", "net": "hot" },
+    { "id": "w3", "a": "s1|T1", "b": "s4|A1", "net": "traveler" },
+    { "id": "w4", "a": "s1|T2", "b": "s4|A2", "net": "traveler" },
+    { "id": "w5", "a": "s4|B1", "b": "s2|T1", "net": "traveler" },
+    { "id": "w6", "a": "s4|B2", "b": "s2|T2", "net": "traveler" },
+    { "id": "w7", "a": "s2|COM", "b": "stair|a", "net": "switched" },
+    { "id": "w8", "a": "stair|b", "b": "nbus|p0", "net": "ret" },
+    { "id": "w9", "a": "src|N", "b": "nbus|in", "net": "ret" }
+  ]
+}

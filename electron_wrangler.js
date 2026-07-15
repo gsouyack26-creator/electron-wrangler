@@ -115,6 +115,15 @@ const T = {
       <line class="sym" x1="20" y1="30" x2="${c.state==='t1'?8:32}" y2="14"/>
       <text x="20" y="22" class="comp-sub">3W</text>`,
     links:c=>c.fault?[]:(c.state==='t1'?[['COM','T1']]:[['COM','T2']]) },
+  sw4:{ name:'4-Way Switch', w:44,h:50, sw:true, states:['straight','cross'],
+    terms:()=>[{id:'A1',x:8,y:0},{id:'A2',x:36,y:0},{id:'B1',x:8,y:50},{id:'B2',x:36,y:50}],
+    body:c=>{ var x=c.state==='straight'; return `<rect class="sym fillbody" x="4" y="10" width="36" height="30" rx="4"/>
+      <line class="sym" x1="8" y1="0" x2="8" y2="12"/><line class="sym" x1="36" y1="0" x2="36" y2="12"/>
+      <line class="sym" x1="8" y1="38" x2="8" y2="50"/><line class="sym" x1="36" y1="38" x2="36" y2="50"/>
+      <line class="sym" x1="10" y1="16" x2="`+(x?10:34)+`" y2="34"/>
+      <line class="sym" x1="34" y1="16" x2="`+(x?34:10)+`" y2="34"/>
+      <text x="22" y="27" class="comp-sub" style="font-size:6px">4W</text>`; },
+    links:c=>c.fault?[]:(c.state==='straight'?[['A1','B1'],['A2','B2']]:[['A1','B2'],['A2','B1']]) },
   recept:{ name:'Receptacle', w:42,h:54, sw:false,
     terms:()=>[{id:'Hin',x:0,y:12},{id:'Nin',x:0,y:27,rail:null},{id:'Gin',x:0,y:42},
       {id:'Hout',x:42,y:12},{id:'Nout',x:42,y:27},{id:'Gout',x:42,y:42}],
@@ -2083,6 +2092,9 @@ var SEV=[
   ,{id:'r-gfci-trip', cat:'building', diff:2, kind:'GFCI tripped', limit:240, panel:'GFCI-Protected Bathroom / Garage Circuit (120V)',
    name:'Garage & patio outlets dead \u2014 breaker is ON', symptom:'The garage and patio receptacles are dead, but the branch breaker is ON and not tripped. Everything downstream of one device is out. Find what tripped and what protects these outlets.',
    find:function(P){return _sevSet(P,{type:'gfci',state:'tripped'});}}
+  ,{id:'r-4way-trav', cat:'building', diff:3, kind:'broken conductor', limit:320, panel:'Residential \u2014 3-Way / 4-Way Stairway Light (120V)',
+   name:'Stairway light works from only some switch positions', symptom:'A 3-way/4-way stairway light (3 switch locations) only comes on in certain switch combinations \u2014 one traveler between the middle 4-way and a 3-way is open. Find the broken traveler.',
+   find:function(P){return _sevCut(P,{type:'sw4',term:'A1'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }

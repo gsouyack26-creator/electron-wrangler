@@ -144,6 +144,20 @@
       "y": 450,
       "color": "#38bdf8",
       "label": "BLUE Gate6"
+    },
+    {
+      "id": "sol1",
+      "type": "solenoid",
+      "x": 620,
+      "y": 150,
+      "label": "Gate1 Lock Solenoid"
+    },
+    {
+      "id": "stk",
+      "type": "stacklight",
+      "x": 760,
+      "y": 140,
+      "label": "Gate Status"
     }
   ],
   "wires": [
@@ -295,6 +309,42 @@
       "id": "w25",
       "a": "blt5|b",
       "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w26",
+      "a": "sr|24",
+      "b": "sol1|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w27",
+      "a": "sol1|A2",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w28",
+      "a": "cb|out0",
+      "b": "sr|23",
+      "net": "dc"
+    },
+    {
+      "id": "w29",
+      "a": "sr|13",
+      "b": "stk|G",
+      "net": "ctrl"
+    },
+    {
+      "id": "w30",
+      "a": "cb|out0",
+      "b": "stk|R",
+      "net": "dc"
+    },
+    {
+      "id": "w31",
+      "a": "stk|C",
+      "b": "gnd|g4",
       "net": "ret"
     }
   ]

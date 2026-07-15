@@ -37,7 +37,7 @@
     },
     {
       "id": "e_lpc",
-      "type": "estop",
+      "type": "pullcord",
       "x": 300,
       "y": 150,
       "state": "closed",
@@ -45,7 +45,7 @@
     },
     {
       "id": "e_rpc",
-      "type": "estop",
+      "type": "pullcord",
       "x": 300,
       "y": 240,
       "state": "closed",

@@ -1,0 +1,765 @@
+{
+  "name": "CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh17-19)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 300,
+      "label": "24VDC (from CP83 dist)",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 120,
+      "y": 560,
+      "label": "0VDC bus"
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 150,
+      "y": 290,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB8598006 4A I/O PWR"
+    },
+    {
+      "id": "coup",
+      "type": "netdev",
+      "x": 300,
+      "y": 40,
+      "label": "Beckhoff Profibus Coupler"
+    },
+    {
+      "id": "m0",
+      "type": "netdev",
+      "x": 470,
+      "y": 40,
+      "label": "PLC8317002 IP-Link I/O"
+    },
+    {
+      "id": "m1",
+      "type": "netdev",
+      "x": 640,
+      "y": 40,
+      "label": "PLC8317102 IP-Link I/O"
+    },
+    {
+      "id": "m2",
+      "type": "netdev",
+      "x": 810,
+      "y": 40,
+      "label": "PLC8317202 IP-Link I/O"
+    },
+    {
+      "id": "m3",
+      "type": "netdev",
+      "x": 980,
+      "y": 40,
+      "label": "PLC8317302 IP-Link I/O"
+    },
+    {
+      "id": "m4",
+      "type": "netdev",
+      "x": 1150,
+      "y": 40,
+      "label": "PLC8317402 IP-Link I/O"
+    },
+    {
+      "id": "m5",
+      "type": "netdev",
+      "x": 1320,
+      "y": 40,
+      "label": "PLC8317602 IP-Link I/O"
+    },
+    {
+      "id": "m6",
+      "type": "netdev",
+      "x": 470,
+      "y": 130,
+      "label": "PLC8317702 IP-Link I/O"
+    },
+    {
+      "id": "m7",
+      "type": "netdev",
+      "x": 640,
+      "y": 130,
+      "label": "PLC8317802 IP-Link I/O"
+    },
+    {
+      "id": "m8",
+      "type": "netdev",
+      "x": 810,
+      "y": 130,
+      "label": "PLC8317902 IP-Link I/O"
+    },
+    {
+      "id": "m9",
+      "type": "netdev",
+      "x": 980,
+      "y": 130,
+      "label": "PLC8318002 IP-Link I/O"
+    },
+    {
+      "id": "m10",
+      "type": "netdev",
+      "x": 1150,
+      "y": 130,
+      "label": "PLC8318102 IP-Link I/O"
+    },
+    {
+      "id": "m11",
+      "type": "netdev",
+      "x": 1320,
+      "y": 130,
+      "label": "PLC8318202 IP-Link I/O"
+    },
+    {
+      "id": "do",
+      "type": "plcOutCard",
+      "x": 300,
+      "y": 230,
+      "state": "on",
+      "label": "DO -> Interposing"
+    },
+    {
+      "id": "cr0",
+      "type": "relay",
+      "x": 470,
+      "y": 250,
+      "label": "CR8313001"
+    },
+    {
+      "id": "f0",
+      "type": "light",
+      "x": 560,
+      "y": 246,
+      "color": "#a3e635",
+      "label": "Field 8313001"
+    },
+    {
+      "id": "cr1",
+      "type": "relay",
+      "x": 640,
+      "y": 250,
+      "label": "CR8313013"
+    },
+    {
+      "id": "f1",
+      "type": "light",
+      "x": 730,
+      "y": 246,
+      "color": "#a3e635",
+      "label": "Field 8313013"
+    },
+    {
+      "id": "cr2",
+      "type": "relay",
+      "x": 810,
+      "y": 250,
+      "label": "CR8313121"
+    },
+    {
+      "id": "f2",
+      "type": "light",
+      "x": 900,
+      "y": 246,
+      "color": "#a3e635",
+      "label": "Field 8313121"
+    },
+    {
+      "id": "cr3",
+      "type": "relay",
+      "x": 980,
+      "y": 250,
+      "label": "CR8313327"
+    },
+    {
+      "id": "f3",
+      "type": "light",
+      "x": 1070,
+      "y": 246,
+      "color": "#a3e635",
+      "label": "Field 8313327"
+    },
+    {
+      "id": "cr4",
+      "type": "relay",
+      "x": 470,
+      "y": 380,
+      "label": "CR8313335"
+    },
+    {
+      "id": "f4",
+      "type": "light",
+      "x": 560,
+      "y": 376,
+      "color": "#a3e635",
+      "label": "Field 8313335"
+    },
+    {
+      "id": "cr5",
+      "type": "relay",
+      "x": 640,
+      "y": 380,
+      "label": "CR8313464"
+    },
+    {
+      "id": "f5",
+      "type": "light",
+      "x": 730,
+      "y": 376,
+      "color": "#a3e635",
+      "label": "Field 8313464"
+    },
+    {
+      "id": "cr6",
+      "type": "relay",
+      "x": 810,
+      "y": 380,
+      "label": "CR8313512"
+    },
+    {
+      "id": "f6",
+      "type": "light",
+      "x": 900,
+      "y": 376,
+      "color": "#a3e635",
+      "label": "Field 8313512"
+    },
+    {
+      "id": "cr7",
+      "type": "relay",
+      "x": 980,
+      "y": 380,
+      "label": "CR8313540"
+    },
+    {
+      "id": "f7",
+      "type": "light",
+      "x": 1070,
+      "y": 376,
+      "color": "#a3e635",
+      "label": "Field 8313540"
+    },
+    {
+      "id": "tb23",
+      "type": "tstrip",
+      "x": 300,
+      "y": 340,
+      "label": "TB23D-26D"
+    },
+    {
+      "id": "tmr",
+      "type": "timerON",
+      "x": 300,
+      "y": 470,
+      "preset": 2000,
+      "label": "TD8313106 delay"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|N",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w2",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w3",
+      "a": "cb|out0",
+      "b": "coup|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w4",
+      "a": "coup|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w5",
+      "a": "cb|out0",
+      "b": "m0|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w6",
+      "a": "m0|M",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w7",
+      "a": "coup|P1",
+      "b": "m0|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w8",
+      "a": "cb|out0",
+      "b": "m1|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w9",
+      "a": "m1|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w10",
+      "a": "m0|P2",
+      "b": "m1|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w11",
+      "a": "cb|out0",
+      "b": "m2|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w12",
+      "a": "m2|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w13",
+      "a": "m1|P2",
+      "b": "m2|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w14",
+      "a": "cb|out0",
+      "b": "m3|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w15",
+      "a": "m3|M",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w16",
+      "a": "m2|P2",
+      "b": "m3|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w17",
+      "a": "cb|out0",
+      "b": "m4|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w18",
+      "a": "m4|M",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w19",
+      "a": "m3|P2",
+      "b": "m4|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w20",
+      "a": "cb|out0",
+      "b": "m5|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w21",
+      "a": "m5|M",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w22",
+      "a": "m4|P2",
+      "b": "m5|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w23",
+      "a": "cb|out0",
+      "b": "m6|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w24",
+      "a": "m6|M",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "m5|P2",
+      "b": "m6|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w26",
+      "a": "cb|out0",
+      "b": "m7|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w27",
+      "a": "m7|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w28",
+      "a": "m6|P2",
+      "b": "m7|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w29",
+      "a": "cb|out0",
+      "b": "m8|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w30",
+      "a": "m8|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w31",
+      "a": "m7|P2",
+      "b": "m8|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w32",
+      "a": "cb|out0",
+      "b": "m9|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w33",
+      "a": "m9|M",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "m8|P2",
+      "b": "m9|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w35",
+      "a": "cb|out0",
+      "b": "m10|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w36",
+      "a": "m10|M",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w37",
+      "a": "m9|P2",
+      "b": "m10|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w38",
+      "a": "cb|out0",
+      "b": "m11|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w39",
+      "a": "m11|M",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w40",
+      "a": "m10|P2",
+      "b": "m11|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w41",
+      "a": "cb|out0",
+      "b": "do|C",
+      "net": "dc"
+    },
+    {
+      "id": "w42",
+      "a": "do|out0",
+      "b": "cr0|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w43",
+      "a": "cr0|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w44",
+      "a": "cb|out0",
+      "b": "cr0|11",
+      "net": "dc"
+    },
+    {
+      "id": "w45",
+      "a": "cr0|14",
+      "b": "f0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w46",
+      "a": "f0|b",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w47",
+      "a": "do|out1",
+      "b": "cr1|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w48",
+      "a": "cr1|A2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w49",
+      "a": "cb|out0",
+      "b": "cr1|11",
+      "net": "dc"
+    },
+    {
+      "id": "w50",
+      "a": "cr1|14",
+      "b": "f1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w51",
+      "a": "f1|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w52",
+      "a": "do|out2",
+      "b": "cr2|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w53",
+      "a": "cr2|A2",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w54",
+      "a": "cb|out0",
+      "b": "cr2|11",
+      "net": "dc"
+    },
+    {
+      "id": "w55",
+      "a": "cr2|14",
+      "b": "f2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w56",
+      "a": "f2|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w57",
+      "a": "do|out3",
+      "b": "cr3|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w58",
+      "a": "cr3|A2",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w59",
+      "a": "cb|out0",
+      "b": "cr3|11",
+      "net": "dc"
+    },
+    {
+      "id": "w60",
+      "a": "cr3|14",
+      "b": "f3|a",
+      "net": "dc"
+    },
+    {
+      "id": "w61",
+      "a": "f3|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w62",
+      "a": "do|out4",
+      "b": "cr4|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w63",
+      "a": "cr4|A2",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w64",
+      "a": "cb|out0",
+      "b": "cr4|11",
+      "net": "dc"
+    },
+    {
+      "id": "w65",
+      "a": "cr4|14",
+      "b": "f4|a",
+      "net": "dc"
+    },
+    {
+      "id": "w66",
+      "a": "f4|b",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w67",
+      "a": "do|out5",
+      "b": "cr5|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w68",
+      "a": "cr5|A2",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w69",
+      "a": "cb|out0",
+      "b": "cr5|11",
+      "net": "dc"
+    },
+    {
+      "id": "w70",
+      "a": "cr5|14",
+      "b": "f5|a",
+      "net": "dc"
+    },
+    {
+      "id": "w71",
+      "a": "f5|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w72",
+      "a": "do|out6",
+      "b": "cr6|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w73",
+      "a": "cr6|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w74",
+      "a": "cb|out0",
+      "b": "cr6|11",
+      "net": "dc"
+    },
+    {
+      "id": "w75",
+      "a": "cr6|14",
+      "b": "f6|a",
+      "net": "dc"
+    },
+    {
+      "id": "w76",
+      "a": "f6|b",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w77",
+      "a": "do|out7",
+      "b": "cr7|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w78",
+      "a": "cr7|A2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w79",
+      "a": "cb|out0",
+      "b": "cr7|11",
+      "net": "dc"
+    },
+    {
+      "id": "w80",
+      "a": "cr7|14",
+      "b": "f7|a",
+      "net": "dc"
+    },
+    {
+      "id": "w81",
+      "a": "f7|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w82",
+      "a": "cb|out0",
+      "b": "tb23|L1",
+      "net": "dc"
+    },
+    {
+      "id": "w83",
+      "a": "cb|out0",
+      "b": "tmr|IN",
+      "net": "dc"
+    }
+  ]
+}

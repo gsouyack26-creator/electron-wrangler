@@ -23,14 +23,14 @@
     {
       "id": "vfd",
       "type": "vfd",
-      "x": 320,
+      "x": 410,
       "y": 90,
       "label": "VFD06114 5.5kW"
     },
     {
       "id": "lsm",
       "type": "motor",
-      "x": 480,
+      "x": 570,
       "y": 90,
       "phases": 3,
       "hp": 7,
@@ -78,6 +78,13 @@
       "phases": 1,
       "volts": 24,
       "label": "FAN06708"
+    },
+    {
+      "id": "react",
+      "type": "reactor",
+      "x": 250,
+      "y": 90,
+      "label": "RE06118 Line Reactor"
     }
   ],
   "wires": [
@@ -102,19 +109,19 @@
     {
       "id": "w4",
       "a": "ds|out0",
-      "b": "vfd|L1",
+      "b": "react|L1",
       "net": "hot"
     },
     {
       "id": "w5",
       "a": "ds|out1",
-      "b": "vfd|L2",
+      "b": "react|L2",
       "net": "hot"
     },
     {
       "id": "w6",
       "a": "ds|out2",
-      "b": "vfd|L3",
+      "b": "react|L3",
       "net": "hot"
     },
     {
@@ -164,6 +171,24 @@
       "a": "fan|b",
       "b": "gnd|g0",
       "net": "ret"
+    },
+    {
+      "id": "w15",
+      "a": "react|T1",
+      "b": "vfd|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "react|T2",
+      "b": "vfd|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "react|T3",
+      "b": "vfd|L3",
+      "net": "hot"
     }
   ]
 }

@@ -226,6 +226,61 @@ const T = {
       ${c._on?'<path class="sym" d="M30 10 q5 7 0 14" style="fill:none"/>':''}
       <text x="18" y="20" class="comp-sub" style="font-size:6px">${esc(c.label||'AH')}</text>`,
     links:()=>[] },
+  transformer:{ name:'Transformer (CPT)', w:56,h:64, sw:false, xfmr:true, sv:120,
+    terms:()=>[{id:'H1',x:0,y:16},{id:'H2',x:0,y:48},{id:'X1',x:56,y:16},{id:'X2',x:56,y:48}],
+    body:c=>`<rect class="sym fillbody" x="6" y="4" width="44" height="56" rx="4"/>
+      <text x="28" y="20" class="comp-label" style="font-size:9px">XFMR</text>
+      <text x="28" y="32" class="comp-sub" style="font-size:6.5px">${esc((c.pv||480)+'/'+(c.sv||120))}</text>
+      <text x="3" y="19" class="comp-sub" style="font-size:6px">H1</text><text x="3" y="51" class="comp-sub" style="font-size:6px">H2</text>
+      <text x="53" y="19" class="comp-sub" style="font-size:6px;text-anchor:end">X1</text><text x="53" y="51" class="comp-sub" style="font-size:6px;text-anchor:end">X2</text>
+      <circle cx="28" cy="46" r="4" style="fill:${c._priOn?'var(--live)':'none'};stroke:var(--edge)"/>`,
+    links:()=>[] },
+  phaseMon:{ name:'Phase Monitor', w:50,h:56, sw:false, pmon:true,
+    terms:()=>[{id:'L1',x:0,y:12},{id:'L2',x:0,y:26},{id:'L3',x:0,y:40},{id:'11',x:50,y:18},{id:'14',x:50,y:40}],
+    body:c=>`<rect class="sym fillbody" x="6" y="2" width="38" height="52" rx="4"/>
+      <text x="25" y="18" class="comp-label" style="font-size:8px">3\u00d8</text>
+      <text x="25" y="29" class="comp-sub" style="font-size:6px">MON</text>
+      <circle cx="25" cy="42" r="4" style="fill:${c._coilOn?'var(--live)':'var(--warn)'};stroke:var(--edge)"/>`,
+    links:c=>c._coilOn?[['11','14']]:[] },
+  solenoid:{ name:'Solenoid / Valve', w:44,h:42, sw:false, coil:{a1:'A1',a2:'A2'},
+    terms:()=>[{id:'A1',x:22,y:0},{id:'A2',x:22,y:42}],
+    body:c=>`<rect class="sym fillbody" x="8" y="8" width="28" height="26" rx="2"/>
+      <rect class="sym" x="14" y="12" width="16" height="18" style="fill:${c._coilOn?'var(--live)':'none'}"/>
+      <line class="sym" x1="22" y1="0" x2="22" y2="8"/><line class="sym" x1="22" y1="34" x2="22" y2="42"/>
+      <text x="22" y="25" class="comp-sub" style="font-size:6px">${esc(c.label||'SOL')}</text>`,
+    links:()=>[] },
+  stacklight:{ name:'Stack Light', w:30,h:66, sw:false,
+    terms:()=>[{id:'R',x:0,y:14},{id:'Y',x:0,y:32},{id:'G',x:0,y:50},{id:'C',x:30,y:32}],
+    body:c=>{ const e=c._energT||{}; const seg=(y,on,col)=>`<rect class="sym" x="8" y="${y}" width="16" height="16" rx="2" style="fill:${on?col:'#2a2f37'}"/>`;
+      return seg(6,e.R,'#ef4444')+seg(24,e.Y,'#eab308')+seg(42,e.G,'#22c55e')
+        +`<line class="sym" x1="0" y1="14" x2="8" y2="14"/><line class="sym" x1="0" y1="32" x2="8" y2="32"/><line class="sym" x1="0" y1="50" x2="8" y2="50"/><rect class="sym" x="10" y="60" width="12" height="5"/>`; },
+    links:()=>[] },
+  reactor:{ name:'Line Reactor', w:46,h:56, sw:false,
+    terms:()=>[{id:'L1',x:0,y:12},{id:'L2',x:0,y:28},{id:'L3',x:0,y:44},{id:'T1',x:46,y:12},{id:'T2',x:46,y:28},{id:'T3',x:46,y:44}],
+    body:c=>`<rect class="sym fillbody" x="6" y="2" width="34" height="52" rx="4"/>
+      <path class="sym" d="M12 12 q6 -6 12 0 M12 28 q6 -6 12 0 M12 44 q6 -6 12 0" style="fill:none"/>
+      <text x="23" y="52" class="comp-sub" style="font-size:6px">${esc(c.label||'REACTOR')}</text>`,
+    links:c=>c.fault?[]:ltLinks(3) },
+  pullcord:{ name:'Pull-Cord Switch', w:36,h:38, sw:true, states:['closed','open'],
+    terms:()=>[{id:'a',x:18,y:0},{id:'b',x:18,y:38}],
+    body:c=>`<circle class="sym" cx="18" cy="15" r="10" style="fill:${c.state==='open'?'#7f1d1d':'#dc2626'}"/>
+      <path class="sym" d="M18 15 l6 8 M18 15 l-6 8" style="fill:none;stroke:#fff"/>
+      <line class="sym" x1="18" y1="0" x2="18" y2="5"/><line class="sym" x1="18" y1="25" x2="18" y2="38"/>
+      <text x="18" y="19" class="comp-sub" style="font-size:6px;fill:#fff">PC</text>`,
+    links:c=>(c.state==='closed'&&!c.fault)?[['a','b']]:[] },
+  overtemp:{ name:'Over-Temp / PTC', w:40,h:30, sw:true, states:['closed','open'],
+    terms:()=>[{id:'a',x:0,y:15},{id:'b',x:40,y:15}],
+    body:c=>`<rect class="sym fillbody" x="8" y="4" width="24" height="22" rx="3"/>
+      <text x="20" y="18" class="comp-sub" style="font-size:8px;fill:${c.state==='open'?'var(--warn)':'var(--live)'}">${c.state==='open'?'T\u00b0!':'\u03b8'}</text>
+      <line class="sym" x1="0" y1="15" x2="8" y2="15"/><line class="sym" x1="32" y1="15" x2="40" y2="15"/>`,
+    links:c=>(c.state==='closed'&&!c.fault)?[['a','b']]:[] },
+  guardlock:{ name:'Guard-Lock Gate', w:48,h:52, sw:true, states:['closed','open'],
+    terms:()=>[{id:'11',x:0,y:12},{id:'12',x:48,y:12},{id:'21',x:0,y:40},{id:'22',x:48,y:40}],
+    body:c=>{ const cl=c.state==='closed'; return `<rect class="sym fillbody" x="8" y="2" width="32" height="48" rx="4"/>
+      <text x="24" y="16" class="comp-sub" style="font-size:6px">GATE</text>
+      <circle cx="24" cy="30" r="7" style="fill:${cl?'var(--live)':'#7f1d1d'};stroke:var(--edge)"/>
+      <text x="24" y="33" class="comp-sub" style="font-size:6px;fill:#fff">${cl?'LK':'OP'}</text>`; },
+    links:c=>(c.state==='closed'&&!c.fault)?[['11','12'],['21','22']]:[] },
 };
 function polePairs(n,w,h){const ar=[];for(let i=0;i<n;i++){const y=10+i*((h-14)/Math.max(1,n-1||1));ar.push({id:'in'+i,x:0,y:n===1?h/2:y});ar.push({id:'out'+i,x:w,y:n===1?h/2:y});}return ar;}
 function poleLinks(n){const l=[];for(let i=0;i<n;i++)l.push(['in'+i,'out'+i]);return l;}
@@ -260,7 +315,7 @@ function findComp(id){return PANEL.components.find(c=>c.id===id);}
    hot-live / ret-live from source rails. iterate for coils to fixed point. */
 function solve(){
   const comps=PANEL.components;
-  comps.forEach(c=>{c._coilOn=false;c._on=false;c._energT={};});
+  comps.forEach(c=>{c._coilOn=false;c._on=false;c._energT={};c._priOn=false;});
   let iter=0, changed=true;
   let uf;
   while(changed && iter++<12){
@@ -279,6 +334,7 @@ function solve(){
     const isHot=k=>hot.has(uf.find(k)), isRet=k=>ret.has(uf.find(k));
     // PSU DC output acts as a rail while its AC input was energized (converges over iterations)
     comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ hot.add(uf.find(key(c,'Vp'))); ret.add(uf.find(key(c,'Vn'))); } });
+    comps.forEach(c=>{ if(compDef(c).xfmr&&c._priOn){ hot.add(uf.find(key(c,'X1'))); ret.add(uf.find(key(c,'X2'))); } });
     // recompute coils
     changed=false;
     comps.forEach(c=>{ const d=compDef(c);
@@ -288,6 +344,8 @@ function solve(){
         if(!!c._coilOn!==!!on){c._coilOn=on;changed=true;}
       }
       if(d.psu){ const on=isHot(key(c,'Lin')); if(!!c._acOn!==!!on){c._acOn=on;changed=true;} }
+      if(d.xfmr){ const on=isHot(key(c,'H1'))&&(isHot(key(c,'H2'))||isRet(key(c,'H2'))); if(!!c._priOn!==!!on){c._priOn=on;changed=true;} }
+      if(d.pmon){ const on=isHot(key(c,'L1'))&&isHot(key(c,'L2'))&&isHot(key(c,'L3')); if(!!c._coilOn!==!!on){c._coilOn=on;changed=true;} }
       if(d.timer){ const inOn=isHot(key(c,'IN')); c._coilOn=inOn;
         if(!_playing){ if(!!c._out!==!!inOn){c._out=inOn;changed=true;} } }
       });
@@ -312,6 +370,8 @@ function solve(){
     }
     if(d.coil) c._on=c._coilOn;
     if(d.psu) c._on=!!c._acOn;
+    if(d.xfmr) c._on=!!c._priOn;
+    if(d.pmon) c._on=!!c._coilOn;
     if(d.timer) c._on=!!c._out;
   });
   // current-flow groups: UF2 = potential nodes + union across ON loads/coils
@@ -334,6 +394,7 @@ function solve(){
   const _vuf=solve._uf, hotV={}, _nv=v=>{const m=String(v||'').match(/(\d+(?:\.\d+)?)/);return m?+m[1]:0;};
   comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_vuf.find(_key(c,t.id)); hotV[r]=Math.max(hotV[r]||0,nv); } }); } });
   comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ const r=_vuf.find(_key(c,'Vp')); hotV[r]=Math.max(hotV[r]||0,+(c.dcv||24)); } });
+  comps.forEach(c=>{ if(compDef(c).xfmr&&c._priOn){ const r=_vuf.find(_key(c,'X1')); hotV[r]=Math.max(hotV[r]||0,+(c.sv||120)); } });
   solve._hotV=hotV;
   PANEL.wires.forEach(w=>{ if(w.cut){w._v=null;return;}
     w._v = _isHot(w.a)?(hotV[_vuf.find(w.a)]||0) : _isRet(w.a)?0 : _isHot(w.b)?(hotV[_vuf.find(w.b)]||0) : _isRet(w.b)?0 : null;
@@ -344,6 +405,7 @@ function solve(){
     comps.forEach(c=>{ if(c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>g.union(_key(c,x),_key(c,y))); });
     const V={},_srcV={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot'){V[r]=Math.max(V[r]||0,nv);_srcV[r]=1;} if(t.rail==='ret'){V[r]=0;_srcV[r]=1;} }); } });
     comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ V[g.find(_key(c,'Vp'))]=Math.max(V[g.find(_key(c,'Vp'))]||0,+(c.dcv||24)); V[g.find(_key(c,'Vn'))]=0; } });
+    comps.forEach(c=>{ if(compDef(c).xfmr&&c._priOn){ V[g.find(_key(c,'X1'))]=Math.max(V[g.find(_key(c,'X1'))]||0,+(c.sv||120)); V[g.find(_key(c,'X2'))]=0; } });
     let ch=true,pass=0; while(ch&&pass++<24){ ch=false; comps.forEach(c=>{ if(!c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>{ const ra=g.find(_key(c,x)),rb=g.find(_key(c,y)); const va=V[ra]||0,vb=V[rb]||0;
       if(!_srcV[rb]&&va*0.55>(V[rb]||0)+0.5){V[rb]=va*0.55;ch=true;} if(!_srcV[ra]&&vb*0.55>(V[ra]||0)+0.5){V[ra]=vb*0.55;ch=true;} }); }); }
     PANEL.wires.forEach(w=>{ if(w.cut){w._dispV=null;return;} const r=g.find(w.a); w._dispV=(V[r]!=null)?Math.round(V[r]):w._v; }); }
@@ -366,7 +428,10 @@ function diagnose(loadComp){
     else if(c.type==='contactor') ideal=ltLinks(c.poles||3);
     else if(c.type==='overload'){ideal=ltLinks(c.poles||3);ideal.push(['95','96']);}
     else if(c.type==='relay') ideal=null; // built with contact metadata below
-    else if(['estop','pbNO','pbNC','selector','sensor'].includes(c.type)) ideal=[['a','b']];
+    else if(['estop','pbNO','pbNC','selector','sensor','pullcord','overtemp'].includes(c.type)) ideal=[['a','b']];
+    else if(c.type==='guardlock') ideal=[['11','12'],['21','22']];
+    else if(c.type==='reactor') ideal=ltLinks(3);
+    else if(c.type==='phaseMon') ideal=[['11','14']];
     else if(c.type==='vfd') ideal=[['L1','U'],['L2','V'],['L3','W']];
     else if(c.type==='plcOut') ideal=[['c','out']];
     else if(c.type==='diode') ideal=[['a','b']];
@@ -405,6 +470,10 @@ function broken(c,contact){ if(c.fault)return 'faulted/open';
   if(c.type==='fuse'&&c.state==='blown')return 'BLOWN';
   if(c.type==='overload'&&c.state==='tripped')return 'OL TRIPPED';
   if(c.type==='estop'&&c.state==='open')return 'E-STOP pressed';
+  if(c.type==='pullcord'&&c.state==='open')return 'pull-cord PULLED';
+  if(c.type==='overtemp'&&c.state==='open')return 'OVER-TEMP (thermal open)';
+  if(c.type==='guardlock'&&c.state==='open')return 'gate OPEN / unlocked';
+  if(c.type==='phaseMon'&&!c._coilOn)return 'PHASE LOSS (not all 3 phases present)';
   if(c.type==='pbNC'&&c.state==='open')return 'stop pressed';
   if(c.type==='pbNO'&&c.state==='open')return 'not started';
   if(['selector','sensor'].includes(c.type)&&c.state==='open')return 'contact open';
@@ -703,7 +772,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
 function flash(id){ const g=svg.querySelector(`[data-comp="${id}"]`); if(g){g.classList.add('faulted');setTimeout(()=>render(),1200);} }
 
 /* ---------- palette / modes ---------- */
-const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','plcInCard','plcOutCard','psu','term','tstrip','ftb','gndbar','safetyRelay','plc','netdev','diode','resistor','horn'];
+const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','plcInCard','plcOutCard','psu','term','tstrip','ftb','gndbar','safetyRelay','plc','netdev','diode','resistor','horn','transformer','phaseMon','solenoid','stacklight','reactor','pullcord','overtemp','guardlock'];
 function buildPalette(){ $('#palette').innerHTML=PAL.map(t=>`<button data-t="${t}"><svg viewBox="0 0 ${T[t].w} ${T[t].h}">${T[t].body(demoStub(t))}</svg>${T[t].name}</button>`).join('');
   $('#palette').querySelectorAll('button').forEach(b=>b.onclick=()=>setTool(b.dataset.t)); }
 function demoStub(t){const c={type:t,label:'',poles:3,phases:3,state:T[t].states?T[t].states[0]:undefined,volts:'480V'};return c;}

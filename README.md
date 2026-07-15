@@ -39,7 +39,9 @@ start/stop push-buttons, selector, sensor/photo-eye, PLC in/out, **8-ch PLC inpu
 **8-ch PLC output card**, single terminal, **multi-position terminal strip**, **fused terminal**,
 **ground/PE bar**, safety relay, on/off-delay timers, **PLC/controller**, **comms/network device**
 (Profibus scanner, port server, Ethernet switch, Beckhoff coupler), **diode**, **resistor**,
-**alarm horn**.
+**alarm horn**, **transformer** (CPT, steps voltage), **phase monitor** (drops out on phase loss),
+**solenoid/valve**, **stack light** (R/Y/G), **line reactor**, **pull-cord**, **over-temp/PTC**,
+**guard-lock gate** switch.
 
 Bundled panel library includes the ACY1 13XP33/CC566 set plus the full **BEUMER/Intelligrated
 LS4000 / M-16-00264 sorter** set traced from the source drawings — CP82 & CP83 PLC panels, DCP power

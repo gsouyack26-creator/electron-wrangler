@@ -88,13 +88,12 @@
     },
     {
       "id": "ctl",
-      "type": "motor",
+      "type": "transformer",
       "x": 470,
       "y": 388,
-      "phases": 3,
-      "hp": 5,
-      "volts": 600,
-      "label": "24VDC CTRL XFMR"
+      "label": "CTRL XFMR 480/120",
+      "pv": 480,
+      "sv": 120
     },
     {
       "id": "ups",
@@ -136,6 +135,29 @@
       "x": 470,
       "y": 700,
       "label": "PE/GND"
+    },
+    {
+      "id": "ctlload",
+      "type": "light",
+      "x": 640,
+      "y": 388,
+      "color": "#4ade80",
+      "label": "120V CONTROL"
+    },
+    {
+      "id": "pm",
+      "type": "phaseMon",
+      "x": 300,
+      "y": 470,
+      "label": "PHASE MONITOR"
+    },
+    {
+      "id": "pmrel",
+      "type": "light",
+      "x": 470,
+      "y": 480,
+      "color": "#22d3ee",
+      "label": "3PH-OK RELAY"
     }
   ],
   "wires": [
@@ -286,19 +308,13 @@
     {
       "id": "w25",
       "a": "cbK|out0",
-      "b": "ctl|U",
+      "b": "ctl|H1",
       "net": "hot"
     },
     {
       "id": "w26",
       "a": "cbK|out1",
-      "b": "ctl|V",
-      "net": "hot"
-    },
-    {
-      "id": "w27",
-      "a": "cbK|out2",
-      "b": "ctl|W",
+      "b": "ctl|H2",
       "net": "hot"
     },
     {
@@ -341,6 +357,54 @@
       "id": "w34",
       "a": "ps2|Vn",
       "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "ctl|X1",
+      "b": "ctlload|a",
+      "net": "hot"
+    },
+    {
+      "id": "w35",
+      "a": "ctlload|b",
+      "b": "ctl|X2",
+      "net": "ret"
+    },
+    {
+      "id": "w36",
+      "a": "ds|out0",
+      "b": "pm|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w37",
+      "a": "ds|out1",
+      "b": "pm|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w38",
+      "a": "ds|out2",
+      "b": "pm|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w39",
+      "a": "pm|14",
+      "b": "pmrel|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w40",
+      "a": "pm|11",
+      "b": "ds|out0",
+      "net": "hot"
+    },
+    {
+      "id": "w41",
+      "a": "pmrel|b",
+      "b": "gnd|g2",
       "net": "ret"
     }
   ]

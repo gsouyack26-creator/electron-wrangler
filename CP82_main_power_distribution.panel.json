@@ -1,0 +1,347 @@
+{
+  "name": "CP82 Main Power Distribution (M-16-00264 p.82060-61)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 300,
+      "label": "600VAC 3PH UTILITY",
+      "phases": 3,
+      "volts": 600
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 280,
+      "poles": 3,
+      "state": "closed",
+      "label": "DISC8206018B 600A/500Af"
+    },
+    {
+      "id": "cbL",
+      "type": "breaker",
+      "x": 300,
+      "y": 40,
+      "poles": 3,
+      "state": "closed",
+      "label": "LSM DRIVES 200A"
+    },
+    {
+      "id": "lsm",
+      "type": "motor",
+      "x": 470,
+      "y": 58,
+      "phases": 3,
+      "hp": 5,
+      "volts": 600,
+      "label": "LSM LINEAR MOTOR"
+    },
+    {
+      "id": "cbC",
+      "type": "breaker",
+      "x": 300,
+      "y": 150,
+      "poles": 3,
+      "state": "closed",
+      "label": "COND RAIL 100A"
+    },
+    {
+      "id": "cr",
+      "type": "motor",
+      "x": 470,
+      "y": 168,
+      "phases": 3,
+      "hp": 5,
+      "volts": 600,
+      "label": "CONDUCTOR RAIL"
+    },
+    {
+      "id": "cbI",
+      "type": "breaker",
+      "x": 300,
+      "y": 260,
+      "poles": 3,
+      "state": "closed",
+      "label": "INDUCTION 300A"
+    },
+    {
+      "id": "ind",
+      "type": "motor",
+      "x": 470,
+      "y": 278,
+      "phases": 3,
+      "hp": 5,
+      "volts": 600,
+      "label": "INDUCTION DRIVES"
+    },
+    {
+      "id": "cbK",
+      "type": "breaker",
+      "x": 300,
+      "y": 370,
+      "poles": 3,
+      "state": "closed",
+      "label": "CONTROL PWR 100A"
+    },
+    {
+      "id": "ctl",
+      "type": "motor",
+      "x": 470,
+      "y": 388,
+      "phases": 3,
+      "hp": 5,
+      "volts": 600,
+      "label": "24VDC CTRL XFMR"
+    },
+    {
+      "id": "ups",
+      "type": "source",
+      "x": 40,
+      "y": 620,
+      "label": "120VAC UPS8209833",
+      "phases": 1,
+      "volts": 120
+    },
+    {
+      "id": "cb6",
+      "type": "breaker",
+      "x": 190,
+      "y": 620,
+      "poles": 1,
+      "state": "closed",
+      "label": "CBB206005 6A"
+    },
+    {
+      "id": "ps1",
+      "type": "psu",
+      "x": 320,
+      "y": 600,
+      "dcv": 24,
+      "label": "24VDC PS1 -> CP83"
+    },
+    {
+      "id": "ps2",
+      "type": "psu",
+      "x": 320,
+      "y": 690,
+      "dcv": 24,
+      "label": "24VDC PS2 -> CP83"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 470,
+      "y": 700,
+      "label": "PE/GND"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "cbL|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "cbL|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "cbL|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "cbL|out0",
+      "b": "lsm|U",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "cbL|out1",
+      "b": "lsm|V",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "cbL|out2",
+      "b": "lsm|W",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "ds|out0",
+      "b": "cbC|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "ds|out1",
+      "b": "cbC|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "ds|out2",
+      "b": "cbC|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "cbC|out0",
+      "b": "cr|U",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "cbC|out1",
+      "b": "cr|V",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "cbC|out2",
+      "b": "cr|W",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "ds|out0",
+      "b": "cbI|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "ds|out1",
+      "b": "cbI|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "ds|out2",
+      "b": "cbI|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "cbI|out0",
+      "b": "ind|U",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "cbI|out1",
+      "b": "ind|V",
+      "net": "hot"
+    },
+    {
+      "id": "w21",
+      "a": "cbI|out2",
+      "b": "ind|W",
+      "net": "hot"
+    },
+    {
+      "id": "w22",
+      "a": "ds|out0",
+      "b": "cbK|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "ds|out1",
+      "b": "cbK|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w24",
+      "a": "ds|out2",
+      "b": "cbK|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w25",
+      "a": "cbK|out0",
+      "b": "ctl|U",
+      "net": "hot"
+    },
+    {
+      "id": "w26",
+      "a": "cbK|out1",
+      "b": "ctl|V",
+      "net": "hot"
+    },
+    {
+      "id": "w27",
+      "a": "cbK|out2",
+      "b": "ctl|W",
+      "net": "hot"
+    },
+    {
+      "id": "w28",
+      "a": "ups|L",
+      "b": "cb6|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w29",
+      "a": "cb6|out0",
+      "b": "ps1|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w30",
+      "a": "cb6|out0",
+      "b": "ps2|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w31",
+      "a": "ups|N",
+      "b": "ps1|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w32",
+      "a": "ups|N",
+      "b": "ps2|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w33",
+      "a": "ps1|Vn",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "ps2|Vn",
+      "b": "gnd|g1",
+      "net": "ret"
+    }
+  ]
+}

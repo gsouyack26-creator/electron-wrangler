@@ -4,7 +4,7 @@ import glob
 import json
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(HERE, "ACY1_Voltbench.html"), encoding="utf-8") as _f:
+with open(os.path.join(HERE, "Voltbench.html"), encoding="utf-8") as _f:
     html = _f.read()
 with open(os.path.join(HERE, "voltbench.js"), encoding="utf-8") as _f:
     js = _f.read()
@@ -46,7 +46,7 @@ if os.path.exists(_mpath) and '<link rel="manifest" href="manifest.json">' in ou
     _durl = "data:application/manifest+json;base64," + _b64.b64encode(_mraw.encode("utf-8")).decode("ascii")
     out = out.replace('<link rel="manifest" href="manifest.json">', '<link rel="manifest" href="' + _durl + '">', 1)
 
-dist = os.path.join(HERE, "ACY1_Voltbench_dist.html")
+dist = os.path.join(HERE, "Voltbench_dist.html")
 with open(dist, "w", encoding="utf-8") as _f:
     _f.write(out)
 kb = os.path.getsize(dist) // 1024

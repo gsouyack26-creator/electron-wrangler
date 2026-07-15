@@ -1,8 +1,8 @@
 {
-  "name": "ACY1 RME Voltbench",
+  "name": "RME Voltbench",
   "short_name": "Voltbench",
   "description": "Offline interactive electrical-panel simulator for troubleshooting.",
-  "start_url": "ACY1_Voltbench.html",
+  "start_url": "Voltbench.html",
   "scope": ".",
   "display": "standalone",
   "orientation": "any",

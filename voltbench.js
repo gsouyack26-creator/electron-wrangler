@@ -1,4 +1,4 @@
-/* ACY1 RME — Voltbench  |  offline, single-graph electrical simulator */
+/* RME — Voltbench  |  offline, single-graph electrical simulator */
 'use strict';
 const VERSION='1.0';
 const $=s=>document.querySelector(s);
@@ -586,7 +586,7 @@ function backplate(){
 function applyEnc(){ const st=document.getElementById('stage'); if(st)st.classList.toggle('enc',encOn);
   const be=$('#btnEnc'); if(be)be.classList.toggle('on',encOn);
   const pl=$('#enc-plate'); if(pl){ const nm=(PANEL.name||'PANEL').split(/[—-]/)[0].trim().slice(0,34)||'PANEL';
-    pl.innerHTML=esc(nm)+' <small>&#183; ACY1 RME</small>'; } }
+    pl.innerHTML=esc(nm)+' <small>&#183; RME</small>'; } }
 function endPos(k){ const [id,t]=k.split('|'); const c=findComp(id); return c?termPos(c,t):null; }
 function anyEnerg(c){ return Object.values(c._energT||{}).some(Boolean); }
 function updateFooter(){ const n=PANEL.components.length, w=PANEL.wires.length;
@@ -1620,7 +1620,7 @@ function titleBlock(b){ const day=new Date().toISOString().slice(0,10);
     +'<line x1="'+bx+'" y1="'+(by+22)+'" x2="'+(bx+bw)+'" y2="'+(by+22)+'" stroke="#c9d1d9" stroke-width=".5"/>'
     +'<line x1="'+bx+'" y1="'+(by+40)+'" x2="'+(bx+bw)+'" y2="'+(by+40)+'" stroke="#c9d1d9" stroke-width=".5"/>'
     +'<text x="'+(bx+7)+'" y="'+(by+15)+'" style="fill:#e6edf3;font:bold 11px sans-serif">'+esc((PANEL.name||'PANEL').slice(0,40))+'</text>'
-    +'<text x="'+(bx+7)+'" y="'+(by+35)+'" style="fill:#8b949e;font:8px sans-serif">ACY1 RME \u00b7 Voltbench</text>'
+    +'<text x="'+(bx+7)+'" y="'+(by+35)+'" style="fill:#8b949e;font:8px sans-serif">RME \u00b7 Voltbench</text>'
     +'<text x="'+(bx+7)+'" y="'+(by+53)+'" style="fill:#8b949e;font:8px sans-serif">Date '+day+'   Rev '+esc(PANEL.rev||'-')+'   By '+esc(PANEL.tracedBy||'-')+'</text></g>'; }
 
 /* ---------- 6 + init hooks ---------- */
@@ -1693,7 +1693,7 @@ function printWorksheet(){ const w=window.open('','_blank'); if(!w){toast('Popup
     +measurements.map(m=>'<tr><td>'+esc(m.key)+'</td><td>'+m.expected+'V</td><td>'+m.actual+'V</td><td>'+(m.ok?'OK':'MISMATCH')+'</td></tr>').join('')+'</table>'; }
   w.document.write('<!doctype html><meta charset=utf-8><title>Worksheet \u2014 '+esc(PANEL.name||'')+'</title>'
     +'<style>body{font:13px Segoe UI,Arial,sans-serif;margin:24px;color:#111}h1{font-size:18px}h3{margin-top:18px;border-bottom:1px solid #999;padding-bottom:2px}svg{max-width:100%;height:auto;border:1px solid #ccc}table{border-collapse:collapse;font-size:12px}td,th{border:1px solid #999;padding:4px 8px;text-align:left}</style>'
-    +'<h1>ACY1 RME \u2014 Troubleshooting Worksheet</h1>'
+    +'<h1>RME \u2014 Troubleshooting Worksheet</h1>'
     +'<div><b>Panel:</b> '+esc(PANEL.name||'')+' &nbsp; <b>Date:</b> '+new Date().toISOString().slice(0,10)+' &nbsp; <b>Tech:</b> '+esc(PANEL.tracedBy||'____________')+'</div>'
     +(diag||'<h3>Diagnosis</h3><div>All modeled loads energized.</div>')+meas
     +'<h3>Schematic</h3>'+serializeSvg()
@@ -2159,7 +2159,7 @@ function openReportCard(){ var ALL=_allCalls(); var meta={};
   certs.forEach(function(nm){ badges.push(['\ud83c\udf96','\u200b'+nm+' Certified',nm+' fully cleared']); });
   var badgeHtml=badges.length?badges.map(function(b){ return '<div style="display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--edge);border-radius:9px;background:var(--panel2,rgba(255,255,255,.03))"><span style="font-size:20px">'+b[0]+'</span><div><div style="font-weight:700;font-size:12px">'+esc(b[1])+'</div><div class="hint" style="font-size:10px">'+esc(b[2])+'</div></div></div>'; }).join(''):'<div class="hint">No badges yet \u2014 clear a call to start earning them.</div>';
   var body='<div style="border:2px solid var(--acc,#3b82f6);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.10),transparent)">'
-    +'<div class="hint" style="letter-spacing:2px;font-size:10px">ACY1 RME \u00b7 VOLTBENCH</div>'
+    +'<div class="hint" style="letter-spacing:2px;font-size:10px">RME \u00b7 VOLTBENCH</div>'
     +'<div style="font-weight:800;font-size:18px;margin:2px 0">Trouble-Call Report Card</div>'
     +'<div style="display:flex;justify-content:center;gap:22px;margin:10px 0 4px;flex-wrap:wrap">'
     +'<div><div style="font-size:30px;font-weight:800;color:var(--acc,#3b82f6);line-height:1">'+pct+'%</div><div class="hint" style="font-size:10px">complete</div></div>'

@@ -1,11 +1,11 @@
-# ACY1 RME — Voltbench
+# RME — Voltbench
 
 Offline, single-file interactive electrical-panel simulator for troubleshooting.
 Recreate a control panel as a live graph, then trace complete power/control paths,
 operate devices, inject faults, and auto-diagnose dead loads.
 
 ## Run
-Open `ACY1_Voltbench.html` in any browser (Chrome/Edge). No install, no server.
+Open `Voltbench.html` in any browser (Chrome/Edge). No install, no server.
 Keep `voltbench.js` in the same folder. Ships with a demo conveyor motor-starter panel.
 
 ## Two modes
@@ -29,7 +29,7 @@ Keep `voltbench.js` in the same folder. Ships with a demo conveyor motor-starter
 
 ## Save / load
 - **💾 Save** downloads a `.panel.json`; **📂 Load** re-imports. Auto-saves to browser storage.
-- Build a library of your ACY1 panels over time (MCPs, VFD cabinets, sorter controls, etc.).
+- Build a library of your panels over time (MCPs, VFD cabinets, sorter controls, etc.).
 
 ## Component library
 Power source (1Ø/3Ø), **DC power supply** (AC-in → 24/75V DC-out, output live only when fed),
@@ -95,9 +95,9 @@ deep-link share URL · self-contained QR code (no CDN) · cross-panel jump links
 
 ## Repo layout
 ```
-ACY1_Voltbench.html       shell + styles (edit this + voltbench.js)
+Voltbench.html       shell + styles (edit this + voltbench.js)
 voltbench.js              the engine (~100 KB)
-ACY1_Voltbench_dist.html  BUILT single-file distributable (do not hand-edit)
+Voltbench_dist.html  BUILT single-file distributable (do not hand-edit)
 build.py                     inlines JS + all *.panel.json + layout into the dist
 extract_layout.py            helper: derive a physical-layout map from a drawing
 layout_cc566.json            physical backplate layout (embedded by build)
@@ -107,11 +107,11 @@ EXTRACTION_SPEC.md           schema/spec for AI panel extraction
 ```
 
 ## Build
-After editing `ACY1_Voltbench.html` or `voltbench.js`:
+After editing `Voltbench.html` or `voltbench.js`:
 ```
 python build.py
 ```
-regenerates `ACY1_Voltbench_dist.html` with the JS and the whole panel library inlined —
+regenerates `Voltbench_dist.html` with the JS and the whole panel library inlined —
 a single portable file you can email, drop on a share, or open offline.
 
 Ship either the two-file version (HTML + JS in the same folder) or just the single `_dist.html`.

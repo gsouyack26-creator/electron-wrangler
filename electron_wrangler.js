@@ -14,10 +14,11 @@ const T = {
   source:{ name:'Power In', w:54,h:44, sw:false,
     terms:c=>{ const ph=c.phases||1;
       if(ph===3) return [{id:'L1',x:54,y:10,rail:'hot'},{id:'L2',x:54,y:22,rail:'hot'},{id:'L3',x:54,y:34,rail:'hot'},{id:'N',x:0,y:22,rail:'ret'}];
+      if(ph===2) return [{id:'L1',x:54,y:9,rail:'hot'},{id:'L2',x:54,y:20,rail:'hot'},{id:'N',x:54,y:31,rail:'ret'},{id:'G',x:0,y:31,rail:'ret'}];
       return [{id:'L',x:54,y:14,rail:'hot'},{id:'N',x:54,y:30,rail:'ret'}]; },
     body:c=>`<rect class="sym fillbody" x="4" y="4" width="46" height="36" rx="4"/>
       <text x="27" y="19" class="comp-label">${esc(c.volts||'480V')}</text>
-      <text x="27" y="31" class="comp-sub">${(c.phases||1)===3?'3Ø':'1Ø'} SRC</text>`,
+      <text x="27" y="31" class="comp-sub">${(c.phases||1)===3?'3Ø':((c.phases||1)===2?'120/240':'1Ø')} SRC</text>`,
     links:()=>[] },
   disc:{ name:'Disconnect', w:44,h:48, sw:true, states:['closed','open'],
     terms:c=>polePairs(c.poles||3,44,48),
@@ -129,6 +130,13 @@ const T = {
       +`<line class="sym" x1="0" y1="10" x2="6" y2="10"/><text x="9" y="2" class="comp-sub" style="font-size:6px">${esc(c.label||'BUS')}</text>`;
       for(let i=0;i<n;i++){ g+=`<line class="sym" x1="12" y1="${10+i*15}" x2="18" y2="${10+i*15}"/><circle class="sym" cx="12" cy="${10+i*15}" r="1.6"/>`; } return g; },
     links:c=>{ const n=c.taps||6, l=[['in','p0']]; for(let i=1;i<n;i++)l.push(['p0','p'+i]); return l; } },
+  heater:{ name:'240V Appliance', w:50,h:42, sw:false, load:true,
+    terms:()=>[{id:'a',x:12,y:0},{id:'b',x:38,y:0}],
+    body:c=>`<rect class="sym fillbody" x="4" y="7" width="42" height="32" rx="4"/>
+      <line class="sym" x1="12" y1="0" x2="12" y2="9"/><line class="sym" x1="38" y1="0" x2="38" y2="9"/>
+      <path class="sym" d="M11 30 q4 -9 8 0 q4 9 8 0 q4 -9 8 0" fill="none"/>
+      <text x="25" y="19" class="comp-sub">${esc(c.label||'240V')}</text>`,
+    links:()=>[] },
   plcIn:{ name:'PLC Input', w:44,h:26, sw:false, load:true,
     terms:()=>[{id:'in',x:0,y:13},{id:'c',x:44,y:13,rail:'ret'}],
     body:c=>`<rect class="sym fillbody" x="6" y="3" width="32" height="20" rx="3"/>
@@ -380,7 +388,7 @@ function solve(){
   const {_isHot,_isRet,_key}=solve;
   // per-node phase tracking (single-phasing detection)
   const _puf=solve._uf, _phaseOf={};
-  comps.forEach(c=>{ if(c.type==='source'){ const ph=c.phases||1; termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_puf.find(_key(c,t.id)); (_phaseOf[r]=_phaseOf[r]||new Set()).add(ph===3?t.id:'L'); } }); } });
+  comps.forEach(c=>{ if(c.type==='source'){ const ph=c.phases||1; termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_puf.find(_key(c,t.id)); (_phaseOf[r]=_phaseOf[r]||new Set()).add(ph===3?t.id:(ph===2?t.id:'L')); } }); } });
   solve._phaseOf=_phaseOf; const _phasesAt=k=>_phaseOf[_puf.find(k)]||new Set();
   phaseMap=_phaseOf;
   // energized terminals + load on-states
@@ -389,8 +397,10 @@ function solve(){
     if(d.load){ const ph=c.phases||(c.type==='motor'?3:1);
       if(c.type==='motor'&&ph===3){ const mp=new Set(); ['U','V','W'].forEach(t=>_phasesAt(_key(c,t)).forEach(p=>mp.add(p)));
         c._nPhases=mp.size; c._singlePhase=(mp.size===2); c._on=(mp.size>=3); }
-      else { const ts=termList(c); const a=ts[0].id,b=ts[1].id;
-        c._on=( _isHot(_key(c,a))&&_isRet(_key(c,b)) )||( _isRet(_key(c,a))&&_isHot(_key(c,b)) ); }
+      else { const ts=termList(c); const a=ts[0].id,b=ts[1].id, ka=_key(c,a), kb=_key(c,b);
+        var onLN=( _isHot(ka)&&_isRet(kb) )||( _isRet(ka)&&_isHot(kb) );
+        var onLL=false; if(_isHot(ka)&&_isHot(kb)){ var pa=_phasesAt(ka),pb=_phasesAt(kb),df=false; pa.forEach(function(x){if(!pb.has(x))df=true;}); pb.forEach(function(x){if(!pa.has(x))df=true;}); onLL=df; }
+        c._on=onLN||onLL; }
     }
     if(d.coil) c._on=c._coilOn;
     if(d.psu) c._on=!!c._acOn;
@@ -416,7 +426,7 @@ function solve(){
     if(live && (flowRoots.has(U2.find(w.a))||flowRoots.has(U2.find(w.b)))) w._flow=true;
   });
   const _vuf=solve._uf, hotV={}, _nv=v=>{const m=String(v||'').match(/(\d+(?:\.\d+)?)/);return m?+m[1]:0;};
-  comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_vuf.find(_key(c,t.id)); hotV[r]=Math.max(hotV[r]||0,nv); } }); } });
+  comps.forEach(c=>{ if(c.type==='source'){ const nv=(c.phases===2)?(+c.legv||_nv(c.volts)/2):_nv(c.volts); termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_vuf.find(_key(c,t.id)); hotV[r]=Math.max(hotV[r]||0,nv); } }); } });
   comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ const r=_vuf.find(_key(c,'Vp')); hotV[r]=Math.max(hotV[r]||0,+(c.dcv||24)); } });
   comps.forEach(c=>{ if(compDef(c).xfmr&&c._priOn){ const r=_vuf.find(_key(c,'X1')); hotV[r]=Math.max(hotV[r]||0,+(c.sv||120)); } });
   solve._hotV=hotV;
@@ -427,7 +437,7 @@ function solve(){
   { const g=new UF();
     PANEL.wires.forEach(w=>{ if(!w.cut)g.union(w.a,w.b); });
     comps.forEach(c=>{ if(c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>g.union(_key(c,x),_key(c,y))); });
-    const V={},_srcV={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot'){V[r]=Math.max(V[r]||0,nv);_srcV[r]=1;} if(t.rail==='ret'){V[r]=0;_srcV[r]=1;} }); } });
+    const V={},_srcV={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=(c.phases===2)?(+c.legv||_nv(c.volts)/2):_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot'){V[r]=Math.max(V[r]||0,nv);_srcV[r]=1;} if(t.rail==='ret'){V[r]=0;_srcV[r]=1;} }); } });
     comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ V[g.find(_key(c,'Vp'))]=Math.max(V[g.find(_key(c,'Vp'))]||0,+(c.dcv||24)); V[g.find(_key(c,'Vn'))]=0; } });
     comps.forEach(c=>{ if(compDef(c).xfmr&&c._priOn){ V[g.find(_key(c,'X1'))]=Math.max(V[g.find(_key(c,'X1'))]||0,+(c.sv||120)); V[g.find(_key(c,'X2'))]=0; } });
     let ch=true,pass=0; while(ch&&pass++<24){ ch=false; comps.forEach(c=>{ if(!c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>{ const ra=g.find(_key(c,x)),rb=g.find(_key(c,y)); const va=V[ra]||0,vb=V[rb]||0;
@@ -1042,14 +1052,18 @@ function probeVoltage(){ if(probes.length<2)return null; solve();
   const num=s=>{ const m=String(s||'').match(/(\d+(?:\.\d+)?)/); return m?+m[1]:0; };
   const nomFor=k=>{ let v=0; PANEL.components.forEach(c=>{ if(c.type==='source') termList(c).forEach(t=>{ if(uf.find(c.id+'|'+t.id)===uf.find(k)) v=Math.max(v,num(c.volts)); }); });
     if(!v){ PANEL.components.forEach(c=>{ if(c.type==='source') v=Math.max(v,num(c.volts)); }); } return v; };
+  const _V=solve._hotV||{}, _P=solve._phaseOf||{};
+  const legAt=k=>{ const r=uf.find(k); return _V[r]||nomFor(k); };
+  const phAt=k=>_P[uf.find(k)]||new Set();
+  const diffLeg=(x,y)=>{ const pa=phAt(x),pb=phAt(y); let d=false; pa.forEach(z=>{if(!pb.has(z))d=true;}); pb.forEach(z=>{if(!pa.has(z))d=true;}); return d; };
   if(ra===rb) return {v:0,txt:'0 V — same node'};
   const ha=isHot(a),hb=isHot(b),rta=isRet(a),rtb=isRet(b);
   const liveA=ha||rta, liveB=hb||rtb;
-  if((ha&&rtb)||(rta&&hb)){ const nv=nomFor(ha?a:b); return {v:nv,txt:nv+' V (across the line)'}; }
-  if(ha&&hb) return {v:0,txt:'~0 V (both HOT / same phase)'};
+  if((ha&&rtb)||(rta&&hb)){ const nv=legAt(ha?a:b); return {v:nv,txt:nv+' V (hot to neutral)'}; }
+  if(ha&&hb){ if(diffLeg(a,b)){ const nv=legAt(a)+legAt(b); return {v:nv,txt:nv+' V (across both legs — 240 V)'}; } return {v:0,txt:'~0 V (both HOT / same leg)'}; }
   if(rta&&rtb) return {v:0,txt:'0 V (both NEUTRAL/return)'};
-  if(liveA&&!liveB){ const nv=nomFor(a); return {v:nv,txt:nv+' V (open circuit — B is dead)'}; }
-  if(liveB&&!liveA){ const nv=nomFor(b); return {v:nv,txt:nv+' V (open circuit — A is dead)'}; }
+  if(liveA&&!liveB){ const nv=legAt(a); return {v:nv,txt:nv+' V (open circuit — B is dead)'}; }
+  if(liveB&&!liveA){ const nv=legAt(b); return {v:nv,txt:nv+' V (open circuit — A is dead)'}; }
   return {v:0,txt:'0 V (both de-energized)'};
 }
 function renderMeter(){ const box=$('#simextra'); if(!box)return; const r=probeVoltage();
@@ -2049,6 +2063,12 @@ var SEV=[
   ,{id:'r-dead-recept', cat:'building', diff:1, kind:'tripped breaker', limit:180, panel:'Residential \u2014 Lighting Load Center + 3-Way Circuit (120V)',
    name:'Dead receptacle', symptom:'A wall receptacle has no power (tester shows nothing hot-to-neutral). The lights on the panel still work. Find why RCPT1 is dead.',
    find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',label:'BR2'});}}
+  ,{id:'r-lost-leg', cat:'building', diff:2, kind:'lost a leg', limit:300, panel:'Residential \u2014 120/240 V Split-Phase Load Center',
+   name:'Half the house is dead \u2014 lost a leg', symptom:'Half the 120V circuits are dead AND the 240V water heater will not heat, but the other half of the panel works fine. Classic split-phase lost-leg. Find the open leg.',
+   find:function(P){return _sevCut(P,{type:'busbar',label:'L1',term:'in'});}}
+  ,{id:'r-wh-noheat', cat:'building', diff:2, kind:'lost 240V leg', limit:300, panel:'Residential \u2014 120/240 V Split-Phase Load Center',
+   name:'240V water heater won\u2019t heat', symptom:'The electric water heater is stone cold. Its 2-pole breaker is ON and the 120V circuits are fine \u2014 but one of its two hot legs is open. Find it.',
+   find:function(P){return _sevCut(P,{type:'heater',term:'a'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2193,6 +2213,8 @@ var FIXMAP={
   'guard open':{why:'A guard/gate switch reads open, so the safety controller holds the zone disabled.',fix:'Re-close and re-align the guard so the switch actuates fully; confirm both channels make, then reset.'},
   'high-resistance':{why:'A connection has gone high-resistance (loose lug / corrosion). It still passes current, so nothing looks dead — but voltage sags under load and the device runs weak or nuisance-trips.',fix:'Meter voltage DROP across suspect joints under load. The bad one drops significant voltage. De-energize, clean/re-torque the termination, look for heat discoloration.'},
   'single-phasing':{why:'One of the three phases feeding the motor is open (blown fuse / loose lug / open pole). The motor gets only two phases: it hums, will not start, overheats and draws high current.',fix:'Find the open phase — check fuses, lugs and poles per leg with a meter. Restore all three phases and inspect the motor for damage before running.'},
+  'lost a leg':{why:'One of the two 240V service legs is open (blown main lug, a failed half of a 2-pole, or an open feeder). Every 120V circuit on that leg dies and every 240V load loses half its supply, while the OTHER leg keeps working \u2014 that split symptom is the giveaway.',fix:'Meter each leg to neutral (both should read ~120V). The dead leg reads 0. Trace that leg back \u2014 lug, breaker pole, or feeder \u2014 restore it and confirm 240V leg-to-leg returns.'},
+  'lost 240V leg':{why:'A 240V appliance needs BOTH hot legs. One leg to it is open, so it sees no potential across its element and cannot heat \u2014 even though its 2-pole breaker looks on.',fix:'Meter both legs at the appliance to neutral, then leg-to-leg (should be 240V). Find the open pole/conductor on the dead leg and restore it.'},
   'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},
   'open field device':{why:'A field device on a PLC input has gone open-circuit, so its channel reads permanently off and the logic faults.',fix:'Meter the field device and its loop. Replace/repair the open device or its wiring so the input reads correctly.'},
   'one channel open':{why:'This is a dual-channel safety loop — only ONE channel is open. Both must make for the safety relay to reset, so it looks closed but will not reset.',fix:'Check EACH channel independently. Find the single open device on the failed channel and restore it.'},

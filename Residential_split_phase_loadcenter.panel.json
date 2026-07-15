@@ -1,0 +1,38 @@
+{
+  "name": "Residential \u2014 120/240 V Split-Phase Load Center",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 220, "label": "SERVICE", "phases": 2, "volts": 240, "legv": 120 },
+    { "id": "main", "type": "breaker", "x": 150, "y": 190, "poles": 2, "state": "closed", "label": "MAIN 2P" },
+    { "id": "l1bus", "type": "busbar", "x": 280, "y": 70,  "taps": 3, "label": "L1", "color": "#c0453e" },
+    { "id": "l2bus", "type": "busbar", "x": 280, "y": 210, "taps": 3, "label": "L2", "color": "#c77d33" },
+    { "id": "nbus", "type": "busbar", "x": 280, "y": 350, "taps": 4, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 280, "y": 490, "taps": 3, "label": "GROUND", "color": "#3f8f4b" },
+    { "id": "brwh", "type": "breaker", "x": 390, "y": 60,  "poles": 2, "state": "closed", "label": "WH 2P 240V" },
+    { "id": "wh",  "type": "heater",  "x": 520, "y": 40,  "label": "WATER HTR" },
+    { "id": "br1", "type": "breaker", "x": 390, "y": 220, "poles": 1, "state": "closed", "label": "BR1 LTG L1" },
+    { "id": "hall","type": "light",   "x": 520, "y": 196, "color": "#facc15", "label": "HALL" },
+    { "id": "br2", "type": "breaker", "x": 390, "y": 320, "poles": 1, "state": "closed", "label": "BR2 RCPT L2" },
+    { "id": "rcpt1","type": "recept", "x": 520, "y": 320, "label": "RCPT1" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L1", "b": "main|in0", "net": "hot" },
+    { "id": "w2", "a": "src|L2", "b": "main|in1", "net": "hot" },
+    { "id": "w3", "a": "main|out0", "b": "l1bus|in", "net": "hot" },
+    { "id": "w4", "a": "main|out1", "b": "l2bus|in", "net": "hot" },
+    { "id": "w5", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w6", "a": "src|G", "b": "gbus|in", "net": "gnd" },
+    { "id": "w7", "a": "gbus|p2", "b": "nbus|p3", "net": "bond" },
+    { "id": "w8", "a": "l1bus|p0", "b": "brwh|in0", "net": "hot" },
+    { "id": "w9", "a": "l2bus|p0", "b": "brwh|in1", "net": "hot" },
+    { "id": "w10", "a": "brwh|out0", "b": "wh|a", "net": "hot" },
+    { "id": "w11", "a": "brwh|out1", "b": "wh|b", "net": "hot" },
+    { "id": "w12", "a": "l1bus|p1", "b": "br1|in0", "net": "hot" },
+    { "id": "w13", "a": "br1|out0", "b": "hall|a", "net": "hot" },
+    { "id": "w14", "a": "hall|b", "b": "nbus|p0", "net": "ret" },
+    { "id": "w15", "a": "l2bus|p1", "b": "br2|in0", "net": "hot" },
+    { "id": "w16", "a": "br2|out0", "b": "rcpt1|Hin", "net": "hot" },
+    { "id": "w17", "a": "rcpt1|Nin", "b": "nbus|p1", "net": "ret" },
+    { "id": "w18", "a": "rcpt1|Gin", "b": "gbus|p0", "net": "gnd" }
+  ]
+}

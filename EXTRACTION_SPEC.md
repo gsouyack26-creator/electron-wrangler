@@ -1,6 +1,6 @@
-# Voltbench — Extraction Contract (for schematic → .panel.json)
+# Electron Wrangler — Extraction Contract (for schematic → .panel.json)
 
-Read an electrical schematic sheet and emit a `.panel.json` that loads into the Voltbench.
+Read an electrical schematic sheet and emit a `.panel.json` that loads into the Electron Wrangler.
 Source PDF: `C:\Users\souyackg\Downloads\Amazon ACY1_13XP33_SSE_Elec.pdf`.
 
 ## Render a page to view it

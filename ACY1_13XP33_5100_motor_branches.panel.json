@@ -1,0 +1,43 @@
+{
+  "name": "ACY1 13XP33-5100 — CC566 E24 24VDC Motor Power Branches",
+  "backdrop": null,
+  "components": [
+    {"id":"e24_src","type":"source","x":55,"y":150,"label":"E24-PS-50094 24VDC Br1","phases":1,"volts":24},
+    {"id":"e24_src2","type":"source","x":55,"y":330,"label":"E24-PS-50104 24VDC Br2","phases":1,"volts":24},
+
+    {"id":"ret1","type":"term","x":200,"y":200,"label":"0VDC-50114 Ret-Br1"},
+    {"id":"ret2","type":"term","x":200,"y":380,"label":"0VDC-50115 Ret-Br2"},
+
+    {"id":"cb5101","type":"breaker","x":200,"y":150,"label":"CB5101 20A","poles":1,"state":"closed"},
+    {"id":"cb5121","type":"breaker","x":200,"y":330,"label":"CB5121 20A","poles":1,"state":"closed"},
+
+    {"id":"pl5104","type":"term","x":360,"y":150,"label":"PL5104 E24-Motor-Cards-Br1"},
+    {"id":"pl5124","type":"term","x":360,"y":330,"label":"PL5124 E24-Motor-Cards-Br2"},
+
+    {"id":"e24_m1a","type":"motor","x":530,"y":130,"label":"E24-Zone-A Branch1","phases":1},
+    {"id":"e24_m1b","type":"motor","x":530,"y":175,"label":"E24-Zone-B Branch1","phases":1},
+    {"id":"e24_m2a","type":"motor","x":530,"y":310,"label":"E24-Zone-A Branch2","phases":1},
+    {"id":"e24_m2b","type":"motor","x":530,"y":355,"label":"E24-Zone-B Branch2","phases":1}
+  ],
+  "wires": [
+    {"id":"w1","a":"e24_src|L","b":"cb5101|in0","net":"hot"},
+    {"id":"w2","a":"cb5101|out0","b":"pl5104|a","net":"hot"},
+
+    {"id":"w3","a":"pl5104|b","b":"e24_m1a|a","net":"hot"},
+    {"id":"w4","a":"pl5104|t","b":"e24_m1b|a","net":"hot"},
+
+    {"id":"w5","a":"e24_src|N","b":"ret1|a","net":"ret"},
+    {"id":"w6","a":"ret1|b","b":"e24_m1a|b","net":"ret"},
+    {"id":"w7","a":"ret1|t","b":"e24_m1b|b","net":"ret"},
+
+    {"id":"w8","a":"e24_src2|L","b":"cb5121|in0","net":"hot"},
+    {"id":"w9","a":"cb5121|out0","b":"pl5124|a","net":"hot"},
+
+    {"id":"w10","a":"pl5124|b","b":"e24_m2a|a","net":"hot"},
+    {"id":"w11","a":"pl5124|t","b":"e24_m2b|a","net":"hot"},
+
+    {"id":"w12","a":"e24_src2|N","b":"ret2|a","net":"ret"},
+    {"id":"w13","a":"ret2|b","b":"e24_m2a|b","net":"ret"},
+    {"id":"w14","a":"ret2|t","b":"e24_m2b|b","net":"ret"}
+  ]
+}

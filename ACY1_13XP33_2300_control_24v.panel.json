@@ -1,0 +1,154 @@
+{
+  "name": "ACY1 13XP33 2300 — CC566 24VDC UPS & Control Power",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src_24",
+      "type": "source",
+      "x": 60,
+      "y": 80,
+      "label": "PWS Secondary 24VDC",
+      "phases": 1,
+      "volts": "24VDC"
+    },
+    {
+      "id": "CB7001",
+      "type": "breaker",
+      "x": 175,
+      "y": 62,
+      "label": "CB7001",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "CB7003",
+      "type": "breaker",
+      "x": 310,
+      "y": 120,
+      "label": "CB7003",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "UPS7003",
+      "type": "term",
+      "x": 455,
+      "y": 128,
+      "label": "UPS7003"
+    },
+    {
+      "id": "CB7004",
+      "type": "breaker",
+      "x": 570,
+      "y": 120,
+      "label": "CB7004",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "PLC7005",
+      "type": "light",
+      "x": 710,
+      "y": 80,
+      "label": "PLC7005",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "ETH7007",
+      "type": "light",
+      "x": 710,
+      "y": 150,
+      "label": "ETH7007",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "ETH7009",
+      "type": "light",
+      "x": 710,
+      "y": 220,
+      "label": "ETH7009",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "ETH7011",
+      "type": "light",
+      "x": 710,
+      "y": 290,
+      "label": "ETH7011",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "HMI7013",
+      "type": "light",
+      "x": 710,
+      "y": 360,
+      "label": "HMI7013",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "CB7021",
+      "type": "breaker",
+      "x": 310,
+      "y": 430,
+      "label": "CB7021",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "LT7023",
+      "type": "light",
+      "x": 480,
+      "y": 410,
+      "label": "LT7023",
+      "color": "#ffffff"
+    },
+    {
+      "id": "PBLT7025",
+      "type": "estop",
+      "x": 480,
+      "y": 455,
+      "label": "PBLT7025",
+      "state": "closed"
+    },
+    {
+      "id": "TAS7027",
+      "type": "selector",
+      "x": 480,
+      "y": 515,
+      "label": "TAS7027",
+      "state": "closed"
+    },
+    {
+      "id": "FAN7027",
+      "type": "motor",
+      "x": 610,
+      "y": 510,
+      "label": "FAN7027",
+      "phases": 1
+    }
+  ],
+  "wires": [
+    {"id":"w1",  "a":"src_24|L",    "b":"CB7001|in0",   "net":"ctrl"},
+    {"id":"w2",  "a":"CB7001|out0", "b":"CB7003|in0",   "net":"ctrl"},
+    {"id":"w3",  "a":"CB7001|out0", "b":"CB7021|in0",   "net":"ctrl"},
+    {"id":"w4",  "a":"CB7003|out0", "b":"UPS7003|a",    "net":"ctrl"},
+    {"id":"w5",  "a":"UPS7003|b",   "b":"CB7004|in0",   "net":"ctrl"},
+    {"id":"w6",  "a":"CB7004|out0", "b":"PLC7005|a",    "net":"ctrl"},
+    {"id":"w7",  "a":"CB7004|out0", "b":"ETH7007|a",    "net":"ctrl"},
+    {"id":"w8",  "a":"CB7004|out0", "b":"ETH7009|a",    "net":"ctrl"},
+    {"id":"w9",  "a":"CB7004|out0", "b":"ETH7011|a",    "net":"ctrl"},
+    {"id":"w10", "a":"CB7004|out0", "b":"HMI7013|a",    "net":"ctrl"},
+    {"id":"w11", "a":"CB7021|out0", "b":"LT7023|a",     "net":"ctrl"},
+    {"id":"w12", "a":"CB7021|out0", "b":"PBLT7025|a",   "net":"ctrl"},
+    {"id":"w13", "a":"CB7021|out0", "b":"TAS7027|a",    "net":"ctrl"},
+    {"id":"w14", "a":"TAS7027|b",   "b":"FAN7027|a",    "net":"ctrl"},
+    {"id":"w15", "a":"src_24|N",    "b":"PLC7005|b",    "net":"ret"},
+    {"id":"w16", "a":"src_24|N",    "b":"ETH7007|b",    "net":"ret"},
+    {"id":"w17", "a":"src_24|N",    "b":"ETH7009|b",    "net":"ret"},
+    {"id":"w18", "a":"src_24|N",    "b":"ETH7011|b",    "net":"ret"},
+    {"id":"w19", "a":"src_24|N",    "b":"HMI7013|b",    "net":"ret"},
+    {"id":"w20", "a":"src_24|N",    "b":"LT7023|b",     "net":"ret"},
+    {"id":"w21", "a":"src_24|N",    "b":"FAN7027|b",    "net":"ret"},
+    {"id":"w22", "a":"src_24|N",    "b":"PBLT7025|b",   "net":"ret"}
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "name": "ACY1 13XP33 CC566 \u2014 E-STOP Safety Chain (Hytrol 2000/2303/5000)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src460",
+      "type": "source",
+      "x": 60,
+      "y": 90,
+      "label": "460VAC",
+      "phases": 3,
+      "volts": "460V"
+    },
+    {
+      "id": "disc",
+      "type": "disc",
+      "x": 210,
+      "y": 80,
+      "label": "DISC0001",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "sc",
+      "type": "contactor",
+      "x": 345,
+      "y": 70,
+      "label": "SC2306",
+      "poles": 3
+    },
+    {
+      "id": "fb",
+      "type": "breaker",
+      "x": 480,
+      "y": 80,
+      "label": "FB0010",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "mpcb",
+      "type": "breaker",
+      "x": 610,
+      "y": 80,
+      "label": "MPCB5022",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "vfd",
+      "type": "vfd",
+      "x": 740,
+      "y": 75,
+      "label": "VFD5022"
+    },
+    {
+      "id": "mtr",
+      "type": "motor",
+      "x": 880,
+      "y": 155,
+      "label": "MTR5023",
+      "phases": 3
+    },
+    {
+      "id": "ups24",
+      "type": "source",
+      "x": 60,
+      "y": 340,
+      "label": "UPS24V",
+      "phases": 1,
+      "volts": "24V"
+    },
+    {
+      "id": "estop",
+      "type": "estop",
+      "x": 210,
+      "y": 330,
+      "label": "PBLT2025",
+      "state": "closed"
+    },
+    {
+      "id": "sr",
+      "type": "relay",
+      "x": 320,
+      "y": 330,
+      "label": "SR2301"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src460|L1",
+      "b": "disc|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "disc|out0",
+      "b": "sc|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "sc|T1",
+      "b": "fb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "fb|out0",
+      "b": "mpcb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "mpcb|out0",
+      "b": "vfd|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "src460|L2",
+      "b": "disc|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "disc|out1",
+      "b": "sc|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "sc|T2",
+      "b": "fb|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "fb|out1",
+      "b": "mpcb|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "mpcb|out1",
+      "b": "vfd|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "src460|L3",
+      "b": "disc|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "disc|out2",
+      "b": "sc|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "sc|T3",
+      "b": "fb|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "fb|out2",
+      "b": "mpcb|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "mpcb|out2",
+      "b": "vfd|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "vfd|U",
+      "b": "mtr|U",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "vfd|V",
+      "b": "mtr|V",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "vfd|W",
+      "b": "mtr|W",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "ups24|L",
+      "b": "estop|a",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "estop|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w21",
+      "a": "sr|A2",
+      "b": "ups24|N",
+      "net": "ret"
+    },
+    {
+      "id": "w22",
+      "a": "ups24|L",
+      "b": "sr|11",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "sr|14",
+      "b": "sc|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w24",
+      "a": "sc|A2",
+      "b": "ups24|N",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "sr|14",
+      "b": "vfd|EN",
+      "net": "ctrl"
+    }
+  ]
+}

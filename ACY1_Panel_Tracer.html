@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACY1 RME — Panel Path Tracer</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3038; --edge:#30363d;
+  --txt:#e6edf3; --dim:#8b949e; --accent:#2dd4bf; --accent2:#38bdf8;
+  --hot:#ff5b4a; --ret:#3b82f6; --ctrl:#eab308; --live:#facc15; --dead:#4b5563;
+  --ok:#22c55e; --warn:#f97316; --bad:#ef4444; --sel:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);
+  font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--panel);
+  border-bottom:1px solid var(--edge);flex:0 0 auto}
+header h1{font-size:15px;margin:0;font-weight:700;letter-spacing:.3px}
+header h1 span{color:var(--accent)}
+.badge{font-size:10px;color:var(--dim);border:1px solid var(--edge);border-radius:10px;padding:1px 7px}
+.spacer{flex:1}
+.modeswitch{display:flex;border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.modeswitch button{background:var(--panel2);color:var(--dim);border:0;padding:6px 14px;
+  cursor:pointer;font-size:12px;font-weight:600}
+.modeswitch button.on{background:var(--accent);color:#04211d}
+.tbtn{background:var(--panel2);color:var(--txt);border:1px solid var(--edge);border-radius:7px;
+  padding:6px 11px;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.tbtn:hover{border-color:var(--accent)}
+.tbtn.warn{color:var(--warn)}
+main{flex:1;display:flex;min-height:0}
+#left{width:190px;flex:0 0 auto;background:var(--panel);border-right:1px solid var(--edge);
+  overflow-y:auto;padding:8px}
+#left h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);
+  margin:12px 4px 6px}
+.pal{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.pal button{background:var(--panel2);border:1px solid var(--edge);border-radius:7px;color:var(--txt);
+  padding:7px 3px;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pal button:hover{border-color:var(--accent);background:#232c3d}
+.pal button.on{border-color:var(--accent);background:#0f2e2a}
+.pal button svg{width:26px;height:20px}
+#stage{flex:1;position:relative;min-width:0;background:
+  radial-gradient(circle at 20% 10%,#131a24,#0a0d12);overflow:hidden}
+#svg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#svg.wire{cursor:crosshair}
+#svg.place{cursor:copy}
+#right{width:250px;flex:0 0 auto;background:var(--panel);border-left:1px solid var(--edge);
+  overflow-y:auto;padding:10px;font-size:12px}
+#right h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:4px 0 8px}
+.field{margin-bottom:9px}
+.field label{display:block;font-size:10px;color:var(--dim);margin-bottom:3px}
+.field input,.field select{width:100%;background:var(--panel2);border:1px solid var(--edge);
+  border-radius:6px;color:var(--txt);padding:5px 7px;font-size:12px}
+.hint{color:var(--dim);font-size:11px;line-height:1.5}
+.statebtn{width:100%;padding:8px;border-radius:7px;border:1px solid var(--edge);cursor:pointer;
+  font-weight:600;font-size:12px;margin-bottom:6px;background:var(--panel2);color:var(--txt)}
+.statebtn.closed{background:#0f2e1e;border-color:var(--ok);color:var(--ok)}
+.statebtn.open{background:#2e1414;border-color:var(--bad);color:var(--bad)}
+.statebtn.fault{background:#2e2410;border-color:var(--warn);color:var(--warn)}
+#diag{margin-top:8px}
+.suspect{padding:6px 8px;border:1px solid var(--edge);border-radius:6px;margin-bottom:5px;
+  background:var(--panel2);cursor:pointer;font-size:11px}
+.suspect:hover{border-color:var(--warn)}
+.suspect b{color:var(--warn)}
+footer{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--edge);padding:5px 14px;
+  font-size:11px;color:var(--dim);display:flex;gap:16px;align-items:center}
+.legdot{display:inline-block;width:22px;height:3px;border-radius:2px;vertical-align:middle;margin-right:4px}
+.term{fill:#0d1117;stroke:#7d8590;stroke-width:1.4;cursor:crosshair}
+.term.hit{fill:var(--accent)}
+.comp-label{fill:var(--txt);font-size:9px;font-family:'Segoe UI',sans-serif;text-anchor:middle;pointer-events:none}
+.comp-sub{fill:var(--dim);font-size:7px;text-anchor:middle;pointer-events:none}
+.compbox{cursor:pointer}
+.compbox.sel .selrect{stroke:var(--sel);stroke-width:2;stroke-dasharray:4 3;fill:none}
+.sym{fill:none;stroke:#c9d1d9;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sym.fillbody{fill:#161b22}
+.energized .sym{stroke:var(--live);filter:drop-shadow(0 0 4px var(--live))}
+.faulted .sym{stroke:var(--warn);stroke-dasharray:3 2}
+.wire{fill:none;stroke-width:2.4;stroke-linecap:round;cursor:pointer}
+.wire.hot{stroke:#5c6470}.wire.ret{stroke:#5c6470}.wire.ctrl{stroke:#5c6470}
+.wire.live{stroke:var(--live);filter:drop-shadow(0 0 3px var(--live))}
+.wire.flow{stroke-dasharray:9 7;animation:flow .6s linear infinite}
+.wire.hit{stroke:var(--sel);stroke-width:3.4}
+.wire.cut{stroke:var(--warn);stroke-dasharray:3 4;opacity:.7}
+@keyframes flow{to{stroke-dashoffset:-16}}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lit{fill:var(--live)!important;filter:drop-shadow(0 0 6px var(--live))}
+.pulse{animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+#toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--panel2);
+  border:1px solid var(--accent);border-radius:8px;padding:8px 16px;font-size:12px;opacity:0;
+  transition:opacity .3s;pointer-events:none;z-index:20}
+#toast.show{opacity:1}
+input[type=file]{display:none}
+.rowbtns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#opacity{width:100%}
+kbd{background:var(--panel2);border:1px solid var(--edge);border-radius:4px;padding:0 5px;font-size:10px}
+
+/* ── enclosure skin ── */
+.tbtn.on{border-color:var(--accent);background:#0f2e2a;color:var(--accent)}
+#stage.enc{background:#0a0d12}
+.compbox:hover{filter:brightness(1.18)}
+.enc .compbox{filter:drop-shadow(0 3px 2px rgba(0,0,0,.55))}
+.enc .compbox:hover{filter:drop-shadow(0 3px 2px rgba(0,0,0,.55)) brightness(1.18)}
+#encFrame{position:absolute;inset:0;pointer-events:none;z-index:6;display:none}
+#stage.enc #encFrame{display:block}
+#encFrame .frame{position:absolute;inset:0;border-radius:12px;border:17px solid #2b3038;
+  border-image:linear-gradient(145deg,#454e5a,#171b21 52%,#333a43) 1;
+  box-shadow:inset 0 0 0 2px #0d1015,inset 0 0 48px rgba(0,0,0,.75),inset 0 3px 4px rgba(255,255,255,.07)}
+#encFrame .screw{position:absolute;width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#aab4c0,#474d57 62%,#1d2128);box-shadow:0 1px 2px rgba(0,0,0,.7)}
+#encFrame .screw::after{content:'';position:absolute;inset:3px;border-top:2px solid #1d2128;transform:rotate(38deg)}
+#encFrame .screw.tl{top:5px;left:5px}#encFrame .screw.tr{top:5px;right:5px}
+#encFrame .screw.bl{bottom:5px;left:5px}#encFrame .screw.br{bottom:5px;right:5px}
+#encFrame .hinge{position:absolute;left:1px;top:24%;width:9px;height:52%;
+  background:linear-gradient(90deg,#454e5a,#1d2128);border-radius:3px;box-shadow:inset 0 0 0 1px #12151b}
+#encFrame .hinge::before,#encFrame .hinge::after{content:'';position:absolute;left:1px;width:7px;height:18px;
+  background:linear-gradient(#727a85,#333942);border-radius:2px}
+#encFrame .hinge::before{top:6%}#encFrame .hinge::after{bottom:6%}
+#encFrame .nameplate{position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(#eef1f5,#c6ccd4);color:#161b22;font:700 11px 'Segoe UI',sans-serif;
+  padding:4px 16px;border-radius:3px;letter-spacing:1.5px;white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0,0,0,.6),inset 0 1px 0 #fff;border:1px solid #9aa2ac}
+#encFrame .nameplate small{color:#5a636e;font-weight:600;letter-spacing:.5px}
+.physmod .selrect{stroke:var(--sel)}
+.physmod:hover .sym{stroke:var(--accent)}
+
+/* --- extras (features 1-13) --- */
+#search{background:var(--panel2);color:var(--txt);border:1px solid var(--edge);border-radius:7px;padding:5px 9px;font-size:12px;width:150px}
+#search::placeholder{color:var(--dim)}
+.field textarea{width:100%;background:var(--panel2);border:1px solid var(--edge);border-radius:6px;color:var(--txt);padding:5px 7px;font-size:12px;font-family:inherit;resize:vertical}
+.wireno{fill:var(--ctrl);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
+.notepin{font-size:11px;cursor:pointer}
+.xlink{fill:var(--accent2);font-size:8px;text-anchor:middle;cursor:pointer;text-decoration:underline}
+.wire.hover{stroke:var(--ok)!important;stroke-width:3.6;filter:drop-shadow(0 0 5px var(--ok))}
+.hoverpath .sym{stroke:var(--ok);filter:drop-shadow(0 0 4px var(--ok))}
+#modal{position:fixed;inset:0;z-index:50;display:none}
+#modal .modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+#modal .modal-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:640px;width:90%;max-height:84vh;overflow:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+#modal .modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+#modal .modal-bd .suspect{padding:6px 8px;border:1px solid var(--edge);border-radius:6px;margin-bottom:5px;background:var(--panel2);font-size:11px}
+.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toolgrid .tbtn{width:100%;justify-content:flex-start;padding:9px 11px}
+table.bom{width:100%;border-collapse:collapse;font-size:11px}
+table.bom th,table.bom td{border:1px solid var(--edge);padding:4px 7px;text-align:left;vertical-align:top}
+table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;font-size:9px;letter-spacing:.5px}
+@media print{ header,#left,#right,footer,#toast,#modal .modal-bg,#modal .modal-hd{display:none!important} #modal,#modal .modal-card{position:static;transform:none;max-height:none;box-shadow:none;border:0;width:auto;max-width:none} body,#stage{overflow:visible!important} }
+
+/* --- extras2 (features 14-25) --- */
+.quickmenu{position:fixed;z-index:60;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;padding:4px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.6);font-size:12px}
+.quickmenu .qm-hd{padding:5px 8px;color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--edge);margin-bottom:3px}
+.quickmenu .qm-item{padding:6px 9px;border-radius:5px;cursor:pointer}
+.quickmenu .qm-item:hover{background:var(--accent);color:#04211d}
+.wire.nethi{stroke:var(--accent2)!important;stroke-width:3.4;filter:drop-shadow(0 0 4px var(--accent2))}
+.voltlbl{fill:var(--live);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
+.pin{cursor:pointer}
+.pin:hover circle{filter:brightness(1.2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1><span>⚡</span> ACY1 Panel <span>Path Tracer</span></h1>
+    <span class="badge" id="ver">v1.0</span>
+    <span class="badge" id="stat">demo panel</span>
+    <input id="search" placeholder="🔎 find tag…" title="Find a component by tag/label/type">
+    <select id="libsel" title="Load a built-in ACY1 panel" style="background:var(--panel2);color:var(--txt);border:1px solid var(--edge);border-radius:7px;padding:5px 8px;font-size:12px;cursor:pointer;display:none"></select>
+    <div class="spacer"></div>
+    <div class="modeswitch">
+      <button id="mBuild" class="on">🔧 Build</button>
+      <button id="mSim">▶ Simulate</button>
+    </div>
+    <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
+    <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
+    <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>
+    <button class="tbtn" id="btnAI">🤖 AI Extract</button>
+    <button class="tbtn" id="btnSave">💾 Save</button>
+    <button class="tbtn" id="btnLoad">📂 Load</button>
+    <button class="tbtn" id="btnTools" title="Tools: BOM, print, export, share, validate, diff">🧰 Tools</button>
+    <button class="tbtn" id="btnUndo" title="Undo (Ctrl+Z)">↶</button>
+    <button class="tbtn" id="btnRedo" title="Redo (Ctrl+Y)">↷</button>
+    <button class="tbtn warn" id="btnClear">🗑 New</button>
+    <input type="file" id="fileImg" accept="image/*">
+    <input type="file" id="fileJson" accept=".json,application/json">
+    <input type="file" id="fileDiff" accept=".json,application/json">
+  </header>
+  <main>
+    <div id="left">
+      <h3>Add Component</h3>
+      <div class="pal" id="palette"></div>
+      <h3>Wire</h3>
+      <button class="pal-wire tbtn" id="btnWire" style="width:100%">✏️ Draw wire</button>
+      <button class="tbtn" id="btnWireNo" style="width:100%;margin-top:5px" title="Show wire numbers/labels"># Wire numbers</button>
+      <button class="tbtn" id="btnOrtho" style="width:100%;margin-top:5px" title="Right-angle wire routing">📐 Ortho wires</button>
+      <h3>Build Tools</h3>
+      <button class="tbtn" id="btnTmpl" style="width:100%" title="Insert a pre-wired skeleton">⚙️ Templates</button>
+      <button class="tbtn" id="btnPin" style="width:100%;margin-top:5px" title="Drop numbered pins on the photo">📍 Photo pin</button>
+      <div class="hint" style="margin-top:6px">Shift+drag = box-select · right-click a device = quick actions · Ctrl+Z = undo.</div>
+      <div class="hint" style="margin-top:6px">Click a terminal, then another to connect.</div>
+      <h3>Backdrop</h3>
+      <div class="field">
+        <label>Drawing opacity</label>
+        <input type="range" id="opacity" min="0" max="100" value="55">
+      </div>
+    </div>
+    <div id="stage">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="toast"></div>
+      <div id="encFrame" aria-hidden="true">
+        <div class="frame"></div>
+        <div class="hinge"></div>
+        <div class="nameplate" id="enc-plate">PANEL</div>
+        <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+      </div>
+    </div>
+    <div id="right">
+      <div id="inspector"><div class="hint">Select a component or wire to edit it. In <b>Simulate</b> mode, click devices to operate them.</div></div>
+    </div>
+  </main>
+  <footer>
+    <span><span class="legdot" style="background:var(--live)"></span>Live / current flow</span>
+    <span><span class="legdot" style="background:#5c6470"></span>De-energized</span>
+    <span><span class="legdot" style="background:var(--warn)"></span>Fault</span>
+    <div class="spacer"></div>
+    <span id="fstat">—</span>
+    <span class="hint">Pan: drag empty · Zoom: scroll · Del: <kbd>Del</kbd></span>
+  </footer>
+</div>
+<script src="panel_tracer.js"></script>
+</body>
+</html>

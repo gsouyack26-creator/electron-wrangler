@@ -1,0 +1,116 @@
+{
+  "name": "ACY1 13XP33 4000-4003 — Remote Shipping Panel (CC566-## 460VAC/Safety)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src460",
+      "type": "source",
+      "x": 50,
+      "y": 90,
+      "label": "MAIN PANEL 460VAC",
+      "phases": 3,
+      "volts": "460V"
+    },
+    {
+      "id": "disc5001",
+      "type": "disc",
+      "x": 200,
+      "y": 80,
+      "label": "DISC5001",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "cr5217",
+      "type": "contactor",
+      "x": 350,
+      "y": 70,
+      "label": "CR5217",
+      "poles": 3
+    },
+    {
+      "id": "disc5022",
+      "type": "disc",
+      "x": 490,
+      "y": 80,
+      "label": "DISC5022",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "mpcb5022",
+      "type": "breaker",
+      "x": 630,
+      "y": 80,
+      "label": "MPCB5022",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "vfd5022",
+      "type": "vfd",
+      "x": 775,
+      "y": 75,
+      "label": "VFD5022"
+    },
+    {
+      "id": "mtr5023",
+      "type": "motor",
+      "x": 900,
+      "y": 155,
+      "label": "MTR5023",
+      "phases": 3
+    },
+    {
+      "id": "src_ctrl",
+      "type": "source",
+      "x": 50,
+      "y": 340,
+      "label": "PWS5005 24VDC",
+      "phases": 1,
+      "volts": "24V"
+    },
+    {
+      "id": "estop5244",
+      "type": "estop",
+      "x": 200,
+      "y": 330,
+      "label": "PCS5244 E-STOP",
+      "state": "closed"
+    },
+    {
+      "id": "sr5212",
+      "type": "relay",
+      "x": 360,
+      "y": 330,
+      "label": "SR5212"
+    }
+  ],
+  "wires": [
+    { "id": "w1",  "a": "src460|L1",       "b": "disc5001|in0",   "net": "hot"  },
+    { "id": "w2",  "a": "src460|L2",       "b": "disc5001|in1",   "net": "hot"  },
+    { "id": "w3",  "a": "src460|L3",       "b": "disc5001|in2",   "net": "hot"  },
+    { "id": "w4",  "a": "disc5001|out0",   "b": "cr5217|L1",      "net": "hot"  },
+    { "id": "w5",  "a": "disc5001|out1",   "b": "cr5217|L2",      "net": "hot"  },
+    { "id": "w6",  "a": "disc5001|out2",   "b": "cr5217|L3",      "net": "hot"  },
+    { "id": "w7",  "a": "cr5217|T1",       "b": "disc5022|in0",   "net": "hot"  },
+    { "id": "w8",  "a": "cr5217|T2",       "b": "disc5022|in1",   "net": "hot"  },
+    { "id": "w9",  "a": "cr5217|T3",       "b": "disc5022|in2",   "net": "hot"  },
+    { "id": "w10", "a": "disc5022|out0",   "b": "mpcb5022|in0",   "net": "hot"  },
+    { "id": "w11", "a": "disc5022|out1",   "b": "mpcb5022|in1",   "net": "hot"  },
+    { "id": "w12", "a": "disc5022|out2",   "b": "mpcb5022|in2",   "net": "hot"  },
+    { "id": "w13", "a": "mpcb5022|out0",   "b": "vfd5022|L1",     "net": "hot"  },
+    { "id": "w14", "a": "mpcb5022|out1",   "b": "vfd5022|L2",     "net": "hot"  },
+    { "id": "w15", "a": "mpcb5022|out2",   "b": "vfd5022|L3",     "net": "hot"  },
+    { "id": "w16", "a": "vfd5022|U",       "b": "mtr5023|U",      "net": "hot"  },
+    { "id": "w17", "a": "vfd5022|V",       "b": "mtr5023|V",      "net": "hot"  },
+    { "id": "w18", "a": "vfd5022|W",       "b": "mtr5023|W",      "net": "hot"  },
+    { "id": "w19", "a": "src_ctrl|L",      "b": "estop5244|a",    "net": "ctrl" },
+    { "id": "w20", "a": "estop5244|b",     "b": "sr5212|A1",      "net": "ctrl" },
+    { "id": "w21", "a": "sr5212|A2",       "b": "src_ctrl|N",     "net": "ret"  },
+    { "id": "w22", "a": "src_ctrl|L",      "b": "sr5212|11",      "net": "ctrl" },
+    { "id": "w23", "a": "sr5212|14",       "b": "cr5217|A1",      "net": "ctrl" },
+    { "id": "w24", "a": "cr5217|A2",       "b": "src_ctrl|N",     "net": "ret"  },
+    { "id": "w25", "a": "sr5212|14",       "b": "vfd5022|EN",     "net": "ctrl" }
+  ]
+}

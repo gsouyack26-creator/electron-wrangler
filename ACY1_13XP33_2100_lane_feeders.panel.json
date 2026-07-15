@@ -1,0 +1,135 @@
+{
+  "name": "ACY1 13XP33-2100 — CC566 460V MPCB Feeders to Remote Panels",
+  "backdrop": null,
+  "components": [
+    {"id":"src0","type":"source","x":55,"y":240,"label":"460VAC-3PH CUST PWR","phases":3,"volts":460},
+
+    {"id":"disc0001","type":"disc","x":195,"y":240,"label":"DISC0001","poles":3,"state":"closed"},
+
+    {"id":"db_l1","type":"term","x":330,"y":180,"label":"DB0004-T1"},
+    {"id":"db_l2","type":"term","x":330,"y":240,"label":"DB0004-T2"},
+    {"id":"db_l3","type":"term","x":330,"y":300,"label":"DB0004-T3"},
+
+    {"id":"cb0021","type":"breaker","x":330,"y":390,"label":"CB0021","poles":2,"state":"closed"},
+    {"id":"pws0021","type":"source","x":460,"y":390,"label":"PWS0021 24VDC","phases":1,"volts":24},
+
+    {"id":"sc2306","type":"contactor","x":460,"y":155,"label":"SC2306 Lanes 129-135","poles":3},
+    {"id":"sc2308","type":"contactor","x":460,"y":325,"label":"SC2308 Lanes 137-141","poles":3},
+
+    {"id":"fb10_l1","type":"term","x":590,"y":100,"label":"FB0010-L1"},
+    {"id":"fb10_l2","type":"term","x":590,"y":145,"label":"FB0010-L2"},
+    {"id":"fb10_l3","type":"term","x":590,"y":190,"label":"FB0010-L3"},
+
+    {"id":"fb14_l1","type":"term","x":590,"y":275,"label":"FB0014-L1"},
+    {"id":"fb14_l2","type":"term","x":590,"y":320,"label":"FB0014-L2"},
+    {"id":"fb14_l3","type":"term","x":590,"y":365,"label":"FB0014-L3"},
+
+    {"id":"mpcb0101","type":"breaker","x":720,"y":70,"label":"MPCB0101 6.3A","poles":3,"state":"closed"},
+    {"id":"mpcb0105","type":"breaker","x":720,"y":110,"label":"MPCB0105 6.3A","poles":3,"state":"closed"},
+    {"id":"mpcb0109","type":"breaker","x":720,"y":150,"label":"MPCB0109 6.3A","poles":3,"state":"closed"},
+    {"id":"mpcb0113","type":"breaker","x":720,"y":190,"label":"MPCB0113 6.3A","poles":3,"state":"closed"},
+
+    {"id":"mpcb0117","type":"breaker","x":720,"y":270,"label":"MPCB0117 6.3A","poles":3,"state":"closed"},
+    {"id":"mpcb0121","type":"breaker","x":720,"y":310,"label":"MPCB0121 6.3A","poles":3,"state":"closed"},
+    {"id":"mpcb0125","type":"breaker","x":720,"y":350,"label":"MPCB0125 6.3A","poles":3,"state":"closed"},
+
+    {"id":"pnl0101","type":"motor","x":870,"y":70,"label":"PNL0101 CC566-129","phases":3},
+    {"id":"pnl0105","type":"motor","x":870,"y":110,"label":"PNL0105 CC566-131","phases":3},
+    {"id":"pnl0109","type":"motor","x":870,"y":150,"label":"PNL0109 CC566-133","phases":3},
+    {"id":"pnl0113","type":"motor","x":870,"y":190,"label":"PNL0113 CC566-135","phases":3},
+
+    {"id":"pnl0117","type":"motor","x":870,"y":270,"label":"PNL0117 CC566-137","phases":3},
+    {"id":"pnl0121","type":"motor","x":870,"y":310,"label":"PNL0121 CC566-139","phases":3},
+    {"id":"pnl0125","type":"motor","x":870,"y":350,"label":"PNL0125 CC566-141","phases":3}
+  ],
+  "wires": [
+    {"id":"w1","a":"src0|L1","b":"disc0001|in0","net":"hot"},
+    {"id":"w2","a":"src0|L2","b":"disc0001|in1","net":"hot"},
+    {"id":"w3","a":"src0|L3","b":"disc0001|in2","net":"hot"},
+
+    {"id":"w4","a":"disc0001|out0","b":"db_l1|a","net":"hot"},
+    {"id":"w5","a":"disc0001|out1","b":"db_l2|a","net":"hot"},
+    {"id":"w6","a":"disc0001|out2","b":"db_l3|a","net":"hot"},
+
+    {"id":"w7","a":"db_l1|b","b":"sc2306|L1","net":"hot"},
+    {"id":"w8","a":"db_l2|b","b":"sc2306|L2","net":"hot"},
+    {"id":"w9","a":"db_l3|b","b":"sc2306|L3","net":"hot"},
+
+    {"id":"w10","a":"db_l1|t","b":"sc2308|L1","net":"hot"},
+    {"id":"w11","a":"db_l2|t","b":"sc2308|L2","net":"hot"},
+    {"id":"w12","a":"db_l3|t","b":"sc2308|L3","net":"hot"},
+
+    {"id":"w13","a":"db_l1|bt","b":"cb0021|in0","net":"hot"},
+    {"id":"w14","a":"db_l2|bt","b":"cb0021|in1","net":"hot"},
+    {"id":"w15","a":"cb0021|out0","b":"pws0021|L","net":"hot"},
+
+    {"id":"w16","a":"pws0021|L","b":"sc2306|A1","net":"ctrl"},
+    {"id":"w17","a":"pws0021|N","b":"sc2306|A2","net":"ret"},
+    {"id":"w18","a":"pws0021|L","b":"sc2308|A1","net":"ctrl"},
+    {"id":"w19","a":"pws0021|N","b":"sc2308|A2","net":"ret"},
+
+    {"id":"w20","a":"sc2306|T1","b":"fb10_l1|a","net":"hot"},
+    {"id":"w21","a":"sc2306|T2","b":"fb10_l2|a","net":"hot"},
+    {"id":"w22","a":"sc2306|T3","b":"fb10_l3|a","net":"hot"},
+
+    {"id":"w23","a":"sc2308|T1","b":"fb14_l1|a","net":"hot"},
+    {"id":"w24","a":"sc2308|T2","b":"fb14_l2|a","net":"hot"},
+    {"id":"w25","a":"sc2308|T3","b":"fb14_l3|a","net":"hot"},
+
+    {"id":"w26","a":"fb10_l1|b","b":"mpcb0101|in0","net":"hot"},
+    {"id":"w27","a":"fb10_l2|b","b":"mpcb0101|in1","net":"hot"},
+    {"id":"w28","a":"fb10_l3|b","b":"mpcb0101|in2","net":"hot"},
+
+    {"id":"w29","a":"fb10_l1|t","b":"mpcb0105|in0","net":"hot"},
+    {"id":"w30","a":"fb10_l2|t","b":"mpcb0105|in1","net":"hot"},
+    {"id":"w31","a":"fb10_l3|t","b":"mpcb0105|in2","net":"hot"},
+
+    {"id":"w32","a":"fb10_l1|bt","b":"mpcb0109|in0","net":"hot"},
+    {"id":"w33","a":"fb10_l2|bt","b":"mpcb0109|in1","net":"hot"},
+    {"id":"w34","a":"fb10_l3|bt","b":"mpcb0109|in2","net":"hot"},
+
+    {"id":"w35","a":"fb10_l1|a","b":"mpcb0113|in0","net":"hot"},
+    {"id":"w36","a":"fb10_l2|a","b":"mpcb0113|in1","net":"hot"},
+    {"id":"w37","a":"fb10_l3|a","b":"mpcb0113|in2","net":"hot"},
+
+    {"id":"w38","a":"fb14_l1|b","b":"mpcb0117|in0","net":"hot"},
+    {"id":"w39","a":"fb14_l2|b","b":"mpcb0117|in1","net":"hot"},
+    {"id":"w40","a":"fb14_l3|b","b":"mpcb0117|in2","net":"hot"},
+
+    {"id":"w41","a":"fb14_l1|t","b":"mpcb0121|in0","net":"hot"},
+    {"id":"w42","a":"fb14_l2|t","b":"mpcb0121|in1","net":"hot"},
+    {"id":"w43","a":"fb14_l3|t","b":"mpcb0121|in2","net":"hot"},
+
+    {"id":"w44","a":"fb14_l1|bt","b":"mpcb0125|in0","net":"hot"},
+    {"id":"w45","a":"fb14_l2|bt","b":"mpcb0125|in1","net":"hot"},
+    {"id":"w46","a":"fb14_l3|bt","b":"mpcb0125|in2","net":"hot"},
+
+    {"id":"w47","a":"mpcb0101|out0","b":"pnl0101|U","net":"hot"},
+    {"id":"w48","a":"mpcb0101|out1","b":"pnl0101|V","net":"hot"},
+    {"id":"w49","a":"mpcb0101|out2","b":"pnl0101|W","net":"hot"},
+
+    {"id":"w50","a":"mpcb0105|out0","b":"pnl0105|U","net":"hot"},
+    {"id":"w51","a":"mpcb0105|out1","b":"pnl0105|V","net":"hot"},
+    {"id":"w52","a":"mpcb0105|out2","b":"pnl0105|W","net":"hot"},
+
+    {"id":"w53","a":"mpcb0109|out0","b":"pnl0109|U","net":"hot"},
+    {"id":"w54","a":"mpcb0109|out1","b":"pnl0109|V","net":"hot"},
+    {"id":"w55","a":"mpcb0109|out2","b":"pnl0109|W","net":"hot"},
+
+    {"id":"w56","a":"mpcb0113|out0","b":"pnl0113|U","net":"hot"},
+    {"id":"w57","a":"mpcb0113|out1","b":"pnl0113|V","net":"hot"},
+    {"id":"w58","a":"mpcb0113|out2","b":"pnl0113|W","net":"hot"},
+
+    {"id":"w59","a":"mpcb0117|out0","b":"pnl0117|U","net":"hot"},
+    {"id":"w60","a":"mpcb0117|out1","b":"pnl0117|V","net":"hot"},
+    {"id":"w61","a":"mpcb0117|out2","b":"pnl0117|W","net":"hot"},
+
+    {"id":"w62","a":"mpcb0121|out0","b":"pnl0121|U","net":"hot"},
+    {"id":"w63","a":"mpcb0121|out1","b":"pnl0121|V","net":"hot"},
+    {"id":"w64","a":"mpcb0121|out2","b":"pnl0121|W","net":"hot"},
+
+    {"id":"w65","a":"mpcb0125|out0","b":"pnl0125|U","net":"hot"},
+    {"id":"w66","a":"mpcb0125|out1","b":"pnl0125|V","net":"hot"},
+    {"id":"w67","a":"mpcb0125|out2","b":"pnl0125|W","net":"hot"}
+  ]
+}

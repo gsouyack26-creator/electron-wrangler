@@ -1,0 +1,207 @@
+{
+  "name": "ACY1 13XP33 2200 — CC566 120VAC Control Power",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src_120",
+      "type": "source",
+      "x": 60,
+      "y": 80,
+      "label": "XFMR Secondary 120VAC",
+      "phases": 1,
+      "volts": "120VAC"
+    },
+    {
+      "id": "CB1001",
+      "type": "breaker",
+      "x": 175,
+      "y": 62,
+      "label": "CB1001",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "CB1005",
+      "type": "breaker",
+      "x": 340,
+      "y": 122,
+      "label": "CB1005",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "RECP1005",
+      "type": "light",
+      "x": 490,
+      "y": 125,
+      "label": "RECP1005",
+      "color": "#aaaaaa"
+    },
+    {
+      "id": "CR2205",
+      "type": "relay",
+      "x": 340,
+      "y": 175,
+      "label": "CR2205"
+    },
+    {
+      "id": "AH1007",
+      "type": "light",
+      "x": 510,
+      "y": 198,
+      "label": "AH1007",
+      "color": "#ff4444"
+    },
+    {
+      "id": "CB1009",
+      "type": "breaker",
+      "x": 340,
+      "y": 250,
+      "label": "CB1009",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1009",
+      "type": "light",
+      "x": 490,
+      "y": 253,
+      "label": "IOP1009",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1011",
+      "type": "breaker",
+      "x": 340,
+      "y": 305,
+      "label": "CB1011",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1011",
+      "type": "light",
+      "x": 490,
+      "y": 308,
+      "label": "IOP1011",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1013",
+      "type": "breaker",
+      "x": 340,
+      "y": 360,
+      "label": "CB1013",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1013",
+      "type": "light",
+      "x": 490,
+      "y": 363,
+      "label": "IOP1013",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1015",
+      "type": "breaker",
+      "x": 340,
+      "y": 415,
+      "label": "CB1015",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1015",
+      "type": "light",
+      "x": 490,
+      "y": 418,
+      "label": "IOP1015",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1017",
+      "type": "breaker",
+      "x": 340,
+      "y": 470,
+      "label": "CB1017",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1017",
+      "type": "light",
+      "x": 490,
+      "y": 473,
+      "label": "IOP1017",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1019",
+      "type": "breaker",
+      "x": 340,
+      "y": 525,
+      "label": "CB1019",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1019",
+      "type": "light",
+      "x": 490,
+      "y": 528,
+      "label": "IOP1019",
+      "color": "#22c55e"
+    },
+    {
+      "id": "CB1021",
+      "type": "breaker",
+      "x": 340,
+      "y": 580,
+      "label": "CB1021",
+      "poles": 1,
+      "state": "closed"
+    },
+    {
+      "id": "IOP1021",
+      "type": "light",
+      "x": 490,
+      "y": 583,
+      "label": "IOP1021",
+      "color": "#22c55e"
+    }
+  ],
+  "wires": [
+    {"id":"w1",  "a":"src_120|L",    "b":"CB1001|in0",   "net":"hot"},
+    {"id":"w2",  "a":"CB1001|out0",  "b":"CB1005|in0",   "net":"hot"},
+    {"id":"w3",  "a":"CB1001|out0",  "b":"CR2205|A1",    "net":"hot"},
+    {"id":"w4",  "a":"CB1001|out0",  "b":"CR2205|11",    "net":"hot"},
+    {"id":"w5",  "a":"CB1001|out0",  "b":"CB1009|in0",   "net":"hot"},
+    {"id":"w6",  "a":"CB1001|out0",  "b":"CB1011|in0",   "net":"hot"},
+    {"id":"w7",  "a":"CB1001|out0",  "b":"CB1013|in0",   "net":"hot"},
+    {"id":"w8",  "a":"CB1001|out0",  "b":"CB1015|in0",   "net":"hot"},
+    {"id":"w9",  "a":"CB1001|out0",  "b":"CB1017|in0",   "net":"hot"},
+    {"id":"w10", "a":"CB1001|out0",  "b":"CB1019|in0",   "net":"hot"},
+    {"id":"w11", "a":"CB1001|out0",  "b":"CB1021|in0",   "net":"hot"},
+    {"id":"w12", "a":"CB1005|out0",  "b":"RECP1005|a",   "net":"hot"},
+    {"id":"w13", "a":"CR2205|14",    "b":"AH1007|a",     "net":"hot"},
+    {"id":"w14", "a":"CB1009|out0",  "b":"IOP1009|a",    "net":"hot"},
+    {"id":"w15", "a":"CB1011|out0",  "b":"IOP1011|a",    "net":"hot"},
+    {"id":"w16", "a":"CB1013|out0",  "b":"IOP1013|a",    "net":"hot"},
+    {"id":"w17", "a":"CB1015|out0",  "b":"IOP1015|a",    "net":"hot"},
+    {"id":"w18", "a":"CB1017|out0",  "b":"IOP1017|a",    "net":"hot"},
+    {"id":"w19", "a":"CB1019|out0",  "b":"IOP1019|a",    "net":"hot"},
+    {"id":"w20", "a":"CB1021|out0",  "b":"IOP1021|a",    "net":"hot"},
+    {"id":"w21", "a":"src_120|N",    "b":"RECP1005|b",   "net":"ret"},
+    {"id":"w22", "a":"src_120|N",    "b":"CR2205|A2",    "net":"ret"},
+    {"id":"w23", "a":"src_120|N",    "b":"AH1007|b",     "net":"ret"},
+    {"id":"w24", "a":"src_120|N",    "b":"IOP1009|b",    "net":"ret"},
+    {"id":"w25", "a":"src_120|N",    "b":"IOP1011|b",    "net":"ret"},
+    {"id":"w26", "a":"src_120|N",    "b":"IOP1013|b",    "net":"ret"},
+    {"id":"w27", "a":"src_120|N",    "b":"IOP1015|b",    "net":"ret"},
+    {"id":"w28", "a":"src_120|N",    "b":"IOP1017|b",    "net":"ret"},
+    {"id":"w29", "a":"src_120|N",    "b":"IOP1019|b",    "net":"ret"},
+    {"id":"w30", "a":"src_120|N",    "b":"IOP1021|b",    "net":"ret"}
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "name": "ACY1 13XP33 CC566 \u2014 VFD Lane (from Hytrol 13XP33-5000)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 60,
+      "y": 120,
+      "label": "460VAC",
+      "phases": 3,
+      "volts": "460V"
+    },
+    {
+      "id": "disc1",
+      "type": "disc",
+      "x": 210,
+      "y": 110,
+      "label": "DISC5001",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "mpcb",
+      "type": "breaker",
+      "x": 345,
+      "y": 110,
+      "label": "MPCB5022",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "disc2",
+      "type": "disc",
+      "x": 475,
+      "y": 110,
+      "label": "DISC5022",
+      "poles": 3,
+      "state": "closed"
+    },
+    {
+      "id": "vfd",
+      "type": "vfd",
+      "x": 605,
+      "y": 105,
+      "label": "VFD5022"
+    },
+    {
+      "id": "mtr",
+      "type": "motor",
+      "x": 765,
+      "y": 190,
+      "label": "MTR5023",
+      "phases": 3
+    },
+    {
+      "id": "c24",
+      "type": "source",
+      "x": 440,
+      "y": 340,
+      "label": "24VDC",
+      "phases": 1,
+      "volts": "24V"
+    },
+    {
+      "id": "runsel",
+      "type": "selector",
+      "x": 580,
+      "y": 340,
+      "label": "RUN EN",
+      "state": "closed"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "disc1|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "disc1|out0",
+      "b": "mpcb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "mpcb|out0",
+      "b": "disc2|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "disc2|out0",
+      "b": "vfd|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "src|L2",
+      "b": "disc1|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "disc1|out1",
+      "b": "mpcb|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "mpcb|out1",
+      "b": "disc2|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "disc2|out1",
+      "b": "vfd|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "src|L3",
+      "b": "disc1|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "disc1|out2",
+      "b": "mpcb|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "mpcb|out2",
+      "b": "disc2|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "disc2|out2",
+      "b": "vfd|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "vfd|U",
+      "b": "mtr|U",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "vfd|V",
+      "b": "mtr|V",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "vfd|W",
+      "b": "mtr|W",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "c24|L",
+      "b": "runsel|a",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "runsel|b",
+      "b": "vfd|EN",
+      "net": "ctrl"
+    }
+  ]
+}

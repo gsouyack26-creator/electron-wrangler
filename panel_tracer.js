@@ -2086,6 +2086,7 @@ function openSevEvents(){ var ALL=_allCalls(); var meta={};
   function solvedCount(cat){ var t=ALL.filter(function(s){return s.cat===cat;}); var done=t.filter(function(s){return (meta[s.id]||{}).pass;}).length; return done+'/'+t.length; }
   var body='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'
     +'<button class="tbtn" id="sev-new" style="flex:1">\u2795 New call (from a ticket)</button>'
+    +'<button class="tbtn" id="sev-report" style="flex:1">\U0001F4CA Report card</button>'
     +'<label class="hint" style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="sev-guided"'+(_sevGuided?' checked':'')+'> \ud83e\udded Guided mode</label></div>';
   body+='<div class="hint" style="margin-bottom:8px">Pick a call. A real panel loads with a hidden fault and a response clock starts \u2014 trace it, click your suspect, then <b>Check</b>. Guided mode rules out good devices &amp; gives warmer/colder hints. Time out or give up to see a full fault-&amp;-fix walkthrough. Grouped by <b>fault type</b>; \u2605 = difficulty.</div>';
   CAT_ORDER.forEach(function(cat){ var list=ALL.filter(function(s){return s.cat===cat;}); if(!list.length)return;
@@ -2096,9 +2097,54 @@ function openSevEvents(){ var ALL=_allCalls(); var meta={};
   openModal('\U0001F6E0 Trouble Call board', body);
   var root=document.querySelector('#modal')||document;
   var _n=root.querySelector('#sev-new'); if(_n)_n.onclick=function(){ openNewCall(null); };
+  var _rc=root.querySelector('#sev-report'); if(_rc)_rc.onclick=function(){ openReportCard(); };
   var _g=root.querySelector('#sev-guided'); if(_g)_g.onchange=function(){ _sevGuided=this.checked; try{localStorage.setItem('pt_guided',_sevGuided?'1':'0');}catch(e){} };
   root.querySelectorAll('[data-del]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); _deleteCustom(el.dataset.del); }; });
   root.querySelectorAll('[data-sev]').forEach(function(el){ el.onclick=function(){ startSev(el.dataset.sev); }; }); }
+
+function openReportCard(){ var ALL=_allCalls(); var meta={};
+  ALL.forEach(function(x){ try{ meta[x.id]={best:+localStorage.getItem('pt_sev_'+x.id)||null,pass:+localStorage.getItem('pt_sev_'+x.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+x.id+'_fail')||0}; }catch(e){ meta[x.id]={pass:0,fail:0}; } });
+  var cleared=ALL.filter(function(x){return (meta[x.id]||{}).pass;});
+  var totPass=0,totFail=0,bests=[]; ALL.forEach(function(x){ var m=meta[x.id]||{}; totPass+=m.pass||0; totFail+=m.fail||0; if(m.best)bests.push(m.best); });
+  var pct=ALL.length?Math.round(cleared.length/ALL.length*100):0;
+  var avgBest=bests.length?Math.round(bests.reduce(function(a,b){return a+b;},0)/bests.length):0;
+  var rank=pct>=100?'Master Troubleshooter':pct>=75?'Senior Tech':pct>=50?'Journeyman':pct>=25?'Apprentice':cleared.length?'Trainee':'Unrated';
+  var catRows=''; var certs=[];
+  CAT_ORDER.forEach(function(cat){ var list=ALL.filter(function(x){return x.cat===cat;}); if(!list.length)return;
+    var c=CATS[cat]||{name:cat,col:'#888'}; var done=list.filter(function(x){return (meta[x.id]||{}).pass;}).length;
+    var p=Math.round(done/list.length*100); if(done===list.length)certs.push(c.name);
+    catRows+='<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span style="color:'+c.col+';font-weight:700">'+esc(c.name)+'</span><span class="hint">'+done+'/'+list.length+(done===list.length?' \u2705':'')+'</span></div>'
+      +'<div style="height:9px;border-radius:5px;background:var(--edge);overflow:hidden"><div style="height:100%;width:'+p+'%;background:'+c.col+'"></div></div></div>';
+  });
+  var badges=[];
+  if(cleared.length>=1)badges.push(['\ud83d\ude80','First Responder','Cleared your first call']);
+  if(cleared.length>=10)badges.push(['\ud83c\udfaf','Sharpshooter','10+ calls cleared']);
+  if(cleared.length===ALL.length&&ALL.length)badges.push(['\ud83c\udfc6','Board Complete','Every call cleared']);
+  var multi=ALL.filter(function(x){return x.cat==='multi';}); if(multi.length&&multi.every(function(x){return (meta[x.id]||{}).pass;}))badges.push(['\ud83e\udde9','Compound Master','All compound calls cleared']);
+  if(bests.length>=3&&avgBest&&avgBest<90)badges.push(['\u26a1','Speed Demon','Avg best under 1:30']);
+  var clean=cleared.filter(function(x){return !(meta[x.id]||{}).fail;}).length; if(clean>=5)badges.push(['\ud83d\udcaf','Clean Sweep','5+ cleared with no misses']);
+  certs.forEach(function(nm){ badges.push(['\ud83c\udf96','\u200b'+nm+' Certified',nm+' fully cleared']); });
+  var badgeHtml=badges.length?badges.map(function(b){ return '<div style="display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--edge);border-radius:9px;background:var(--panel2,rgba(255,255,255,.03))"><span style="font-size:20px">'+b[0]+'</span><div><div style="font-weight:700;font-size:12px">'+esc(b[1])+'</div><div class="hint" style="font-size:10px">'+esc(b[2])+'</div></div></div>'; }).join(''):'<div class="hint">No badges yet \u2014 clear a call to start earning them.</div>';
+  var body='<div style="border:2px solid var(--acc,#3b82f6);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.10),transparent)">'
+    +'<div class="hint" style="letter-spacing:2px;font-size:10px">ACY1 RME \u00b7 PANEL TRACER</div>'
+    +'<div style="font-weight:800;font-size:18px;margin:2px 0">Trouble-Call Report Card</div>'
+    +'<div style="display:flex;justify-content:center;gap:22px;margin:10px 0 4px;flex-wrap:wrap">'
+    +'<div><div style="font-size:30px;font-weight:800;color:var(--acc,#3b82f6);line-height:1">'+pct+'%</div><div class="hint" style="font-size:10px">complete</div></div>'
+    +'<div><div style="font-size:30px;font-weight:800;line-height:1">'+cleared.length+'<span style="font-size:15px;color:var(--dim)">/'+ALL.length+'</span></div><div class="hint" style="font-size:10px">calls cleared</div></div>'
+    +'<div><div style="font-size:30px;font-weight:800;color:var(--ok);line-height:1">'+(avgBest?_fmtClock(avgBest):'\u2014')+'</div><div class="hint" style="font-size:10px">avg best time</div></div>'
+    +'</div>'
+    +'<div style="font-weight:700;font-size:13px;margin-top:4px">Rank: <span style="color:var(--acc,#3b82f6)">'+esc(rank)+'</span></div>'
+    +'<div class="hint" style="font-size:11px">'+totPass+' \u2705 solves \u00b7 '+totFail+' \u274c misses</div>'
+    +'</div>'
+    +'<div style="font-weight:700;margin:4px 0 2px">Mastery by fault type</div>'+catRows
+    +'<div style="font-weight:700;margin:14px 0 6px">Badges</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px">'+badgeHtml+'</div>'
+    +'<div style="margin-top:14px;display:flex;gap:8px"><button class="tbtn" id="rc-print" style="flex:1">\ud83d\udda8 Print</button>'
+    +'<button class="tbtn" id="rc-board" style="flex:1">\ud83d\udee0 Back to board</button></div>';
+  openModal('\U0001F4CA Report card', body);
+  var root=document.querySelector('#modal')||document;
+  var _p=root.querySelector('#rc-print'); if(_p)_p.onclick=function(){ try{window.print();}catch(e){} };
+  var _b=root.querySelector('#rc-board'); if(_b)_b.onclick=function(){ closeModal(); openSevEvents(); }; }
 
 /* ---------- 6c: reveal walkthrough + guided mode + custom calls ---------- */
 var FIXMAP={

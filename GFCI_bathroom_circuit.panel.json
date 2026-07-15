@@ -1,0 +1,27 @@
+{
+  "name": "GFCI-Protected Bathroom / Garage Circuit (120V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 190, "label": "PANEL 120V", "phases": 1, "volts": 120 },
+    { "id": "br", "type": "breaker", "x": 150, "y": 166, "poles": 1, "state": "closed", "label": "BR3 GFCI" },
+    { "id": "gfci", "type": "gfci", "x": 290, "y": 110, "state": "ok", "label": "GFCI (BATH)" },
+    { "id": "rcpt2", "type": "recept", "x": 440, "y": 112, "label": "GARAGE" },
+    { "id": "rcpt3", "type": "recept", "x": 580, "y": 112, "label": "PATIO" },
+    { "id": "nbus", "type": "busbar", "x": 290, "y": 300, "taps": 3, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 290, "y": 420, "taps": 3, "label": "GROUND", "color": "#3f8f4b" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L", "b": "br|in0", "net": "hot" },
+    { "id": "w2", "a": "br|out0", "b": "gfci|Hin", "net": "hot" },
+    { "id": "w3", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w4", "a": "nbus|p0", "b": "gfci|Nin", "net": "ret" },
+    { "id": "w5", "a": "gfci|Gin", "b": "gbus|p0", "net": "gnd" },
+    { "id": "w6", "a": "gbus|in", "b": "nbus|p2", "net": "bond" },
+    { "id": "w7", "a": "gfci|Hout", "b": "rcpt2|Hin", "net": "hot" },
+    { "id": "w8", "a": "gfci|Nout", "b": "rcpt2|Nin", "net": "ret" },
+    { "id": "w9", "a": "gfci|Gout", "b": "rcpt2|Gin", "net": "gnd" },
+    { "id": "w10", "a": "rcpt2|Hout", "b": "rcpt3|Hin", "net": "hot" },
+    { "id": "w11", "a": "rcpt2|Nout", "b": "rcpt3|Nin", "net": "ret" },
+    { "id": "w12", "a": "rcpt2|Gout", "b": "rcpt3|Gin", "net": "gnd" }
+  ]
+}

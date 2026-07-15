@@ -137,6 +137,17 @@ const T = {
       <path class="sym" d="M11 30 q4 -9 8 0 q4 9 8 0 q4 -9 8 0" fill="none"/>
       <text x="25" y="19" class="comp-sub">${esc(c.label||'240V')}</text>`,
     links:()=>[] },
+  gfci:{ name:'GFCI Receptacle', w:46,h:58, sw:true, states:['ok','tripped'],
+    terms:()=>[{id:'Hin',x:0,y:12},{id:'Nin',x:0,y:29},{id:'Gin',x:0,y:46},
+      {id:'Hout',x:46,y:12},{id:'Nout',x:46,y:29},{id:'Gout',x:46,y:46}],
+    body:c=>{ var t=(c.state==='tripped'||c.fault); return `<rect class="sym fillbody" x="10" y="3" width="26" height="52" rx="6"/>
+      <rect class="sym" x="18.5" y="10" width="2.4" height="9"/><rect class="sym" x="25" y="10" width="2.4" height="9"/>
+      <path class="sym" d="M20 40 h6 v6 a3 3 0 0 1 -6 0 z" fill="none"/>
+      <rect class="sym" x="18.5" y="30" width="2.4" height="7"/><rect class="sym" x="25" y="30" width="2.4" height="7"/>
+      <rect class="sym" x="19" y="21" width="3.6" height="3.6" rx="1" style="fill:`+(t?'#ef4444':'#22c55e')+`"/>
+      <rect class="sym" x="24" y="21" width="3.6" height="3.6" rx="1" fill="none"/>
+      <text x="23" y="2" class="comp-sub" style="font-size:6px">`+esc(c.label||'GFCI')+`</text>`; },
+    links:c=>(c.state==='tripped'||c.fault)?[['Gin','Gout']]:[['Hin','Hout'],['Nin','Nout'],['Gin','Gout']] },
   plcIn:{ name:'PLC Input', w:44,h:26, sw:false, load:true,
     terms:()=>[{id:'in',x:0,y:13},{id:'c',x:44,y:13,rail:'ret'}],
     body:c=>`<rect class="sym fillbody" x="6" y="3" width="32" height="20" rx="3"/>
@@ -2069,6 +2080,9 @@ var SEV=[
   ,{id:'r-wh-noheat', cat:'building', diff:2, kind:'lost 240V leg', limit:300, panel:'Residential \u2014 120/240 V Split-Phase Load Center',
    name:'240V water heater won\u2019t heat', symptom:'The electric water heater is stone cold. Its 2-pole breaker is ON and the 120V circuits are fine \u2014 but one of its two hot legs is open. Find it.',
    find:function(P){return _sevCut(P,{type:'heater',term:'a'});}}
+  ,{id:'r-gfci-trip', cat:'building', diff:2, kind:'GFCI tripped', limit:240, panel:'GFCI-Protected Bathroom / Garage Circuit (120V)',
+   name:'Garage & patio outlets dead \u2014 breaker is ON', symptom:'The garage and patio receptacles are dead, but the branch breaker is ON and not tripped. Everything downstream of one device is out. Find what tripped and what protects these outlets.',
+   find:function(P){return _sevSet(P,{type:'gfci',state:'tripped'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2213,6 +2227,7 @@ var FIXMAP={
   'guard open':{why:'A guard/gate switch reads open, so the safety controller holds the zone disabled.',fix:'Re-close and re-align the guard so the switch actuates fully; confirm both channels make, then reset.'},
   'high-resistance':{why:'A connection has gone high-resistance (loose lug / corrosion). It still passes current, so nothing looks dead — but voltage sags under load and the device runs weak or nuisance-trips.',fix:'Meter voltage DROP across suspect joints under load. The bad one drops significant voltage. De-energize, clean/re-torque the termination, look for heat discoloration.'},
   'single-phasing':{why:'One of the three phases feeding the motor is open (blown fuse / loose lug / open pole). The motor gets only two phases: it hums, will not start, overheats and draws high current.',fix:'Find the open phase — check fuses, lugs and poles per leg with a meter. Restore all three phases and inspect the motor for damage before running.'},
+  'GFCI tripped':{why:'A GFCI protects everything wired to its LOAD terminals. It sensed a ground-fault imbalance (or was test-tripped) and opened its hot AND neutral, killing its own face and every downstream receptacle \u2014 while its LINE side and the branch breaker stay live. That is why the breaker looks fine but the outlets are dead.',fix:'Find the GFCI protecting the circuit (often in a bathroom, garage, or the first box in the run), clear/​inspect the downstream fault or wet device, then press RESET. Confirm the button latches and downstream power returns.'},
   'lost a leg':{why:'One of the two 240V service legs is open (blown main lug, a failed half of a 2-pole, or an open feeder). Every 120V circuit on that leg dies and every 240V load loses half its supply, while the OTHER leg keeps working \u2014 that split symptom is the giveaway.',fix:'Meter each leg to neutral (both should read ~120V). The dead leg reads 0. Trace that leg back \u2014 lug, breaker pole, or feeder \u2014 restore it and confirm 240V leg-to-leg returns.'},
   'lost 240V leg':{why:'A 240V appliance needs BOTH hot legs. One leg to it is open, so it sees no potential across its element and cannot heat \u2014 even though its 2-pole breaker looks on.',fix:'Meter both legs at the appliance to neutral, then leg-to-leg (should be 240V). Find the open pole/conductor on the dead leg and restore it.'},
   'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},

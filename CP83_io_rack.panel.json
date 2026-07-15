@@ -1,13 +1,13 @@
 {
-  "name": "CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh17-19)",
+  "name": "CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)",
   "backdrop": null,
   "components": [
     {
       "id": "src",
       "type": "source",
       "x": 40,
-      "y": 300,
-      "label": "24VDC (from CP83 dist)",
+      "y": 360,
+      "label": "24VDC (8308015/17 from CP83)",
       "phases": 1,
       "volts": 24
     },
@@ -15,14 +15,14 @@
       "id": "gnd",
       "type": "gndbar",
       "x": 120,
-      "y": 560,
+      "y": 720,
       "label": "0VDC bus"
     },
     {
       "id": "cb",
       "type": "breaker",
       "x": 150,
-      "y": 290,
+      "y": 350,
       "poles": 1,
       "state": "closed",
       "label": "CB8598006 4A I/O PWR"
@@ -32,234 +32,324 @@
       "type": "netdev",
       "x": 300,
       "y": 40,
-      "label": "Beckhoff Profibus Coupler"
+      "label": "PLC8316904 Profibus Coupler"
     },
     {
       "id": "m0",
-      "type": "netdev",
+      "type": "plcInCard",
       "x": 470,
       "y": 40,
-      "label": "PLC8317002 IP-Link I/O"
+      "label": "PLC8317002 LSM CB Fault (DCP-LSM 01-07)"
     },
     {
       "id": "m1",
       "type": "netdev",
-      "x": 640,
+      "x": 620,
       "y": 40,
-      "label": "PLC8317102 IP-Link I/O"
+      "label": "PLC8317102 Vision / DDC-03 I/O"
     },
     {
       "id": "m2",
       "type": "netdev",
-      "x": 810,
+      "x": 770,
       "y": 40,
-      "label": "PLC8317202 IP-Link I/O"
+      "label": "PLC8317202 CRB Safety Reset Sup."
     },
     {
       "id": "m3",
       "type": "netdev",
-      "x": 980,
+      "x": 920,
       "y": 40,
-      "label": "PLC8317302 IP-Link I/O"
+      "label": "PLC8317302 CB Fault Monitor"
     },
     {
       "id": "m4",
       "type": "netdev",
-      "x": 1150,
+      "x": 1070,
       "y": 40,
-      "label": "PLC8317402 IP-Link I/O"
+      "label": "PLC8317402 CB Fault Monitor"
     },
     {
       "id": "m5",
       "type": "netdev",
-      "x": 1320,
+      "x": 1220,
       "y": 40,
-      "label": "PLC8317602 IP-Link I/O"
+      "label": "PLC8317602 24V Chute/Sorter Sup."
     },
     {
       "id": "m6",
       "type": "netdev",
-      "x": 470,
-      "y": 130,
-      "label": "PLC8317702 IP-Link I/O"
+      "x": 1370,
+      "y": 40,
+      "label": "PLC8317702 E-Stop Supervision"
     },
     {
       "id": "m7",
-      "type": "netdev",
-      "x": 640,
-      "y": 130,
-      "label": "PLC8317802 IP-Link I/O"
+      "type": "plcOutCard",
+      "x": 1520,
+      "y": 40,
+      "label": "PLC8317802 Sorter Lamps / Reset",
+      "state": "on"
     },
     {
       "id": "m8",
       "type": "netdev",
-      "x": 810,
-      "y": 130,
-      "label": "PLC8317902 IP-Link I/O"
+      "x": 1670,
+      "y": 40,
+      "label": "PLC8317902 CRB Safety Gate I/O"
     },
     {
       "id": "m9",
       "type": "netdev",
-      "x": 980,
-      "y": 130,
-      "label": "PLC8318002 IP-Link I/O"
+      "x": 1820,
+      "y": 40,
+      "label": "PLC8318002 General Sorter I/O"
     },
     {
       "id": "m10",
-      "type": "netdev",
-      "x": 1150,
-      "y": 130,
-      "label": "PLC8318102 IP-Link I/O"
+      "type": "plcInCard",
+      "x": 1970,
+      "y": 40,
+      "label": "PLC8318102 IND CB Fault (DCP-IND 01-08)"
     },
     {
       "id": "m11",
       "type": "netdev",
-      "x": 1320,
-      "y": 130,
-      "label": "PLC8318202 IP-Link I/O"
+      "x": 2120,
+      "y": 40,
+      "label": "PLC8318202 IND CB Fault (DCP-IND-15)"
     },
     {
-      "id": "do",
-      "type": "plcOutCard",
-      "x": 300,
-      "y": 230,
-      "state": "on",
-      "label": "DO -> Interposing"
+      "id": "lsm0",
+      "type": "sensor",
+      "x": 470,
+      "y": 200,
+      "state": "closed",
+      "label": "Main Pwr Sup"
+    },
+    {
+      "id": "lsm1",
+      "type": "sensor",
+      "x": 470,
+      "y": 260,
+      "state": "closed",
+      "label": "DCP-LSM_01 CB"
+    },
+    {
+      "id": "lsm2",
+      "type": "sensor",
+      "x": 470,
+      "y": 320,
+      "state": "closed",
+      "label": "DCP-LSM_02 CB"
+    },
+    {
+      "id": "lsm3",
+      "type": "sensor",
+      "x": 470,
+      "y": 380,
+      "state": "closed",
+      "label": "DCP-LSM_03 CB"
+    },
+    {
+      "id": "lsm4",
+      "type": "sensor",
+      "x": 470,
+      "y": 440,
+      "state": "closed",
+      "label": "DCP-LSM_04 CB"
+    },
+    {
+      "id": "lsm5",
+      "type": "sensor",
+      "x": 470,
+      "y": 500,
+      "state": "closed",
+      "label": "DCP-LSM_05 CB"
+    },
+    {
+      "id": "lsm6",
+      "type": "sensor",
+      "x": 470,
+      "y": 560,
+      "state": "closed",
+      "label": "DCP-LSM_06 CB"
+    },
+    {
+      "id": "lsm7",
+      "type": "sensor",
+      "x": 470,
+      "y": 620,
+      "state": "closed",
+      "label": "DCP-LSM_07 CB"
+    },
+    {
+      "id": "ind0",
+      "type": "sensor",
+      "x": 1970,
+      "y": 200,
+      "state": "closed",
+      "label": "DCP-IND-01 CB"
+    },
+    {
+      "id": "ind1",
+      "type": "sensor",
+      "x": 1970,
+      "y": 260,
+      "state": "closed",
+      "label": "DCP-IND-02 CB"
+    },
+    {
+      "id": "ind2",
+      "type": "sensor",
+      "x": 1970,
+      "y": 320,
+      "state": "closed",
+      "label": "DCP-IND-03 CB"
+    },
+    {
+      "id": "ind3",
+      "type": "sensor",
+      "x": 1970,
+      "y": 380,
+      "state": "closed",
+      "label": "DCP-IND-04 CB"
+    },
+    {
+      "id": "ind4",
+      "type": "sensor",
+      "x": 1970,
+      "y": 440,
+      "state": "closed",
+      "label": "DCP-IND-05 CB"
+    },
+    {
+      "id": "ind5",
+      "type": "sensor",
+      "x": 1970,
+      "y": 500,
+      "state": "closed",
+      "label": "DCP-IND-06 CB"
+    },
+    {
+      "id": "ind6",
+      "type": "sensor",
+      "x": 1970,
+      "y": 560,
+      "state": "closed",
+      "label": "DCP-IND-07 CB"
+    },
+    {
+      "id": "ind7",
+      "type": "sensor",
+      "x": 1970,
+      "y": 620,
+      "state": "closed",
+      "label": "DCP-IND-08 CB"
     },
     {
       "id": "cr0",
       "type": "relay",
-      "x": 470,
-      "y": 250,
-      "label": "CR8313001"
+      "x": 1150,
+      "y": 200,
+      "label": "CR8313001 E-Stop Relay Slave"
     },
     {
       "id": "f0",
       "type": "light",
-      "x": 560,
-      "y": 246,
+      "x": 1320,
+      "y": 196,
       "color": "#a3e635",
-      "label": "Field 8313001"
+      "label": "E-Stop Relay Slave"
     },
     {
       "id": "cr1",
       "type": "relay",
-      "x": 640,
-      "y": 250,
-      "label": "CR8313013"
+      "x": 1150,
+      "y": 290,
+      "label": "CR8313101 E-Stop Reset"
     },
     {
       "id": "f1",
       "type": "light",
-      "x": 730,
-      "y": 246,
+      "x": 1320,
+      "y": 286,
       "color": "#a3e635",
-      "label": "Field 8313013"
+      "label": "E-Stop Reset"
     },
     {
       "id": "cr2",
       "type": "relay",
-      "x": 810,
-      "y": 250,
-      "label": "CR8313121"
+      "x": 1150,
+      "y": 380,
+      "label": "CR8313403 Sorter Jog"
     },
     {
       "id": "f2",
       "type": "light",
-      "x": 900,
-      "y": 246,
+      "x": 1320,
+      "y": 376,
       "color": "#a3e635",
-      "label": "Field 8313121"
+      "label": "Sorter Jog"
     },
     {
       "id": "cr3",
       "type": "relay",
-      "x": 980,
-      "y": 250,
-      "label": "CR8313327"
+      "x": 1150,
+      "y": 470,
+      "label": "CR8313464 Sorter Running"
     },
     {
-      "id": "f3",
-      "type": "light",
-      "x": 1070,
-      "y": 246,
-      "color": "#a3e635",
-      "label": "Field 8313327"
+      "id": "stk",
+      "type": "stacklight",
+      "x": 1320,
+      "y": 462,
+      "label": "Sorter Status Beacon"
     },
     {
       "id": "cr4",
       "type": "relay",
-      "x": 470,
-      "y": 380,
-      "label": "CR8313335"
+      "x": 1150,
+      "y": 560,
+      "label": "CR8313512 Sorter Ready"
     },
     {
       "id": "f4",
       "type": "light",
-      "x": 560,
-      "y": 376,
+      "x": 1320,
+      "y": 556,
       "color": "#a3e635",
-      "label": "Field 8313335"
+      "label": "Sorter Ready"
     },
     {
       "id": "cr5",
       "type": "relay",
-      "x": 640,
-      "y": 380,
-      "label": "CR8313464"
+      "x": 1150,
+      "y": 650,
+      "label": "CR8313540 Induction Ready"
     },
     {
       "id": "f5",
       "type": "light",
-      "x": 730,
-      "y": 376,
+      "x": 1320,
+      "y": 646,
       "color": "#a3e635",
-      "label": "Field 8313464"
-    },
-    {
-      "id": "cr6",
-      "type": "relay",
-      "x": 810,
-      "y": 380,
-      "label": "CR8313512"
-    },
-    {
-      "id": "f6",
-      "type": "light",
-      "x": 900,
-      "y": 376,
-      "color": "#a3e635",
-      "label": "Field 8313512"
-    },
-    {
-      "id": "cr7",
-      "type": "relay",
-      "x": 980,
-      "y": 380,
-      "label": "CR8313540"
-    },
-    {
-      "id": "f7",
-      "type": "light",
-      "x": 1070,
-      "y": 376,
-      "color": "#a3e635",
-      "label": "Field 8313540"
+      "label": "Induction Ready"
     },
     {
       "id": "tb23",
       "type": "tstrip",
       "x": 300,
-      "y": 340,
-      "label": "TB23D-26D"
+      "y": 560,
+      "label": "TB23D-26D field terms"
     },
     {
       "id": "tmr",
       "type": "timerON",
       "x": 300,
-      "y": 470,
+      "y": 700,
       "preset": 2000,
-      "label": "TD8313106 delay"
+      "label": "TD8313106 reset delay"
     }
   ],
   "wires": [
@@ -289,474 +379,570 @@
     },
     {
       "id": "w5",
-      "a": "cb|out0",
-      "b": "m0|L+",
-      "net": "dc"
-    },
-    {
-      "id": "w6",
-      "a": "m0|M",
+      "a": "m0|C",
       "b": "gnd|g0",
       "net": "ret"
     },
     {
-      "id": "w7",
-      "a": "coup|P1",
-      "b": "m0|P1",
-      "net": "ctrl"
-    },
-    {
-      "id": "w8",
+      "id": "w6",
       "a": "cb|out0",
       "b": "m1|L+",
       "net": "dc"
     },
     {
-      "id": "w9",
+      "id": "w7",
       "a": "m1|M",
       "b": "gnd|g1",
       "net": "ret"
     },
     {
-      "id": "w10",
-      "a": "m0|P2",
+      "id": "w8",
+      "a": "coup|P1",
       "b": "m1|P1",
       "net": "ctrl"
     },
     {
-      "id": "w11",
+      "id": "w9",
       "a": "cb|out0",
       "b": "m2|L+",
       "net": "dc"
     },
     {
-      "id": "w12",
+      "id": "w10",
       "a": "m2|M",
       "b": "gnd|g2",
       "net": "ret"
     },
     {
-      "id": "w13",
+      "id": "w11",
       "a": "m1|P2",
       "b": "m2|P1",
       "net": "ctrl"
     },
     {
-      "id": "w14",
+      "id": "w12",
       "a": "cb|out0",
       "b": "m3|L+",
       "net": "dc"
     },
     {
-      "id": "w15",
+      "id": "w13",
       "a": "m3|M",
       "b": "gnd|g3",
       "net": "ret"
     },
     {
-      "id": "w16",
+      "id": "w14",
       "a": "m2|P2",
       "b": "m3|P1",
       "net": "ctrl"
     },
     {
-      "id": "w17",
+      "id": "w15",
       "a": "cb|out0",
       "b": "m4|L+",
       "net": "dc"
     },
     {
-      "id": "w18",
+      "id": "w16",
       "a": "m4|M",
       "b": "gnd|g4",
       "net": "ret"
     },
     {
-      "id": "w19",
+      "id": "w17",
       "a": "m3|P2",
       "b": "m4|P1",
       "net": "ctrl"
     },
     {
-      "id": "w20",
+      "id": "w18",
       "a": "cb|out0",
       "b": "m5|L+",
       "net": "dc"
     },
     {
-      "id": "w21",
+      "id": "w19",
       "a": "m5|M",
       "b": "gnd|g5",
       "net": "ret"
     },
     {
-      "id": "w22",
+      "id": "w20",
       "a": "m4|P2",
       "b": "m5|P1",
       "net": "ctrl"
     },
     {
-      "id": "w23",
+      "id": "w21",
       "a": "cb|out0",
       "b": "m6|L+",
       "net": "dc"
     },
     {
-      "id": "w24",
+      "id": "w22",
       "a": "m6|M",
       "b": "gnd|g0",
       "net": "ret"
     },
     {
-      "id": "w25",
+      "id": "w23",
       "a": "m5|P2",
       "b": "m6|P1",
       "net": "ctrl"
     },
     {
-      "id": "w26",
+      "id": "w24",
       "a": "cb|out0",
-      "b": "m7|L+",
+      "b": "m7|C",
       "net": "dc"
     },
     {
-      "id": "w27",
-      "a": "m7|M",
-      "b": "gnd|g1",
-      "net": "ret"
-    },
-    {
-      "id": "w28",
-      "a": "m6|P2",
-      "b": "m7|P1",
-      "net": "ctrl"
-    },
-    {
-      "id": "w29",
+      "id": "w25",
       "a": "cb|out0",
       "b": "m8|L+",
       "net": "dc"
     },
     {
-      "id": "w30",
+      "id": "w26",
       "a": "m8|M",
       "b": "gnd|g2",
       "net": "ret"
     },
     {
-      "id": "w31",
-      "a": "m7|P2",
+      "id": "w27",
+      "a": "m6|P2",
       "b": "m8|P1",
       "net": "ctrl"
     },
     {
-      "id": "w32",
+      "id": "w28",
       "a": "cb|out0",
       "b": "m9|L+",
       "net": "dc"
     },
     {
-      "id": "w33",
+      "id": "w29",
       "a": "m9|M",
       "b": "gnd|g3",
       "net": "ret"
     },
     {
-      "id": "w34",
+      "id": "w30",
       "a": "m8|P2",
       "b": "m9|P1",
       "net": "ctrl"
     },
     {
-      "id": "w35",
-      "a": "cb|out0",
-      "b": "m10|L+",
-      "net": "dc"
-    },
-    {
-      "id": "w36",
-      "a": "m10|M",
+      "id": "w31",
+      "a": "m10|C",
       "b": "gnd|g4",
       "net": "ret"
     },
     {
-      "id": "w37",
-      "a": "m9|P2",
-      "b": "m10|P1",
-      "net": "ctrl"
-    },
-    {
-      "id": "w38",
+      "id": "w32",
       "a": "cb|out0",
       "b": "m11|L+",
       "net": "dc"
     },
     {
-      "id": "w39",
+      "id": "w33",
       "a": "m11|M",
       "b": "gnd|g5",
       "net": "ret"
     },
     {
-      "id": "w40",
-      "a": "m10|P2",
+      "id": "w34",
+      "a": "m9|P2",
       "b": "m11|P1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w35",
+      "a": "cb|out0",
+      "b": "lsm0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w36",
+      "a": "lsm0|b",
+      "b": "m0|in0",
+      "net": "ctrl"
+    },
+    {
+      "id": "w37",
+      "a": "cb|out0",
+      "b": "lsm1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w38",
+      "a": "lsm1|b",
+      "b": "m0|in1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w39",
+      "a": "cb|out0",
+      "b": "lsm2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w40",
+      "a": "lsm2|b",
+      "b": "m0|in2",
       "net": "ctrl"
     },
     {
       "id": "w41",
       "a": "cb|out0",
-      "b": "do|C",
+      "b": "lsm3|a",
       "net": "dc"
     },
     {
       "id": "w42",
-      "a": "do|out0",
+      "a": "lsm3|b",
+      "b": "m0|in3",
+      "net": "ctrl"
+    },
+    {
+      "id": "w43",
+      "a": "cb|out0",
+      "b": "lsm4|a",
+      "net": "dc"
+    },
+    {
+      "id": "w44",
+      "a": "lsm4|b",
+      "b": "m0|in4",
+      "net": "ctrl"
+    },
+    {
+      "id": "w45",
+      "a": "cb|out0",
+      "b": "lsm5|a",
+      "net": "dc"
+    },
+    {
+      "id": "w46",
+      "a": "lsm5|b",
+      "b": "m0|in5",
+      "net": "ctrl"
+    },
+    {
+      "id": "w47",
+      "a": "cb|out0",
+      "b": "lsm6|a",
+      "net": "dc"
+    },
+    {
+      "id": "w48",
+      "a": "lsm6|b",
+      "b": "m0|in6",
+      "net": "ctrl"
+    },
+    {
+      "id": "w49",
+      "a": "cb|out0",
+      "b": "lsm7|a",
+      "net": "dc"
+    },
+    {
+      "id": "w50",
+      "a": "lsm7|b",
+      "b": "m0|in7",
+      "net": "ctrl"
+    },
+    {
+      "id": "w51",
+      "a": "cb|out0",
+      "b": "ind0|a",
+      "net": "dc"
+    },
+    {
+      "id": "w52",
+      "a": "ind0|b",
+      "b": "m10|in0",
+      "net": "ctrl"
+    },
+    {
+      "id": "w53",
+      "a": "cb|out0",
+      "b": "ind1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w54",
+      "a": "ind1|b",
+      "b": "m10|in1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w55",
+      "a": "cb|out0",
+      "b": "ind2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w56",
+      "a": "ind2|b",
+      "b": "m10|in2",
+      "net": "ctrl"
+    },
+    {
+      "id": "w57",
+      "a": "cb|out0",
+      "b": "ind3|a",
+      "net": "dc"
+    },
+    {
+      "id": "w58",
+      "a": "ind3|b",
+      "b": "m10|in3",
+      "net": "ctrl"
+    },
+    {
+      "id": "w59",
+      "a": "cb|out0",
+      "b": "ind4|a",
+      "net": "dc"
+    },
+    {
+      "id": "w60",
+      "a": "ind4|b",
+      "b": "m10|in4",
+      "net": "ctrl"
+    },
+    {
+      "id": "w61",
+      "a": "cb|out0",
+      "b": "ind5|a",
+      "net": "dc"
+    },
+    {
+      "id": "w62",
+      "a": "ind5|b",
+      "b": "m10|in5",
+      "net": "ctrl"
+    },
+    {
+      "id": "w63",
+      "a": "cb|out0",
+      "b": "ind6|a",
+      "net": "dc"
+    },
+    {
+      "id": "w64",
+      "a": "ind6|b",
+      "b": "m10|in6",
+      "net": "ctrl"
+    },
+    {
+      "id": "w65",
+      "a": "cb|out0",
+      "b": "ind7|a",
+      "net": "dc"
+    },
+    {
+      "id": "w66",
+      "a": "ind7|b",
+      "b": "m10|in7",
+      "net": "ctrl"
+    },
+    {
+      "id": "w67",
+      "a": "m7|out0",
       "b": "cr0|A1",
       "net": "dc"
     },
     {
-      "id": "w43",
+      "id": "w68",
       "a": "cr0|A2",
       "b": "gnd|g0",
       "net": "ret"
     },
     {
-      "id": "w44",
+      "id": "w69",
       "a": "cb|out0",
       "b": "cr0|11",
       "net": "dc"
     },
     {
-      "id": "w45",
+      "id": "w70",
       "a": "cr0|14",
       "b": "f0|a",
       "net": "dc"
     },
     {
-      "id": "w46",
+      "id": "w71",
       "a": "f0|b",
       "b": "gnd|g1",
       "net": "ret"
     },
     {
-      "id": "w47",
-      "a": "do|out1",
+      "id": "w72",
+      "a": "m7|out1",
       "b": "cr1|A1",
       "net": "dc"
     },
     {
-      "id": "w48",
+      "id": "w73",
       "a": "cr1|A2",
       "b": "gnd|g1",
       "net": "ret"
     },
     {
-      "id": "w49",
+      "id": "w74",
       "a": "cb|out0",
       "b": "cr1|11",
       "net": "dc"
     },
     {
-      "id": "w50",
+      "id": "w75",
       "a": "cr1|14",
       "b": "f1|a",
       "net": "dc"
     },
     {
-      "id": "w51",
+      "id": "w76",
       "a": "f1|b",
       "b": "gnd|g2",
       "net": "ret"
     },
     {
-      "id": "w52",
-      "a": "do|out2",
+      "id": "w77",
+      "a": "m7|out2",
       "b": "cr2|A1",
       "net": "dc"
     },
     {
-      "id": "w53",
+      "id": "w78",
       "a": "cr2|A2",
       "b": "gnd|g2",
       "net": "ret"
     },
     {
-      "id": "w54",
+      "id": "w79",
       "a": "cb|out0",
       "b": "cr2|11",
       "net": "dc"
     },
     {
-      "id": "w55",
+      "id": "w80",
       "a": "cr2|14",
       "b": "f2|a",
       "net": "dc"
     },
     {
-      "id": "w56",
+      "id": "w81",
       "a": "f2|b",
       "b": "gnd|g3",
       "net": "ret"
     },
     {
-      "id": "w57",
-      "a": "do|out3",
+      "id": "w82",
+      "a": "m7|out3",
       "b": "cr3|A1",
       "net": "dc"
     },
     {
-      "id": "w58",
+      "id": "w83",
       "a": "cr3|A2",
       "b": "gnd|g3",
       "net": "ret"
     },
     {
-      "id": "w59",
+      "id": "w84",
       "a": "cb|out0",
       "b": "cr3|11",
       "net": "dc"
     },
     {
-      "id": "w60",
+      "id": "w85",
       "a": "cr3|14",
-      "b": "f3|a",
+      "b": "stk|G",
       "net": "dc"
     },
     {
-      "id": "w61",
-      "a": "f3|b",
-      "b": "gnd|g4",
+      "id": "w86",
+      "a": "cb|out0",
+      "b": "stk|R",
+      "net": "dc"
+    },
+    {
+      "id": "w87",
+      "a": "stk|C",
+      "b": "gnd|g2",
       "net": "ret"
     },
     {
-      "id": "w62",
-      "a": "do|out4",
+      "id": "w88",
+      "a": "m7|out4",
       "b": "cr4|A1",
       "net": "dc"
     },
     {
-      "id": "w63",
+      "id": "w89",
       "a": "cr4|A2",
       "b": "gnd|g4",
       "net": "ret"
     },
     {
-      "id": "w64",
+      "id": "w90",
       "a": "cb|out0",
       "b": "cr4|11",
       "net": "dc"
     },
     {
-      "id": "w65",
+      "id": "w91",
       "a": "cr4|14",
       "b": "f4|a",
       "net": "dc"
     },
     {
-      "id": "w66",
+      "id": "w92",
       "a": "f4|b",
       "b": "gnd|g5",
       "net": "ret"
     },
     {
-      "id": "w67",
-      "a": "do|out5",
+      "id": "w93",
+      "a": "m7|out5",
       "b": "cr5|A1",
       "net": "dc"
     },
     {
-      "id": "w68",
+      "id": "w94",
       "a": "cr5|A2",
       "b": "gnd|g5",
       "net": "ret"
     },
     {
-      "id": "w69",
+      "id": "w95",
       "a": "cb|out0",
       "b": "cr5|11",
       "net": "dc"
     },
     {
-      "id": "w70",
+      "id": "w96",
       "a": "cr5|14",
       "b": "f5|a",
       "net": "dc"
     },
     {
-      "id": "w71",
+      "id": "w97",
       "a": "f5|b",
       "b": "gnd|g0",
       "net": "ret"
     },
     {
-      "id": "w72",
-      "a": "do|out6",
-      "b": "cr6|A1",
-      "net": "dc"
-    },
-    {
-      "id": "w73",
-      "a": "cr6|A2",
-      "b": "gnd|g0",
-      "net": "ret"
-    },
-    {
-      "id": "w74",
-      "a": "cb|out0",
-      "b": "cr6|11",
-      "net": "dc"
-    },
-    {
-      "id": "w75",
-      "a": "cr6|14",
-      "b": "f6|a",
-      "net": "dc"
-    },
-    {
-      "id": "w76",
-      "a": "f6|b",
-      "b": "gnd|g1",
-      "net": "ret"
-    },
-    {
-      "id": "w77",
-      "a": "do|out7",
-      "b": "cr7|A1",
-      "net": "dc"
-    },
-    {
-      "id": "w78",
-      "a": "cr7|A2",
-      "b": "gnd|g1",
-      "net": "ret"
-    },
-    {
-      "id": "w79",
-      "a": "cb|out0",
-      "b": "cr7|11",
-      "net": "dc"
-    },
-    {
-      "id": "w80",
-      "a": "cr7|14",
-      "b": "f7|a",
-      "net": "dc"
-    },
-    {
-      "id": "w81",
-      "a": "f7|b",
-      "b": "gnd|g2",
-      "net": "ret"
-    },
-    {
-      "id": "w82",
+      "id": "w98",
       "a": "cb|out0",
       "b": "tb23|L1",
       "net": "dc"
     },
     {
-      "id": "w83",
+      "id": "w99",
       "a": "cb|out0",
       "b": "tmr|IN",
       "net": "dc"

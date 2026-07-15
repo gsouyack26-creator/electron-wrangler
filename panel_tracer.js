@@ -120,6 +120,15 @@ const T = {
     body:c=>`<rect class="sym fillbody" x="6" y="2" width="14" height="16" rx="2"/>
       <text x="13" y="14" class="comp-sub">${esc(c.label||'X')}</text>`,
     links:()=>[['a','b'],['a','t'],['a','bt']] },
+  tstrip:{ name:'Terminal Strip', w:36,h:120, sw:false, positions:8,
+    terms:c=>{ const n=8; const ar=[]; for(let i=0;i<n;i++){ const y=14+i*13; ar.push({id:'L'+(i+1),x:0,y}); ar.push({id:'R'+(i+1),x:36,y}); } return ar; },
+    body:c=>{ let s=`<rect class="sym fillbody" x="8" y="4" width="20" height="112" rx="3"/><text x="18" y="2" class="comp-sub" style="font-size:7px">${esc(c.label||'TB1')}</text>`;
+      for(let i=0;i<8;i++){ const y=14+i*13;
+        s+=`<line class="sym" x1="0" y1="${y}" x2="8" y2="${y}"/><line class="sym" x1="28" y1="${y}" x2="36" y2="${y}"/>`
+          +`<circle class="sym" cx="8" cy="${y}" r="1.6"/><circle class="sym" cx="28" cy="${y}" r="1.6"/>`
+          +`<text x="18" y="${y+2.4}" style="fill:var(--dim);font:6px sans-serif;text-anchor:middle">${i+1}</text>`; }
+      return s; },
+    links:c=>{ const l=[]; for(let i=0;i<8;i++)l.push(['L'+(i+1),'R'+(i+1)]); return l; } },
   timerON:{ name:'On-Delay TON', w:52,h:52, sw:false, timer:true,
     terms:()=>[{id:'IN',x:0,y:14,ctrl:true},{id:'o1',x:0,y:38},{id:'o2',x:52,y:38}],
     body:c=>`<rect class="sym fillbody" x="4" y="2" width="44" height="32" rx="4"/>
@@ -350,7 +359,7 @@ function render(){
     s+=`<g class="${cls.join(' ')}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">
       <rect class="selrect" x="-6" y="-6" width="${d.w+12}" height="${d.h+12}" rx="6"/>
       ${body}
-      <text x="${d.w/2}" y="-9" class="comp-label">${c.label&&!['contactor','relay','vfd','term','plcIn','plcOut'].includes(c.type)?esc(c.label):''}</text>`;
+      <text x="${d.w/2}" y="-9" class="comp-label">${c.label&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut'].includes(c.type)?esc(c.label):''}</text>`;
     termList(c).forEach(t=>{ s+=`<circle class="term" data-comp="${c.id}" data-term="${t.id}" cx="${t.x}" cy="${t.y}" r="4"/>`; });
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;
@@ -601,7 +610,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
 function flash(id){ const g=svg.querySelector(`[data-comp="${id}"]`); if(g){g.classList.add('faulted');setTimeout(()=>render(),1200);} }
 
 /* ---------- palette / modes ---------- */
-const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','term'];
+const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','term','tstrip'];
 function buildPalette(){ $('#palette').innerHTML=PAL.map(t=>`<button data-t="${t}"><svg viewBox="0 0 ${T[t].w} ${T[t].h}">${T[t].body(demoStub(t))}</svg>${T[t].name}</button>`).join('');
   $('#palette').querySelectorAll('button').forEach(b=>b.onclick=()=>setTool(b.dataset.t)); }
 function demoStub(t){const c={type:t,label:'',poles:3,phases:3,state:T[t].states?T[t].states[0]:undefined,volts:'480V'};return c;}
@@ -1544,7 +1553,7 @@ function ladderize(){ const ctrlTypes=new Set(['estop','pbNO','pbNC','selector',
   persist(); render(); closeModal(); toast('Control circuit arranged into '+rung+' rung(s)'); }
 
 /* ---------- 10: terminal-strip view ---------- */
-function terminalReport(){ const terms=PANEL.components.filter(c=>c.type==='term');
+function terminalReport(){ const terms=PANEL.components.filter(c=>c.type==='term'||c.type==='tstrip');
   let html;
   if(terms.length){ html=terms.map(tb=>{ const lands=[];
     termList(tb).forEach(t=>{ const k=tb.id+'|'+t.id; PANEL.wires.forEach(w=>{ const o=w.a===k?w.b:(w.b===k?w.a:null);

@@ -1901,17 +1901,23 @@ function startScenario(kind){ const def=SCEN.find(s=>s.id===kind); const sp=scen
   toast('\u25b6 Scenario: '+def.name); }
 function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspect first'); return; }
   if(scenario.done){ toast(scenario.done==='timeout'?'\u23f1 Time expired \u2014 Exit to retry':'Already solved \u2014 Exit for another'); return; }
-  if(scenario.isSev){ const t=Math.round((Date.now()-scenario.t0)/1000); const ok=Array.isArray(scenario.answer)?scenario.answer.indexOf(sel.id)>=0:sel.id===scenario.answer;
-    if(ok){ scenario.done=true; scenario._solveT=t; _sevStop();
-      let b=null; try{b=+localStorage.getItem('pt_sev_'+scenario.id)||null;}catch(e){}
-      if(!b||t<b){ try{localStorage.setItem('pt_sev_'+scenario.id,t);}catch(e){} }
-      try{localStorage.setItem('pt_sev_'+scenario.id+'_pass',(+localStorage.getItem('pt_sev_'+scenario.id+'_pass')||0)+1);}catch(e){}
-      toast('\u2705 SEV cleared in '+t+'s / '+scenario.limit+'s'+(b&&t<b?' \u2014 new best!':b?(' (best '+b+'s)'):'')); _sevHud(); }
-    else { if(scenario.guided){ sel._ruledOut=true; var _d=_compDist(sel.id, Array.isArray(scenario.answer)?scenario.answer[0]:scenario.answer);
-        var _hot=_d<=1?'very close \ud83d\udd25':_d<=2?'close':_d<=4?'getting warmer':'cold \u2014 wrong area';
+  if(scenario.isSev){ const t=Math.round((Date.now()-scenario.t0)/1000);
+    var A=scenario.answers||[[scenario.answer]], F=scenario.found||A.map(function(){return false;}); scenario.found=F;
+    var hitIdx=-1; for(var _i=0;_i<A.length;_i++){ if(A[_i].indexOf(sel.id)>=0){ hitIdx=_i; break; } }
+    if(hitIdx>=0 && F[hitIdx]){ var _lft=F.filter(function(x){return !x;}).length; toast('\u2705 Already found that one \u2014 '+_lft+' fault'+(_lft===1?'':'s')+' left'); renderSimInspector(); return; }
+    if(hitIdx>=0){ F[hitIdx]=true; var _rem2=F.filter(function(x){return !x;}).length;
+      if(_rem2===0){ scenario.done=true; scenario._solveT=t; _sevStop();
+        let b=null; try{b=+localStorage.getItem('pt_sev_'+scenario.id)||null;}catch(e){}
+        if(!b||t<b){ try{localStorage.setItem('pt_sev_'+scenario.id,t);}catch(e){} }
+        try{localStorage.setItem('pt_sev_'+scenario.id+'_pass',(+localStorage.getItem('pt_sev_'+scenario.id+'_pass')||0)+1);}catch(e){}
+        toast('\u2705 '+(A.length>1?('ALL '+A.length+' faults cleared'):'SEV cleared')+' in '+t+'s / '+scenario.limit+'s'+(b&&t<b?' \u2014 new best!':b?(' (best '+b+'s)'):'')); _sevHud(); }
+      else { var _fn=A.length-_rem2; toast('\u2705 Fault '+_fn+' of '+A.length+' found \u2014 keep looking, '+_rem2+' left'); _sevHud(); } }
+    else { if(scenario.guided){ sel._ruledOut=true;
+        var _best=99; for(var _j=0;_j<A.length;_j++){ if(F[_j])continue; var _dd=_compDist(sel.id,A[_j][0]); if(_dd<_best)_best=_dd; }
+        var _hot=_best<=1?'very close \ud83d\udd25':_best<=2?'close':_best<=4?'getting warmer':'cold \u2014 wrong area';
         var _rem=PANEL.components.filter(function(c){var dd=compDef(c);return !c._ruledOut&&(dd.sw||dd.load||dd.coil||dd.psu);}).length;
-        toast('\u274c Ruled out (device is good). Fault is '+_hot+' \u2014 '+_sevRemain()+'s, ~'+_rem+' suspects left'); render(); }
-      else toast('\u274c Not the fault \u2014 '+_sevRemain()+'s left, keep tracing'); }
+        toast('\u274c Ruled out (device is good). Nearest fault is '+_hot+' \u2014 '+_sevRemain()+'s, ~'+_rem+' suspects left'); render(); }
+      else toast('\u274c Not a fault \u2014 '+_sevRemain()+'s left, keep tracing'); }
     renderSimInspector(); return; }
   const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=Array.isArray(scenario.answer)?scenario.answer.indexOf(sel.id)>=0:sel.id===scenario.answer; if(ok)scenario.done=true;
   let best=null; try{ best=+localStorage.getItem('pt_scen_'+scenario.id)||null; }catch(e){}
@@ -1924,8 +1930,8 @@ function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStor
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
 
 /* ---------- 6b: Sev Event trainer (timed) ---------- */
-var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'},custom:{name:'\U0001F4CB My Calls',col:'#94a3b8'}};
-var CAT_ORDER=['power','motor','open','vdrop','safety','controls','custom'];
+var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'},multi:{name:'\U0001F3AF Compound \u2014 find ALL faults',col:'#e879f9'},custom:{name:'\U0001F4CB My Calls',col:'#94a3b8'}};
+var CAT_ORDER=['power','motor','open','vdrop','safety','controls','multi','custom'];
 function _stars(n){return '\u2605'.repeat(n)+'\u2606'.repeat(Math.max(0,3-n));}
 var _sevGuided=false; try{_sevGuided=localStorage.getItem('pt_guided')==='1';}catch(e){}
 var SEV=[
@@ -1994,6 +2000,22 @@ var SEV=[
   {id:'sev-safety-deep', cat:'safety', diff:3, kind:'one channel open', limit:300, panel:'LS4000 E-Stop Junction Box \u2014 dual-channel loop (M-16-00264 ESTOPJB sh121)',
    name:'Dual-channel safety won\u2019t reset', symptom:'The safety relay won\u2019t reset even though the E-stops look closed. This is a dual-channel loop \u2014 only ONE channel is open. Find the device breaking that channel.',
    find:function(P){return _sevSet(P,{type:'estop',state:'open',pick:'last'});}}
+  ,{id:'m-power-safety', cat:'multi', diff:3, kind:'compound', limit:330, panel:'ACY1 13XP33 CC566 \u2014 E-STOP Safety Chain (Hytrol 2000/2303/5000)',
+   name:'Line dead \u2014 more than one fault', symptom:'The line is dead and reset does nothing. There is MORE THAN ONE fault \u2014 do not stop at the first. Find every fault before the clock runs out.',
+   finds:[ {fn:function(P){return _sevSet(P,{type:'estop',state:'open'});}, kind:'E-stop pressed'},
+           {fn:function(P){return _sevSet(P,{type:'breaker',state:'tripped'});}, kind:'tripped breaker'} ]}
+  ,{id:'m-two-belts', cat:'multi', diff:2, kind:'compound', limit:300, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
+   name:'Two belts dead', symptom:'Two induction belts are down while the rest run. Find BOTH blown fuses \u2014 do not stop at the first.',
+   finds:[ {fn:function(P){return _sevSet(P,{type:'fuse',state:'blown',pick:0});}, kind:'blown fuse'},
+           {fn:function(P){return _sevSet(P,{type:'fuse',state:'blown',pick:3});}, kind:'blown fuse'} ]}
+  ,{id:'m-motor-double', cat:'multi', diff:3, kind:'compound', limit:330, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
+   name:'Motor won\u2019t run \u2014 double fault', symptom:'A belt motor is dead. You will find one protection tripped \u2014 but it STILL won\u2019t run after that. There are TWO faults. Find both.',
+   finds:[ {fn:function(P){return _sevSet(P,{type:'overload',state:'tripped'});}, kind:'overload tripped'},
+           {fn:function(P){return _sevFault(P,{type:'contactor'});}, kind:'failed contactor'} ]}
+  ,{id:'m-cp83-double', cat:'multi', diff:3, kind:'compound', limit:360, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
+   name:'CP83 \u2014 multiple faults', symptom:'CP83 is faulted with more than one problem \u2014 a dead interposing-relay output AND a dropped field input. Find every fault.',
+   finds:[ {fn:function(P){return _sevFault(P,{type:'relay'});}, kind:'failed relay'},
+           {fn:function(P){return _sevSet(P,{type:'sensor',state:'open'});}, kind:'open field device'} ]}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2030,6 +2052,7 @@ function _sevHud(){ var el=document.getElementById('sev-hud');
   el.innerHTML='<div style="color:'+((CATS[scenario.cat]||{}).col||'#ef4444')+';font-weight:800;letter-spacing:.5px">\U0001F6A8 TROUBLE CALL \u00b7 '+esc((CATS[scenario.cat]||{}).name||'')+' <span style=\'color:#fbbf24\'>'+_stars(scenario.diff||1)+'</span></div>'
     +'<div style="margin:2px 0 3px;font-weight:600">'+esc(scenario.name)+'</div>'
     +'<div style="font-size:24px;font-weight:800;line-height:1">'+clock+'</div>'
+    +((scenario.answers&&scenario.answers.length>1)?('<div style="font-size:12px;font-weight:700;color:#fbbf24;margin-top:3px">Faults found: '+(scenario.found||[]).filter(function(x){return x;}).length+' / '+scenario.answers.length+'</div>'):'')
     +'<div style="font-size:11px;color:#aaa;max-width:440px;margin-top:5px">'+esc(scenario.symptom)+'</div>'; }
 function _sevTick(){ if(!scenario||!scenario.isSev||scenario.done){ _sevStop(); return; }
   var r=_sevRemain(); _sevHud();
@@ -2042,10 +2065,11 @@ function startSev(id){ var def=_allCalls().find(function(s){return s.id===id;});
   var _prev=(scenario&&scenario.prev)?scenario.prev:JSON.stringify(PANEL);
   _sevStop();
   var P; try{ P=validatePanel(JSON.parse(JSON.stringify(base))); }catch(e){ toast('Could not load panel'); return; }
-  var answer=def.find(P);
-  if(!answer){ toast('Could not stage this call on '+def.panel); return; }
+  var answers=[], fkinds=[];
+  if(def.finds){ for(var _fi=0;_fi<def.finds.length;_fi++){ var _r=def.finds[_fi].fn(P); if(!_r){ toast('Could not stage this call on '+def.panel); return; } answers.push(Array.isArray(_r)?_r:[_r]); fkinds.push(def.finds[_fi].kind); } }
+  else { var answer=def.find(P); if(!answer){ toast('Could not stage this call on '+def.panel); return; } answers.push(Array.isArray(answer)?answer:[answer]); fkinds.push(def.kind); }
   PANEL=P; restoreUid();
-  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, cat:def.cat, diff:def.diff, kind:def.kind, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true, guided:_sevGuided};
+  scenario={id:id, answers:answers, faultKinds:fkinds, found:answers.map(function(){return false;}), answer:answers[0], t0:Date.now(), done:false, prev:_prev, cat:def.cat, diff:def.diff, kind:def.kind, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true, guided:_sevGuided};
   sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
   _sevHud(); _scenTimer=setInterval(_sevTick,1000);
   if(_sevGuided)_sevGuideStart();
@@ -2054,7 +2078,7 @@ function openSevEvents(){ var ALL=_allCalls(); var meta={};
   ALL.forEach(function(s){ try{ meta[s.id]={best:localStorage.getItem('pt_sev_'+s.id),pass:+localStorage.getItem('pt_sev_'+s.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+s.id+'_fail')||0}; }catch(e){ meta[s.id]={}; } });
   function card(s){ var m=meta[s.id]||{}; var col=(CATS[s.cat]||{}).col||'#888';
     var stars='<span style="color:#fbbf24;font-size:11px">'+_stars(s.diff||1)+'</span>';
-    var kind=s.kind?' <span style="display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;border:1px solid var(--edge);color:var(--dim)">'+esc(s.kind)+'</span>':'';
+    var kind=(s.finds&&s.finds.length>1)?' <span style="display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;border:1px solid '+col+';color:'+col+';font-weight:700">'+s.finds.length+' faults</span>':(s.kind?' <span style="display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;border:1px solid var(--edge);color:var(--dim)">'+esc(s.kind)+'</span>':'');
     var stat=''; if(m.best)stat+=' <span style="color:var(--ok)">\u00b7 best '+esc(String(m.best))+'s</span>';
     if(m.pass||m.fail)stat+=' <span class="hint">('+(m.pass||0)+'\u2705 / '+(m.fail||0)+'\u274c)</span>';
     var del=s.custom?'<button class="tbtn" data-del="'+s.id+'" style="float:right;padding:0 7px;line-height:1.4" title="Delete">\u2715</button>':'';
@@ -2085,6 +2109,7 @@ var FIXMAP={
   'blown fuse':{why:'The branch fuse is open, so that single branch is dead while the rest of the panel runs.',fix:'Find the cause of the blow (short / overload on that branch), correct it, then replace with a fuse of the correct type AND rating.'},
   'overload tripped':{why:'The motor overload tripped on excess current, dropping the starter.',fix:'Let it cool, check actual motor amps vs the heater/overload setting, inspect for mechanical bind or a single-phase condition, then reset.'},
   'failed contactor':{why:'The contactor is failed open (burned/pitted tips or an open coil) — control calls for it but the power contacts never make.',fix:'Verify coil voltage IS present at A1/A2. If coil is good but tips do not pass power, replace the contactor.'},
+  'failed relay':{why:'The interposing relay is failed open (open coil or burned contacts) — the PLC output energizes but the relay never passes the signal/power on to the field.',fix:'Confirm the coil is being driven (LED / coil voltage). If driven but the output contact will not make, replace the relay.'},
   'pull-cord latched':{why:'A pull-cord safety switch is latched open, breaking the induction safety loop.',fix:'Walk the cord, find the pulled/latched switch, verify cable tension, reset it, then reset the safety relay.'},
   'guard open':{why:'A guard/gate switch reads open, so the safety controller holds the zone disabled.',fix:'Re-close and re-align the guard so the switch actuates fully; confirm both channels make, then reset.'},
   'high-resistance':{why:'A connection has gone high-resistance (loose lug / corrosion). It still passes current, so nothing looks dead — but voltage sags under load and the device runs weak or nuisance-trips.',fix:'Meter voltage DROP across suspect joints under load. The bad one drops significant voltage. De-energize, clean/re-torque the termination, look for heat discoloration.'},
@@ -2147,19 +2172,28 @@ function _classifyTicket(txt){ txt=String(txt||'').toLowerCase();
   return {cat:'power',mode:'set',type:'breaker',kind:'tripped breaker'}; }
 function _sevReveal(gaveUp){ if(!scenario||!scenario.isSev)return;
   if(!scenario.done) scenario.done=gaveUp?'gaveup':scenario.done||true; _sevStop();
-  var ids=Array.isArray(scenario.answer)?scenario.answer:[scenario.answer];
-  var comps=ids.map(function(id){return findComp(id);}).filter(Boolean);
+  var A=scenario.answers||[[scenario.answer]];
+  var allIds=[]; A.forEach(function(g){ g.forEach(function(id){ if(allIds.indexOf(id)<0)allIds.push(id); }); });
+  var comps=allIds.map(function(id){return findComp(id);}).filter(Boolean);
   var primary=comps.find(function(c){return c.fault||c.hiZ||(c.state&&['tripped','open','blown'].indexOf(c.state)>=0);})||comps[0];
   if(primary){ sel=primary; selWire=null; selSet=[]; }
-  var fx=FIXMAP[scenario.kind]||{why:'',fix:''};
-  var where=comps.map(function(c){return '<b>'+esc(c.label||compDef(c).name)+'</b>'; }).join(' / ');
-  var faultState=primary?(primary.fault?'faulted / open':primary.hiZ?'high-resistance':primary.state||''):'';
+  var multi=A.length>1, faultHtml='';
+  for(var _fi=0;_fi<A.length;_fi++){ var _k=(scenario.faultKinds&&scenario.faultKinds[_fi])||scenario.kind;
+    var _fx=FIXMAP[_k]||{why:'',fix:''};
+    var _cs=A[_fi].map(function(id){return findComp(id);}).filter(Boolean);
+    var _pri=_cs.find(function(c){return c.fault||c.hiZ||(c.state&&['tripped','open','blown'].indexOf(c.state)>=0);})||_cs[0];
+    var _where=_cs.map(function(c){return '<b>'+esc(c.label||compDef(c).name)+'</b>';}).join(' / ');
+    var _fstate=_pri?(_pri.fault?'faulted / open':_pri.hiZ?'high-resistance':_pri.state||''):'';
+    faultHtml+='<div style="margin:8px 0;padding-top:6px;border-top:1px solid #2a2f37">'
+      +(multi?'<div style="font-weight:700;color:'+((CATS[scenario.cat]||{}).col||'#888')+'">Fault '+(_fi+1)+' of '+A.length+'</div>':'')
+      +'<div style="margin:4px 0"><b>Where:</b> '+_where+(_fstate?' \u2014 <span style="color:var(--warn)">'+esc(_fstate)+'</span>':'')+'</div>'
+      +'<div style="margin:4px 0"><b>Why it caused the symptom:</b><br>'+esc(_fx.why)+'</div>'
+      +'<div style="margin:4px 0"><b>The fix:</b><br>'+esc(_fx.fix)+'</div></div>';
+  }
   var body='<div style="border-left:3px solid '+((CATS[scenario.cat]||{}).col||'#888')+';padding-left:10px">'
     +'<div style="font-weight:800;font-size:15px;margin-bottom:2px">'+esc(scenario.name)+'</div>'
-    +'<div class="hint" style="margin-bottom:8px">'+esc((CATS[scenario.cat]||{}).name||'')+' \u00b7 '+esc(scenario.kind||'')+'</div>'
-    +'<div style="margin:6px 0"><b>The fault:</b> '+where+(faultState?' \u2014 <span style="color:var(--warn)">'+esc(faultState)+'</span>':'')+'</div>'
-    +'<div style="margin:6px 0"><b>Why it caused the symptom:</b><br>'+esc(fx.why)+'</div>'
-    +'<div style="margin:6px 0"><b>The fix:</b><br>'+esc(fx.fix)+'</div>'
+    +'<div class="hint" style="margin-bottom:8px">'+esc((CATS[scenario.cat]||{}).name||'')+(multi?(' \u00b7 '+A.length+' faults'):(' \u00b7 '+esc(scenario.kind||'')))+'</div>'
+    +faultHtml
     +'<div class="hint" style="margin-top:8px">The faulted device is now selected on the panel \u2014 close this to see it. Use <b>Meter</b> / <b>Trace</b> to walk the path yourself.</div>'
     +'</div>'
     +'<div style="margin-top:12px;display:flex;gap:8px"><button class="tbtn" id="rv-retry" style="flex:1">\ud83d\udd01 Retry this call</button>'

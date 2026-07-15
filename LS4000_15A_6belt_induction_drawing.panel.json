@@ -1,0 +1,464 @@
+{
+  "name": "LS4000 15A 6-Belt Induction Power Panel (M-16-00264 p.062)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 300,
+      "label": "480VAC 06100-02",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 160,
+      "y": 280,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS06103 FUSED DISC"
+    },
+    {
+      "id": "f0_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 40,
+      "state": "ok",
+      "label": "F1.1"
+    },
+    {
+      "id": "f0_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 64,
+      "state": "ok",
+      "label": "F1.2"
+    },
+    {
+      "id": "f0_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 88,
+      "state": "ok",
+      "label": "F1.3"
+    },
+    {
+      "id": "m0",
+      "type": "motor",
+      "x": 470,
+      "y": 58,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 1 J06209"
+    },
+    {
+      "id": "f1_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 140,
+      "state": "ok",
+      "label": "F2.1"
+    },
+    {
+      "id": "f1_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 164,
+      "state": "ok",
+      "label": "F2.2"
+    },
+    {
+      "id": "f1_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 188,
+      "state": "ok",
+      "label": "F2.3"
+    },
+    {
+      "id": "m1",
+      "type": "motor",
+      "x": 470,
+      "y": 158,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 2 J06214"
+    },
+    {
+      "id": "f2_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 240,
+      "state": "ok",
+      "label": "F3.1"
+    },
+    {
+      "id": "f2_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 264,
+      "state": "ok",
+      "label": "F3.2"
+    },
+    {
+      "id": "f2_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 288,
+      "state": "ok",
+      "label": "F3.3"
+    },
+    {
+      "id": "m2",
+      "type": "motor",
+      "x": 470,
+      "y": 258,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 3 J06229"
+    },
+    {
+      "id": "f3_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 340,
+      "state": "ok",
+      "label": "F4.1"
+    },
+    {
+      "id": "f3_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 364,
+      "state": "ok",
+      "label": "F4.2"
+    },
+    {
+      "id": "f3_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 388,
+      "state": "ok",
+      "label": "F4.3"
+    },
+    {
+      "id": "m3",
+      "type": "motor",
+      "x": 470,
+      "y": 358,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 4 J06234"
+    },
+    {
+      "id": "f4_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 440,
+      "state": "ok",
+      "label": "F5.1"
+    },
+    {
+      "id": "f4_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 464,
+      "state": "ok",
+      "label": "F5.2"
+    },
+    {
+      "id": "f4_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 488,
+      "state": "ok",
+      "label": "F5.3"
+    },
+    {
+      "id": "m4",
+      "type": "motor",
+      "x": 470,
+      "y": 458,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 5 J06249"
+    },
+    {
+      "id": "f5_0",
+      "type": "fuse",
+      "x": 320,
+      "y": 540,
+      "state": "ok",
+      "label": "F6.1"
+    },
+    {
+      "id": "f5_1",
+      "type": "fuse",
+      "x": 320,
+      "y": 564,
+      "state": "ok",
+      "label": "F6.2"
+    },
+    {
+      "id": "f5_2",
+      "type": "fuse",
+      "x": 320,
+      "y": 588,
+      "state": "ok",
+      "label": "F6.3"
+    },
+    {
+      "id": "m5",
+      "type": "motor",
+      "x": 470,
+      "y": 558,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 6 J06254"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "f0_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "f0_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "f0_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "f0_0|b",
+      "b": "m0|U",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "f0_1|b",
+      "b": "m0|V",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "f0_2|b",
+      "b": "m0|W",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "ds|out0",
+      "b": "f1_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "ds|out1",
+      "b": "f1_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "ds|out2",
+      "b": "f1_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "f1_0|b",
+      "b": "m1|U",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "f1_1|b",
+      "b": "m1|V",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "f1_2|b",
+      "b": "m1|W",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "ds|out0",
+      "b": "f2_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "ds|out1",
+      "b": "f2_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "ds|out2",
+      "b": "f2_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "f2_0|b",
+      "b": "m2|U",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "f2_1|b",
+      "b": "m2|V",
+      "net": "hot"
+    },
+    {
+      "id": "w21",
+      "a": "f2_2|b",
+      "b": "m2|W",
+      "net": "hot"
+    },
+    {
+      "id": "w22",
+      "a": "ds|out0",
+      "b": "f3_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "ds|out1",
+      "b": "f3_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w24",
+      "a": "ds|out2",
+      "b": "f3_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w25",
+      "a": "f3_0|b",
+      "b": "m3|U",
+      "net": "hot"
+    },
+    {
+      "id": "w26",
+      "a": "f3_1|b",
+      "b": "m3|V",
+      "net": "hot"
+    },
+    {
+      "id": "w27",
+      "a": "f3_2|b",
+      "b": "m3|W",
+      "net": "hot"
+    },
+    {
+      "id": "w28",
+      "a": "ds|out0",
+      "b": "f4_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w29",
+      "a": "ds|out1",
+      "b": "f4_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w30",
+      "a": "ds|out2",
+      "b": "f4_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w31",
+      "a": "f4_0|b",
+      "b": "m4|U",
+      "net": "hot"
+    },
+    {
+      "id": "w32",
+      "a": "f4_1|b",
+      "b": "m4|V",
+      "net": "hot"
+    },
+    {
+      "id": "w33",
+      "a": "f4_2|b",
+      "b": "m4|W",
+      "net": "hot"
+    },
+    {
+      "id": "w34",
+      "a": "ds|out0",
+      "b": "f5_0|a",
+      "net": "hot"
+    },
+    {
+      "id": "w35",
+      "a": "ds|out1",
+      "b": "f5_1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w36",
+      "a": "ds|out2",
+      "b": "f5_2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w37",
+      "a": "f5_0|b",
+      "b": "m5|U",
+      "net": "hot"
+    },
+    {
+      "id": "w38",
+      "a": "f5_1|b",
+      "b": "m5|V",
+      "net": "hot"
+    },
+    {
+      "id": "w39",
+      "a": "f5_2|b",
+      "b": "m5|W",
+      "net": "hot"
+    }
+  ]
+}

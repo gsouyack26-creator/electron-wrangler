@@ -774,7 +774,7 @@ function render(){
     const _vv=(w._dispV!=null?w._dispV:w._v); if(showVolts&&mode==='sim'&&_vv!=null) s+=`<text class="voltlbl" x="${mx}" y="${(a.y+b.y)/2+9}">${_vv}V</text>`; });
   // components
   PANEL.components.forEach(c=>{ const d=compDef(c);
-    const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c)&&!c._singlePhase)cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath'); if(mode==='sim'&&c._singlePhase)cls.push('singlephase');
+    const cls=['compbox']; if(c._ruledOut)cls.push('ruledout'); if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c)&&!c._singlePhase)cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath'); if(mode==='sim'&&c._singlePhase)cls.push('singlephase');
     let body=d.body(c);
     // live overlays in sim
     if(mode==='sim'){
@@ -999,7 +999,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     $('#sim-phase').onclick=()=>{showPhase=!showPhase;render();renderSimInspector();};
     $('#sim-therm').onclick=()=>{showTherm=!showTherm;render();renderSimInspector();};
     if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog(); if(contMode) renderCont();
-    if(scenario){ const _d=$('#simextra'); if(_d){ _d.innerHTML+=(!scenario.done?'<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>':'')+'<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:8px">← Exit scenario (restore my panel)</button>'; const _e=$('#sim-scen-exit'); if(_e)_e.onclick=exitScenario; } }
+    if(scenario){ const _d=$('#simextra'); if(_d){ _d.innerHTML+=(!scenario.done?'<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>':'')+((scenario.isSev&&!scenario.done)?'<button class="tbtn warn" id="sim-scen-reveal" style="width:100%;margin-top:8px">🏳 Give up — reveal fault & fix</button>':'')+'<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:8px">← Exit call (restore my panel)</button>'; const _e=$('#sim-scen-exit'); if(_e)_e.onclick=exitScenario; const _rv=$('#sim-scen-reveal'); if(_rv)_rv.onclick=function(){_sevReveal(true);}; } }
     return; }
   const d=compDef(c); let h=`<h3>${c.label?esc(c.label)+' — ':''}${d.name}</h3>`;
   if(d.sw){ const cur=c.state; const cls=(cur==='closed'||cur==='ok'||cur==='on')?'closed':(cur==='tripped'||cur==='blown')?'fault':'open';
@@ -1008,7 +1008,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   h+=`<button class="statebtn ${c.fault?'fault':''}" id="sim-fault">${c.fault?'⚠ FAULTED (open) — clear':'Inject fault (open device)'}</button>`;
   h+=`<button class="statebtn ${c.hiZ?'fault':''}" id="sim-hiz">${c.hiZ?'⚠ HIGH-RESISTANCE — clear':'Inject high-resistance (voltage drop)'}</button>`;
   h+=`<button class="tbtn" id="sim-bolt" style="width:100%">⚡ Bolted fault here → trips protection</button>`;
-  if(scenario){ if(!scenario.done) h+=`<button class="tbtn" id="sim-scen" style="width:100%;margin-top:6px">🎯 Check: is this the scenario fault?</button>`; h+=`<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:6px">← Exit scenario</button>`; }
+  if(scenario){ if(!scenario.done) h+=`<button class="tbtn" id="sim-scen" style="width:100%;margin-top:6px">🎯 Check: is this the fault?</button>`; if(scenario.isSev&&!scenario.done) h+=`<button class="tbtn warn" id="sim-scen-reveal" style="width:100%;margin-top:6px">🏳 Give up — reveal fault & fix</button>`; h+=`<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:6px">← Exit call</button>`; }
   if(compDef(c).load||compDef(c).coil){ h+=`<div class="hint" style="margin:6px 0">Status: <b style="color:${c._on?'var(--live)':'var(--dim)'}">${c._on?'ENERGIZED / RUNNING':'DEAD'}</b></div>`;
     if(!c._on) h+=`<button class="tbtn" id="sim-diag" style="width:100%">🔎 Diagnose why it's dead</button><div id="diag"></div>`; }
   if(quiz&&!quiz.answered) h+=`<button class="tbtn" id="sim-qz-check" style="width:100%;margin-top:8px">\ud83c\udf93 Check: is this the fault?</button>`;
@@ -1020,7 +1020,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   $('#sim-fault').onclick=()=>{c.fault=!c.fault;render();renderSimInspector();};
   const _hz=$('#sim-hiz'); if(_hz)_hz.onclick=()=>{c.hiZ=!c.hiZ;render();renderSimInspector();};
   const _bf=$('#sim-bolt'); if(_bf)_bf.onclick=()=>boltedFault(c);
-  const _sc=$('#sim-scen'); if(_sc)_sc.onclick=scenarioGuess; const _sce=$('#sim-scen-exit'); if(_sce)_sce.onclick=exitScenario;
+  const _sc=$('#sim-scen'); if(_sc)_sc.onclick=scenarioGuess; const _sce=$('#sim-scen-exit'); if(_sce)_sce.onclick=exitScenario; const _rv2=$('#sim-scen-reveal'); if(_rv2)_rv2.onclick=function(){_sevReveal(true);};
   const dg=$('#sim-diag'); if(dg)dg.onclick=()=>runDiag(c);
 }
 function runDiag(c){ const r=diagnose(c); const box=$('#diag');
@@ -2173,7 +2173,11 @@ function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspe
       if(!b||t<b){ try{localStorage.setItem('pt_sev_'+scenario.id,t);}catch(e){} }
       try{localStorage.setItem('pt_sev_'+scenario.id+'_pass',(+localStorage.getItem('pt_sev_'+scenario.id+'_pass')||0)+1);}catch(e){}
       toast('\u2705 SEV cleared in '+t+'s / '+scenario.limit+'s'+(b&&t<b?' \u2014 new best!':b?(' (best '+b+'s)'):'')); _sevHud(); }
-    else { toast('\u274c Not the fault \u2014 '+_sevRemain()+'s left, keep tracing'); }
+    else { if(scenario.guided){ sel._ruledOut=true; var _d=_compDist(sel.id, Array.isArray(scenario.answer)?scenario.answer[0]:scenario.answer);
+        var _hot=_d<=1?'very close \ud83d\udd25':_d<=2?'close':_d<=4?'getting warmer':'cold \u2014 wrong area';
+        var _rem=PANEL.components.filter(function(c){var dd=compDef(c);return !c._ruledOut&&(dd.sw||dd.load||dd.coil||dd.psu);}).length;
+        toast('\u274c Ruled out (device is good). Fault is '+_hot+' \u2014 '+_sevRemain()+'s, ~'+_rem+' suspects left'); render(); }
+      else toast('\u274c Not the fault \u2014 '+_sevRemain()+'s left, keep tracing'); }
     renderSimInspector(); return; }
   const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=Array.isArray(scenario.answer)?scenario.answer.indexOf(sel.id)>=0:sel.id===scenario.answer; if(ok)scenario.done=true;
   let best=null; try{ best=+localStorage.getItem('pt_scen_'+scenario.id)||null; }catch(e){}
@@ -2186,9 +2190,10 @@ function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStor
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
 
 /* ---------- 6b: Sev Event trainer (timed) ---------- */
-var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'}};
-var CAT_ORDER=['power','motor','open','vdrop','safety','controls'];
+var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'},custom:{name:'\U0001F4CB My Calls',col:'#94a3b8'}};
+var CAT_ORDER=['power','motor','open','vdrop','safety','controls','custom'];
 function _stars(n){return '\u2605'.repeat(n)+'\u2606'.repeat(Math.max(0,3-n));}
+var _sevGuided=false; try{_sevGuided=localStorage.getItem('pt_guided')==='1';}catch(e){}
 var SEV=[
   /* ===== SEV 3 — basic / new-tech drills (one obvious fault, generous clock) ===== */
   {id:'sev-t-breaker', cat:'power', diff:1, kind:'tripped breaker', limit:240, panel:'Standard 12-Belt Induction Power \u2014 30A (M-16-00264 IND30 sh061-063)',
@@ -2296,8 +2301,8 @@ function _sevTick(){ if(!scenario||!scenario.isSev||scenario.done){ _sevStop(); 
   var r=_sevRemain(); _sevHud();
   if(r<=0){ scenario.done='timeout'; _sevStop();
     try{localStorage.setItem('pt_sev_'+scenario.id+'_fail',(+localStorage.getItem('pt_sev_'+scenario.id+'_fail')||0)+1);}catch(e){}
-    toast('\u23f1 TIME! Sev event expired \u2014 review the fault, then Exit to retry'); _sevHud(); renderSimInspector(); } }
-function startSev(id){ var def=SEV.find(function(s){return s.id===id;}); if(!def)return;
+    toast('\u23f1 TIME! Response clock expired'); _sevReveal(false); } }
+function startSev(id){ var def=_allCalls().find(function(s){return s.id===id;}); if(!def)return; _sevInjectCSS();
   var lib=window.PANEL_LIBRARY||{}, base=lib[def.panel];
   if(!base){ toast('Panel not found: '+def.panel); return; }
   var _prev=(scenario&&scenario.prev)?scenario.prev:JSON.stringify(PANEL);
@@ -2306,27 +2311,174 @@ function startSev(id){ var def=SEV.find(function(s){return s.id===id;}); if(!def
   var answer=def.find(P);
   if(!answer){ toast('Could not stage this call on '+def.panel); return; }
   PANEL=P; restoreUid();
-  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, cat:def.cat, diff:def.diff, kind:def.kind, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true};
+  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, cat:def.cat, diff:def.diff, kind:def.kind, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true, guided:_sevGuided};
   sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
   _sevHud(); _scenTimer=setInterval(_sevTick,1000);
+  if(_sevGuided)_sevGuideStart();
   toast('\U0001F6A8 CALL: '+def.name+' \u2014 clock running!'); }
-function openSevEvents(){ var meta={};
-  SEV.forEach(function(s){ try{ meta[s.id]={best:localStorage.getItem('pt_sev_'+s.id),pass:+localStorage.getItem('pt_sev_'+s.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+s.id+'_fail')||0}; }catch(e){ meta[s.id]={}; } });
+function openSevEvents(){ var ALL=_allCalls(); var meta={};
+  ALL.forEach(function(s){ try{ meta[s.id]={best:localStorage.getItem('pt_sev_'+s.id),pass:+localStorage.getItem('pt_sev_'+s.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+s.id+'_fail')||0}; }catch(e){ meta[s.id]={}; } });
   function card(s){ var m=meta[s.id]||{}; var col=(CATS[s.cat]||{}).col||'#888';
     var stars='<span style="color:#fbbf24;font-size:11px">'+_stars(s.diff||1)+'</span>';
     var kind=s.kind?' <span style="display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;border:1px solid var(--edge);color:var(--dim)">'+esc(s.kind)+'</span>':'';
     var stat=''; if(m.best)stat+=' <span style="color:var(--ok)">\u00b7 best '+esc(String(m.best))+'s</span>';
     if(m.pass||m.fail)stat+=' <span class="hint">('+(m.pass||0)+'\u2705 / '+(m.fail||0)+'\u274c)</span>';
-    return '<div class="suspect" style="cursor:pointer;border-left:3px solid '+col+';padding-left:8px" data-sev="'+s.id+'">'+stars+kind+' <b>'+esc(s.name)+'</b> <span class="hint">\u00b7 '+_fmtClock(s.limit)+' target</span>'+stat+'<br><span class="hint">'+esc(s.symptom)+'</span></div>'; }
-  function solvedCount(cat){ var t=SEV.filter(function(s){return s.cat===cat;}); var done=t.filter(function(s){return (meta[s.id]||{}).pass;}).length; return done+'/'+t.length; }
-  var body='<div class="hint" style="margin-bottom:8px">Pick a call off the board. A real site panel loads with a hidden fault and a response clock starts. Trace the circuit, click your suspect device, then <b>Check</b> before the clock runs out. Calls are grouped by <b>fault type</b> \u2014 the skill each one builds. \u2605 = difficulty.</div>';
-  CAT_ORDER.forEach(function(cat){ var list=SEV.filter(function(s){return s.cat===cat;}); if(!list.length)return;
+    var del=s.custom?'<button class="tbtn" data-del="'+s.id+'" style="float:right;padding:0 7px;line-height:1.4" title="Delete">\u2715</button>':'';
+    return '<div class="suspect" style="cursor:pointer;border-left:3px solid '+col+';padding-left:8px" data-sev="'+s.id+'">'+del+stars+kind+' <b>'+esc(s.name)+'</b> <span class="hint">\u00b7 '+_fmtClock(s.limit)+' target</span>'+stat+'<br><span class="hint">'+esc(s.symptom)+'</span></div>'; }
+  function solvedCount(cat){ var t=ALL.filter(function(s){return s.cat===cat;}); var done=t.filter(function(s){return (meta[s.id]||{}).pass;}).length; return done+'/'+t.length; }
+  var body='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'
+    +'<button class="tbtn" id="sev-new" style="flex:1">\u2795 New call (from a ticket)</button>'
+    +'<label class="hint" style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="sev-guided"'+(_sevGuided?' checked':'')+'> \ud83e\udded Guided mode</label></div>';
+  body+='<div class="hint" style="margin-bottom:8px">Pick a call. A real panel loads with a hidden fault and a response clock starts \u2014 trace it, click your suspect, then <b>Check</b>. Guided mode rules out good devices &amp; gives warmer/colder hints. Time out or give up to see a full fault-&amp;-fix walkthrough. Grouped by <b>fault type</b>; \u2605 = difficulty.</div>';
+  CAT_ORDER.forEach(function(cat){ var list=ALL.filter(function(s){return s.cat===cat;}); if(!list.length)return;
     var c=CATS[cat]||{name:cat,col:'#888'};
     body+='<div style="font-weight:700;margin:12px 0 3px;color:'+c.col+'">'+esc(c.name)+' <span class="hint" style="font-weight:400">\u00b7 '+solvedCount(cat)+' cleared</span></div>';
     list.sort(function(a,b){return (a.diff||1)-(b.diff||1);});
     body+=list.map(card).join(''); });
   openModal('\U0001F6E0 Trouble Call board', body);
-  (document.querySelector('#modal')||document).querySelectorAll('[data-sev]').forEach(function(el){ el.onclick=function(){ startSev(el.dataset.sev); }; }); }
+  var root=document.querySelector('#modal')||document;
+  var _n=root.querySelector('#sev-new'); if(_n)_n.onclick=function(){ openNewCall(null); };
+  var _g=root.querySelector('#sev-guided'); if(_g)_g.onchange=function(){ _sevGuided=this.checked; try{localStorage.setItem('pt_guided',_sevGuided?'1':'0');}catch(e){} };
+  root.querySelectorAll('[data-del]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); _deleteCustom(el.dataset.del); }; });
+  root.querySelectorAll('[data-sev]').forEach(function(el){ el.onclick=function(){ startSev(el.dataset.sev); }; }); }
+
+/* ---------- 6c: reveal walkthrough + guided mode + custom calls ---------- */
+var FIXMAP={
+  'tripped breaker':{why:'The breaker is tripped, so its poles are open and everything downstream is dead.',fix:'Find WHY it tripped (downstream short / overload / ground fault) BEFORE resetting. Meter for a fault, clear it, then reset the breaker and confirm it holds.'},
+  'feeder tripped':{why:'A feeder breaker tripped — the remote panel it supplies lost all incoming power.',fix:'Isolate the downstream fault first (megger / visual), then reset the feeder. If it trips again, do not keep resetting — find the short.'},
+  'disconnect open':{why:'The disconnect is open, breaking power to everything past it.',fix:'Verify it is not open for a reason (LOTO / another tech). If clear, close it and confirm downstream comes alive.'},
+  'E-stop pressed':{why:'An E-stop is latched open, so the safety string is broken and the machine cannot enable.',fix:'Confirm the area is clear, twist/pull to release the E-stop, then reset the safety relay and re-enable.'},
+  'blown fuse':{why:'The branch fuse is open, so that single branch is dead while the rest of the panel runs.',fix:'Find the cause of the blow (short / overload on that branch), correct it, then replace with a fuse of the correct type AND rating.'},
+  'overload tripped':{why:'The motor overload tripped on excess current, dropping the starter.',fix:'Let it cool, check actual motor amps vs the heater/overload setting, inspect for mechanical bind or a single-phase condition, then reset.'},
+  'failed contactor':{why:'The contactor is failed open (burned/pitted tips or an open coil) — control calls for it but the power contacts never make.',fix:'Verify coil voltage IS present at A1/A2. If coil is good but tips do not pass power, replace the contactor.'},
+  'pull-cord latched':{why:'A pull-cord safety switch is latched open, breaking the induction safety loop.',fix:'Walk the cord, find the pulled/latched switch, verify cable tension, reset it, then reset the safety relay.'},
+  'guard open':{why:'A guard/gate switch reads open, so the safety controller holds the zone disabled.',fix:'Re-close and re-align the guard so the switch actuates fully; confirm both channels make, then reset.'},
+  'high-resistance':{why:'A connection has gone high-resistance (loose lug / corrosion). It still passes current, so nothing looks dead — but voltage sags under load and the device runs weak or nuisance-trips.',fix:'Meter voltage DROP across suspect joints under load. The bad one drops significant voltage. De-energize, clean/re-torque the termination, look for heat discoloration.'},
+  'single-phasing':{why:'One of the three phases feeding the motor is open (blown fuse / loose lug / open pole). The motor gets only two phases: it hums, will not start, overheats and draws high current.',fix:'Find the open phase — check fuses, lugs and poles per leg with a meter. Restore all three phases and inspect the motor for damage before running.'},
+  'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},
+  'open field device':{why:'A field device on a PLC input has gone open-circuit, so its channel reads permanently off and the logic faults.',fix:'Meter the field device and its loop. Replace/repair the open device or its wiring so the input reads correctly.'},
+  'one channel open':{why:'This is a dual-channel safety loop — only ONE channel is open. Both must make for the safety relay to reset, so it looks closed but will not reset.',fix:'Check EACH channel independently. Find the single open device on the failed channel and restore it.'},
+  'loose wire':{why:'A conductor worked loose at a termination, opening the circuit to a device that then went dead.',fix:'Find the open termination, re-land and torque the conductor. Check for a broken/nicked strand under the lug.'},
+  'open control wire':{why:'There is an open in the control string feeding the coil, so the coil never energizes and the starter will not seal in.',fix:'Ring out the control string from the source to the coil. Find and re-land the open conductor / connection.'},
+  'broken conductor':{why:'A conductor between the field device and the input card is broken, so the channel reads open even though the device itself is good.',fix:'Ring out the run end-to-end. Find the break (often at a terminal or a flex point) and repair/re-pull the conductor.'}
+};
+function _sevInjectCSS(){ if(document.getElementById('sev-css'))return; var st=document.createElement('style'); st.id='sev-css';
+  st.textContent='.compbox.ruledout{opacity:.3;filter:grayscale(1)} .sev-reveal-hit{outline:3px dashed #fbbf24}'; document.head.appendChild(st); }
+function _defState(t){ return ({breaker:'tripped',disc:'open',estop:'open',overload:'tripped',fuse:'blown',pullcord:'open',sensor:'open',pbNC:'open',pbNO:'closed',guardlock:'open',selector:'open'})[t]||'open'; }
+function _sevBuildFind(spec){ return function(P){
+  if(spec.mode==='fault') return _sevFault(P,{type:spec.type,pick:spec.pick});
+  if(spec.mode==='hiz') return _sevHiZ(P,{type:spec.type,pick:spec.pick});
+  if(spec.mode==='cut') return _sevCut(P,{type:spec.type,term:spec.term});
+  if(spec.mode==='phase') return _sevPhase(P,{});
+  return _sevSet(P,{type:spec.type,state:spec.state||_defState(spec.type),pick:spec.pick}); }; }
+function _specManifest(base,spec){ var _save=PANEL; try{ var P=validatePanel(JSON.parse(JSON.stringify(base))); PANEL=P; solve();
+    var lb=P.components.filter(function(c){return c._on;}).length, wb=P.wires.filter(function(w){return w._live;}).length;
+    var v0={}; P.wires.forEach(function(w){v0[w.id]=w._dispV;});
+    var ans=_sevBuildFind(spec)(P); if(ans==null)return false; solve();
+    var la=P.components.filter(function(c){return c._on;}).length, wa=P.wires.filter(function(w){return w._live;}).length;
+    if(P.components.some(function(c){return c.hiZ;})) return P.wires.some(function(w){return v0[w.id]!=null&&w._dispV!=null&&w._dispV<v0[w.id]-1;});
+    return (la<lb)||(wa<wb); } finally { PANEL=_save; } }
+function _bestPick(base,spec){ var cnt=base.components.filter(function(c){return c.type===spec.type;}).length; if(spec.mode==='phase')cnt=1;
+  for(var i=0;i<Math.max(1,cnt);i++){ var s2=Object.assign({},spec,{pick:i}); if(_specManifest(base,s2)) return i; }
+  return null; }
+function _customCalls(){ var a=[]; try{ a=JSON.parse(localStorage.getItem('pt_customcalls')||'[]'); }catch(e){ a=[]; }
+  return (Array.isArray(a)?a:[]).map(function(cc){ cc.find=_sevBuildFind(cc.spec||{}); cc.custom=true; cc.cat=cc.cat||'custom'; return cc; }); }
+function _saveCustom(list){ try{ localStorage.setItem('pt_customcalls', JSON.stringify(list.map(function(cc){ return {id:cc.id,name:cc.name,symptom:cc.symptom,panel:cc.panel,cat:cc.cat,diff:cc.diff,limit:cc.limit,kind:cc.kind,spec:cc.spec}; }))); }catch(e){} }
+function _allCalls(){ return SEV.concat(_customCalls()); }
+function _compAdj(){ var g={}; PANEL.wires.forEach(function(w){ if(w.cut)return; var a=w.a.split('|')[0],b=w.b.split('|')[0]; (g[a]=g[a]||{})[b]=1; (g[b]=g[b]||{})[a]=1; }); return g; }
+function _compDist(from,to){ if(from===to)return 0; var g=_compAdj(), q=[[from,0]], seen={}; seen[from]=1;
+  while(q.length){ var it=q.shift(); var nb=g[it[0]]||{}; for(var k in nb){ if(seen[k])continue; if(k===to)return it[1]+1; seen[k]=1; q.push([k,it[1]+1]); } } return 99; }
+function _sevGuideStart(){ var dead=PANEL.components.find(function(c){ var d=compDef(c); return (d.load||d.coil)&&!c._on; });
+  if(dead){ flash(dead.id); toast('\ud83e\udded Guided: start at "'+(dead.label||compDef(dead).name)+'" \u2014 it\u2019s dead. Trace its supply back.'); }
+  else toast('\ud83e\udded Guided: nothing is fully dead \u2014 this is a weak/voltage-drop fault. Meter along the circuit.'); }
+function _classifyTicket(txt){ txt=String(txt||'').toLowerCase();
+  var R=[
+   [/single.?phas|hums?|won'?t (turn|rotate|spin)|buzz/,{cat:'motor',mode:'phase',type:'motor',kind:'single-phasing'}],
+   [/overload|ol trip|heater/,{cat:'motor',mode:'set',type:'overload',kind:'overload tripped'}],
+   [/contactor|starter (won'?t|wont) (pull|seal)/,{cat:'motor',mode:'fault',type:'contactor',kind:'failed contactor'}],
+   [/e.?stop/,{cat:'safety',mode:'set',type:'estop',kind:'E-stop pressed'}],
+   [/pull.?cord/,{cat:'safety',mode:'set',type:'pullcord',kind:'pull-cord latched'}],
+   [/gate|guard|interlock/,{cat:'safety',mode:'set',type:'sensor',kind:'guard open'}],
+   [/dual.?channel|two.?channel/,{cat:'safety',mode:'set',type:'estop',kind:'one channel open'}],
+   [/dim|voltage drop|under.?volt|weak|high.?resist|corrod|hot (lug|joint|connection)/,{cat:'vdrop',mode:'hiz',type:'light',kind:'high-resistance'}],
+   [/loose|broke|open (wire|conductor|circuit)|no continuity/,{cat:'open',mode:'cut',type:'light',kind:'loose wire'}],
+   [/fuse/,{cat:'power',mode:'set',type:'fuse',kind:'blown fuse'}],
+   [/disconnect|disco\b|switched off/,{cat:'power',mode:'set',type:'disc',kind:'disconnect open'}],
+   [/power supply|psu|24 ?v(dc)?|d\.?c\.? (supply|power)/,{cat:'power',mode:'cut',type:'psu',term:'Lin',kind:'lost supply input'}],
+   [/plc|beckhoff|i\/o|input (card|channel|drop)|sensor|photo.?eye/,{cat:'controls',mode:'set',type:'sensor',kind:'open field device'}],
+   [/relay/,{cat:'controls',mode:'fault',type:'relay',kind:'failed relay'}],
+   [/breaker|trip|mccb|mpcb|mcb|no power|dead|won'?t start/,{cat:'power',mode:'set',type:'breaker',kind:'tripped breaker'}]
+  ];
+  for(var i=0;i<R.length;i++){ if(R[i][0].test(txt)) return R[i][1]; }
+  return {cat:'power',mode:'set',type:'breaker',kind:'tripped breaker'}; }
+function _sevReveal(gaveUp){ if(!scenario||!scenario.isSev)return;
+  if(!scenario.done) scenario.done=gaveUp?'gaveup':scenario.done||true; _sevStop();
+  var ids=Array.isArray(scenario.answer)?scenario.answer:[scenario.answer];
+  var comps=ids.map(function(id){return findComp(id);}).filter(Boolean);
+  var primary=comps.find(function(c){return c.fault||c.hiZ||(c.state&&['tripped','open','blown'].indexOf(c.state)>=0);})||comps[0];
+  if(primary){ sel=primary; selWire=null; selSet=[]; }
+  var fx=FIXMAP[scenario.kind]||{why:'',fix:''};
+  var where=comps.map(function(c){return '<b>'+esc(c.label||compDef(c).name)+'</b>'; }).join(' / ');
+  var faultState=primary?(primary.fault?'faulted / open':primary.hiZ?'high-resistance':primary.state||''):'';
+  var body='<div style="border-left:3px solid '+((CATS[scenario.cat]||{}).col||'#888')+';padding-left:10px">'
+    +'<div style="font-weight:800;font-size:15px;margin-bottom:2px">'+esc(scenario.name)+'</div>'
+    +'<div class="hint" style="margin-bottom:8px">'+esc((CATS[scenario.cat]||{}).name||'')+' \u00b7 '+esc(scenario.kind||'')+'</div>'
+    +'<div style="margin:6px 0"><b>The fault:</b> '+where+(faultState?' \u2014 <span style="color:var(--warn)">'+esc(faultState)+'</span>':'')+'</div>'
+    +'<div style="margin:6px 0"><b>Why it caused the symptom:</b><br>'+esc(fx.why)+'</div>'
+    +'<div style="margin:6px 0"><b>The fix:</b><br>'+esc(fx.fix)+'</div>'
+    +'<div class="hint" style="margin-top:8px">The faulted device is now selected on the panel \u2014 close this to see it. Use <b>Meter</b> / <b>Trace</b> to walk the path yourself.</div>'
+    +'</div>'
+    +'<div style="margin-top:12px;display:flex;gap:8px"><button class="tbtn" id="rv-retry" style="flex:1">\ud83d\udd01 Retry this call</button>'
+    +'<button class="tbtn" id="rv-board" style="flex:1">\ud83d\udee0 Back to board</button></div>';
+  openModal('\ud83d\udd27 Fault revealed \u2014 '+(gaveUp?'gave up':scenario.done==='timeout'?'time expired':'solved'), body);
+  render(); renderSimInspector();
+  var _r=document.getElementById('rv-retry'); if(_r)_r.onclick=function(){ var id=scenario.id; closeModal(); startSev(id); };
+  var _b=document.getElementById('rv-board'); if(_b)_b.onclick=function(){ closeModal(); openSevEvents(); };
+  _sevHud(); }
+function openNewCall(edit){ var lib=window.PANEL_LIBRARY||{}; var names=Object.keys(lib).sort();
+  var e=edit||{name:'',symptom:'',panel:names[0]||'',cat:'custom',diff:2,limit:240,kind:'',spec:{mode:'set',type:''}};
+  var catOpts=Object.keys(CATS).map(function(k){return '<option value="'+k+'"'+(e.cat===k?' selected':'')+'>'+esc(CATS[k].name)+'</option>';}).join('');
+  var modeOpts=[['set','Trip / open (breaker, disc, E-stop, fuse\u2026)'],['fault','Failed-open device (contactor, relay)'],['hiz','High-resistance / voltage drop'],['cut','Loose / broken conductor'],['phase','Single-phase a motor']]
+    .map(function(m){return '<option value="'+m[0]+'"'+(e.spec.mode===m[0]?' selected':'')+'>'+esc(m[1])+'</option>';}).join('');
+  var panelOpts=names.map(function(n){return '<option value="'+esc(n)+'"'+(e.panel===n?' selected':'')+'>'+esc(n)+'</option>';}).join('');
+  function typeOpts(panel,sel){ var p=lib[panel]; if(!p)return '<option value="">(pick a panel)</option>';
+    var ts={}; p.components.forEach(function(c){ ts[c.type]=(ts[c.type]||0)+1; });
+    return Object.keys(ts).sort().map(function(t){return '<option value="'+t+'"'+(sel===t?' selected':'')+'>'+t+' ('+ts[t]+')</option>';}).join(''); }
+  var L='display:block;font-weight:600;margin:8px 0 2px;font-size:12px', I='width:100%;padding:5px;background:var(--panel,#1a1a1a);color:inherit;border:1px solid var(--edge);border-radius:5px';
+  var body='<label style="'+L+'">Call name</label><input id="nc-name" style="'+I+'" value="'+esc(e.name)+'">'
+    +'<label style="'+L+'">Symptom / paste the ticket here</label><textarea id="nc-sym" rows="3" style="'+I+'">'+esc(e.symptom)+'</textarea>'
+    +'<button class="tbtn" id="nc-classify" style="margin-top:6px">\ud83e\udde0 Suggest fault from ticket text</button>'
+    +'<label style="'+L+'">Panel</label><select id="nc-panel" style="'+I+'">'+panelOpts+'</select>'
+    +'<div style="display:flex;gap:8px"><div style="flex:1"><label style="'+L+'">Fault type</label><select id="nc-mode" style="'+I+'">'+modeOpts+'</select></div>'
+    +'<div style="flex:1"><label style="'+L+'">Target device</label><select id="nc-type" style="'+I+'">'+typeOpts(e.panel,e.spec.type)+'</select></div></div>'
+    +'<div style="display:flex;gap:8px"><div style="flex:1"><label style="'+L+'">Category</label><select id="nc-cat" style="'+I+'">'+catOpts+'</select></div>'
+    +'<div style="flex:1"><label style="'+L+'">Difficulty</label><select id="nc-diff" style="'+I+'"><option value="1"'+(e.diff==1?' selected':'')+'>\u2605 easy</option><option value="2"'+(e.diff==2?' selected':'')+'>\u2605\u2605 medium</option><option value="3"'+(e.diff==3?' selected':'')+'>\u2605\u2605\u2605 hard</option></select></div>'
+    +'<div style="flex:1"><label style="'+L+'">Time limit (s)</label><input id="nc-limit" type="number" style="'+I+'" value="'+(+e.limit||240)+'"></div></div>'
+    +'<div style="margin-top:14px;display:flex;gap:8px"><button class="tbtn" id="nc-save" style="flex:2">\ud83d\udcbe Save call</button>'
+    +'<button class="tbtn" id="nc-cancel" style="flex:1">Cancel</button></div>'
+    +'<div id="nc-msg" class="hint" style="margin-top:6px"></div>';
+  openModal(edit?'\u270f Edit call':'\u2795 New trouble call', body);
+  var $m=function(id){return document.getElementById(id);};
+  $m('nc-panel').onchange=function(){ $m('nc-type').innerHTML=typeOpts(this.value,''); };
+  $m('nc-classify').onclick=function(){ var g=_classifyTicket($m('nc-sym').value); $m('nc-cat').value=g.cat; $m('nc-mode').value=g.mode;
+    var opts=typeOpts($m('nc-panel').value, g.type); $m('nc-type').innerHTML=opts; if([].slice.call($m('nc-type').options).some(function(o){return o.value===g.type;})) $m('nc-type').value=g.type;
+    if(!$m('nc-name').value) $m('nc-name').value=g.kind.charAt(0).toUpperCase()+g.kind.slice(1);
+    $m('nc-msg').textContent='Suggested: '+g.kind+' \u2014 adjust the target device if needed.'; };
+  $m('nc-cancel').onclick=function(){ openSevEvents(); };
+  $m('nc-save').onclick=function(){ var mode=$m('nc-mode').value, type=$m('nc-type').value, panel=$m('nc-panel').value;
+    if(!type&&mode!=='phase'){ $m('nc-msg').textContent='Pick a target device.'; return; }
+    var g=_classifyTicket($m('nc-sym').value);
+    var spec={mode:mode, type:mode==='phase'?'motor':type}; if(mode==='cut'&&type==='psu')spec.term='Lin';
+    var _bp=_bestPick(lib[panel],spec); if(_bp!=null)spec.pick=_bp;
+    var kind=$m('nc-name').value?g.kind:g.kind;
+    var cc={id:edit?edit.id:('cc-'+Date.now()), name:$m('nc-name').value||'Custom call', symptom:$m('nc-sym').value||'Find the fault.',
+      panel:panel, cat:$m('nc-cat').value, diff:+$m('nc-diff').value||2, limit:+$m('nc-limit').value||240, kind:kind, spec:spec };
+    var P; try{ P=validatePanel(JSON.parse(JSON.stringify(lib[panel]))); }catch(err){ $m('nc-msg').textContent='Bad panel.'; return; }
+    var ans=_sevBuildFind(spec)(P); if(ans==null){ $m('nc-msg').textContent='That fault can\u2019t be staged on this panel (no '+spec.type+'). Pick another device/panel.'; return; }
+    if(_bp==null){ $m('nc-msg').textContent='\u26a0 Warning: that fault stages but doesn\u2019t visibly change this panel (target may feed nothing modeled). Saved anyway \u2014 consider another device.'; }
+    var list=_customCalls(); var ix=list.findIndex(function(x){return x.id===cc.id;}); if(ix>=0)list[ix]=cc; else list.push(cc);
+    _saveCustom(list); openSevEvents(); toast('\ud83d\udcbe Saved: '+cc.name); }; }
+function _deleteCustom(id){ var list=_customCalls().filter(function(c){return c.id!==id;}); _saveCustom(list); openSevEvents(); }
 
 /* ---------- 7: colorblind-safe ---------- */
 function applyCb(){ const st=document.getElementById('stage'); if(st)st.classList.toggle('cbsafe',cbSafe);

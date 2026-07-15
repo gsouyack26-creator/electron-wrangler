@@ -1,12 +1,12 @@
-# ACY1 RME — Panel Path Tracer
+# ACY1 RME — Voltbench
 
 Offline, single-file interactive electrical-panel simulator for troubleshooting.
 Recreate a control panel as a live graph, then trace complete power/control paths,
 operate devices, inject faults, and auto-diagnose dead loads.
 
 ## Run
-Open `ACY1_Panel_Tracer.html` in any browser (Chrome/Edge). No install, no server.
-Keep `panel_tracer.js` in the same folder. Ships with a demo conveyor motor-starter panel.
+Open `ACY1_Voltbench.html` in any browser (Chrome/Edge). No install, no server.
+Keep `voltbench.js` in the same folder. Ships with a demo conveyor motor-starter panel.
 
 ## Two modes
 - **🔧 Build** — pick a part from the left palette, click canvas to place it. Click a terminal
@@ -25,7 +25,7 @@ Keep `panel_tracer.js` in the same folder. Ships with a demo conveyor motor-star
 ## Hybrid drawing workflow (trace + AI)
 1. **🖼 Drawing** — drop a panel photo, PDF page, or hand sketch as a backdrop (opacity slider on the left).
 2. Trace components + wires over it, **or** send the same image to Aki: *"extract this panel to
-   Panel Tracer JSON"* → Aki returns a `.panel.json` → **📂 Load** it, then nudge parts to line up.
+   Voltbench JSON"* → Aki returns a `.panel.json` → **📂 Load** it, then nudge parts to line up.
 
 ## Save / load
 - **💾 Save** downloads a `.panel.json`; **📂 Load** re-imports. Auto-saves to browser storage.
@@ -95,9 +95,9 @@ deep-link share URL · self-contained QR code (no CDN) · cross-panel jump links
 
 ## Repo layout
 ```
-ACY1_Panel_Tracer.html       shell + styles (edit this + panel_tracer.js)
-panel_tracer.js              the engine (~100 KB)
-ACY1_Panel_Tracer_dist.html  BUILT single-file distributable (do not hand-edit)
+ACY1_Voltbench.html       shell + styles (edit this + voltbench.js)
+voltbench.js              the engine (~100 KB)
+ACY1_Voltbench_dist.html  BUILT single-file distributable (do not hand-edit)
 build.py                     inlines JS + all *.panel.json + layout into the dist
 extract_layout.py            helper: derive a physical-layout map from a drawing
 layout_cc566.json            physical backplate layout (embedded by build)
@@ -107,11 +107,11 @@ EXTRACTION_SPEC.md           schema/spec for AI panel extraction
 ```
 
 ## Build
-After editing `ACY1_Panel_Tracer.html` or `panel_tracer.js`:
+After editing `ACY1_Voltbench.html` or `voltbench.js`:
 ```
 python build.py
 ```
-regenerates `ACY1_Panel_Tracer_dist.html` with the JS and the whole panel library inlined —
+regenerates `ACY1_Voltbench_dist.html` with the JS and the whole panel library inlined —
 a single portable file you can email, drop on a share, or open offline.
 
 Ship either the two-file version (HTML + JS in the same folder) or just the single `_dist.html`.

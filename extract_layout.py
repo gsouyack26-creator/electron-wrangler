@@ -3,7 +3,7 @@
 
 The backplate layout sheets carry a real selectable text layer (not raster),
 so PyMuPDF gives us each device tag with its bounding box. Coords are
-normalized 0..1 within the page; the Panel Tracer scales them into the
+normalized 0..1 within the page; the Voltbench scales them into the
 physical-view cabinet. Off-page tags are dropped.
 
 Usage: python extract_layout.py [PDF_PATH] [OUT_JSON]

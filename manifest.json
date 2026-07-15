@@ -1,8 +1,8 @@
 {
-  "name": "ACY1 RME Panel Path Tracer",
-  "short_name": "Panel Tracer",
+  "name": "ACY1 RME Voltbench",
+  "short_name": "Voltbench",
   "description": "Offline interactive electrical-panel simulator for troubleshooting.",
-  "start_url": "ACY1_Panel_Tracer.html",
+  "start_url": "ACY1_Voltbench.html",
   "scope": ".",
   "display": "standalone",
   "orientation": "any",

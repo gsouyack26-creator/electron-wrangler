@@ -381,7 +381,7 @@ function findComp(id){return PANEL.components.find(c=>c.id===id);}
    hot-live / ret-live from source rails. iterate for coils to fixed point. */
 function solve(){
   const comps=PANEL.components;
-  comps.forEach(c=>{c._coilOn=false;c._on=false;c._energT={};c._priOn=false;});
+  comps.forEach(c=>{c._coilOn=false;c._on=false;c._energT={};c._priOn=false;c._mwbcV=null;c._mwbcPartner=null;});
   let iter=0, changed=true;
   let uf;
   while(changed && iter++<12){
@@ -442,6 +442,38 @@ function solve(){
     if(d.pmon) c._on=!!c._coilOn;
     if(d.timer) c._on=!!c._out;
   });
+  // ---- MWBC open-neutral: two 120 V loads sharing a FLOATING neutral node,
+  // fed from OPPOSITE legs, end up in SERIES across 240 V and split the voltage. ----
+  (function(){
+    var _pnum=function(x){var m=String(x||'').match(/(\d+(?:\.\d+)?)/);return m?+m[1]:0;};
+    var legv=120; comps.forEach(function(c){ if(c.type==='source'){ legv=(+c.legv)||(c.phases===2?_pnum(c.volts)/2:_pnum(c.volts))||120; } });
+    var _ohms=function(c){ var w=+c.watts||60; return (legv*legv)/w; };
+    var cand=comps.filter(function(c){ var d=compDef(c); return d.load && !c._on && c.type!=='motor' && (c.phases||1)!==3; });
+    var byNode={};
+    cand.forEach(function(c){ var ts=termList(c); if(ts.length<2)return;
+      var k0=_key(c,ts[0].id),k1=_key(c,ts[1].id), hotT=null,retT=null;
+      if(_isHot(k0)&&!_isHot(k1)){hotT=ts[0].id;retT=ts[1].id;}
+      else if(_isHot(k1)&&!_isHot(k0)){hotT=ts[1].id;retT=ts[0].id;}
+      else return;
+      var rn=_puf.find(_key(c,retT));
+      (byNode[rn]=byNode[rn]||[]).push({c:c,hotT:hotT,retT:retT});
+    });
+    var mnodes={};
+    Object.keys(byNode).forEach(function(rn){ var g=byNode[rn]; if(g.length<2)return;
+      for(var i=0;i<g.length;i++)for(var j=i+1;j<g.length;j++){ var A=g[i],B=g[j];
+        if(A.c._mwbcPartner||B.c._mwbcPartner)continue;
+        var pa=_phasesAt(_key(A.c,A.hotT)),pb=_phasesAt(_key(B.c,B.hotT)),df=false;
+        pa.forEach(function(x){if(!pb.has(x))df=true;}); pb.forEach(function(x){if(!pa.has(x))df=true;});
+        if(!df)continue;
+        var RA=_ohms(A.c),RB=_ohms(B.c),tot=RA+RB,VLL=legv*2;
+        A.c._on=true;B.c._on=true;
+        A.c._mwbcPartner=B.c.id;B.c._mwbcPartner=A.c.id;
+        A.c._mwbcV=Math.round(VLL*RA/tot); B.c._mwbcV=VLL-A.c._mwbcV;
+        mnodes[rn]=Math.abs(legv-A.c._mwbcV);
+      }
+    });
+    solve._mwbcNodes=mnodes;
+  })();
   // current-flow groups: UF2 = potential nodes + union across ON loads/coils
   const U2=new UF();
   PANEL.wires.forEach(w=>{if(!w.cut)U2.union(w.a,w.b);});
@@ -477,6 +509,9 @@ function solve(){
     let ch=true,pass=0; while(ch&&pass++<24){ ch=false; comps.forEach(c=>{ if(!c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>{ const ra=g.find(_key(c,x)),rb=g.find(_key(c,y)); const va=V[ra]||0,vb=V[rb]||0;
       if(!_srcV[rb]&&va*0.55>(V[rb]||0)+0.5){V[rb]=va*0.55;ch=true;} if(!_srcV[ra]&&vb*0.55>(V[ra]||0)+0.5){V[ra]=vb*0.55;ch=true;} }); }); }
     PANEL.wires.forEach(w=>{ if(w.cut){w._dispV=null;return;} const r=g.find(w.a); w._dispV=(V[r]!=null)?Math.round(V[r]):w._v; }); }
+  if(solve._mwbcNodes){ var _mn=solve._mwbcNodes; PANEL.wires.forEach(function(w){ if(w.cut)return;
+    var ra=_vuf.find(w.a), rb=_vuf.find(w.b);
+    if(_mn[ra]!=null) w._dispV=_mn[ra]; else if(_mn[rb]!=null) w._dispV=_mn[rb]; }); }
   updateFooter();
 }
 function __setget(s){ return Array.from(s); }
@@ -1090,7 +1125,11 @@ function probeVoltage(){ if(probes.length<2)return null; solve();
   const legAt=k=>{ const r=uf.find(k); return _V[r]||nomFor(k); };
   const phAt=k=>_P[uf.find(k)]||new Set();
   const diffLeg=(x,y)=>{ const pa=phAt(x),pb=phAt(y); let d=false; pa.forEach(z=>{if(!pb.has(z))d=true;}); pb.forEach(z=>{if(!pa.has(z))d=true;}); return d; };
-  if(ra===rb) return {v:0,txt:'0 V — same node'};
+  for(var _mi=0;_mi<PANEL.components.length;_mi++){ var _mc=PANEL.components[_mi];
+    if(_mc._mwbcV==null)continue; var _mt=termList(_mc); if(_mt.length<2)continue;
+    var _mka=uf.find(_mc.id+'|'+_mt[0].id), _mkb=uf.find(_mc.id+'|'+_mt[1].id);
+    if((_mka===ra&&_mkb===rb)||(_mka===rb&&_mkb===ra)) return {v:_mc._mwbcV,txt:_mc._mwbcV+' V (MWBC series \u2014 open shared neutral!)'}; }
+  if(ra===rb) return {v:0,txt:'0 V \u2014 same node'};
   const ha=isHot(a),hb=isHot(b),rta=isRet(a),rtb=isRet(b);
   const liveA=ha||rta, liveB=hb||rtb;
   if((ha&&rtb)||(rta&&hb)){ const nv=legAt(ha?a:b); return {v:nv,txt:nv+' V (hot to neutral)'}; }
@@ -2121,6 +2160,9 @@ var SEV=[
   ,{id:'r-longrun-vdrop', cat:'building', diff:2, kind:'long-run voltage drop', limit:280, panel:'Residential \u2014 Detached Garage Sub-Feed (long run, 120V)',
    name:'Garage lights dim & tools bog down at the far end', symptom:'The detached-garage light glows weak and power tools bog down out there, but the breaker is on and nothing is tripped. Voltage reads fine at the panel yet sags out at the garage under load. Find where the volts are being lost.',
    find:function(P){return _sevHiZ(P,{type:'run'});}}
+  ,{id:'r-mwbc-openneutral', cat:'building', diff:3, kind:'MWBC open shared neutral', limit:340, panel:'Residential \u2014 Kitchen MWBC (shared neutral, 120/240V)',
+   name:'Kitchen lights go crazy \u2014 one blazes, one barely glows', symptom:'On a shared-neutral kitchen circuit, one counter light suddenly blazes super-bright (then pops) while the other on the same handle-tie breaker goes dim, and they change TOGETHER when a load switches. Nothing is tripped. Meter across each light and figure out what failed.',
+   find:function(P){return _sevCut(P,{type:'run',term:'in'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2268,6 +2310,7 @@ var FIXMAP={
   'GFCI tripped':{why:'A GFCI protects everything wired to its LOAD terminals. It sensed a ground-fault imbalance (or was test-tripped) and opened its hot AND neutral, killing its own face and every downstream receptacle \u2014 while its LINE side and the branch breaker stay live. That is why the breaker looks fine but the outlets are dead.',fix:'Find the GFCI protecting the circuit (often in a bathroom, garage, or the first box in the run), clear/​inspect the downstream fault or wet device, then press RESET. Confirm the button latches and downstream power returns.'},
   'AFCI tripped':{why:'An AFCI (arc-fault) breaker watches for the high-frequency signature of arcing \u2014 a loose termination arcing in series, or damaged insulation arcing line-to-neutral. When it sees that pattern (or a real overload/short, or a shared-neutral wiring error) it snaps to the mid TRIPPED position and the whole branch goes dead, even though it is not a plain overload.',fix:'Reset it once (push fully OFF, then ON). If it holds, the trip was a transient. If it trips again, unplug/isolate loads and disconnect the branch, then hunt the arc source: re-torque every backstabbed/loose device termination, look for pinched or nail-nicked cable, and confirm the AFCI neutral pigtail lands on ITS terminal (a shared/crossed neutral is the #1 nuisance-trip cause). Reconnect one section at a time to localize it.'},
   'long-run voltage drop':{why:'This is voltage drop over distance, not a fault. Every foot of conductor has resistance; on a long run to a detached structure that resistance is in SERIES with the load, so under load the wire itself eats a share of the volts (Vdrop = I x Rwire). The panel reads ~120V at no load, but out at the garage it sags well below 120V the moment a real load draws current \u2014 lights dim, motors bog and run hot. Undersized wire (#14 where #12/#10 was needed) or too long a run is the usual cause; NEC targets <=3% drop on a branch, <=5% total.',fix:'Meter volts at the panel breaker, then at the far end WITH the load running \u2014 the difference is the drop. If it exceeds ~3-5%, the run is undersized or too long: upsize the conductor (e.g. #14->#12 or #10), shorten the run, or reduce the load. Also rule out a loose/corroded lug adding series resistance before blaming length.'},
+  'MWBC open shared neutral':{why:'A multiwire branch circuit (MWBC) runs two hots on OPPOSITE 120 V legs but shares ONE neutral. With the neutral intact each load sits at 120 V and the shared neutral only carries the DIFFERENCE of the two currents. If that shared neutral opens, the two loads are no longer returned to neutral \u2014 they are now in SERIES across the full 240 V between the legs. The 240 V divides between them by resistance, so the small/high-resistance load hogs most of the voltage (over-voltage \u2014 it blazes then burns out) while the big/low-resistance load starves (under-voltage \u2014 it goes dim). The tell-tale is that both misbehave TOGETHER and the neutral itself floats to a live, shock-hazard voltage.',fix:'Meter across EACH load: one reads well above 120 V, the other well below, and they sum to ~240 V \u2014 that is the open-neutral signature (a good circuit reads 120 V on each). Then meter neutral-to-ground: a healthy shared neutral is ~0 V; a floating one reads live. Find the open neutral \u2014 a loose neutral lug, a broken/backed-out splice, or a neutral pigtail that was cut while a device was changed \u2014 and re-land/torque it. NEVER work an MWBC neutral hot; the handle-tie breaker is there so you kill BOTH legs first.'},
   'lost a leg':{why:'One of the two 240V service legs is open (blown main lug, a failed half of a 2-pole, or an open feeder). Every 120V circuit on that leg dies and every 240V load loses half its supply, while the OTHER leg keeps working \u2014 that split symptom is the giveaway.',fix:'Meter each leg to neutral (both should read ~120V). The dead leg reads 0. Trace that leg back \u2014 lug, breaker pole, or feeder \u2014 restore it and confirm 240V leg-to-leg returns.'},
   'lost 240V leg':{why:'A 240V appliance needs BOTH hot legs. One leg to it is open, so it sees no potential across its element and cannot heat \u2014 even though its 2-pole breaker looks on.',fix:'Meter both legs at the appliance to neutral, then leg-to-leg (should be 240V). Find the open pole/conductor on the dead leg and restore it.'},
   'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},

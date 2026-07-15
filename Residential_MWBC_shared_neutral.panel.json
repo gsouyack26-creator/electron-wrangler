@@ -1,0 +1,32 @@
+{
+  "name": "Residential \u2014 Kitchen MWBC (shared neutral, 120/240V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 240, "label": "SERVICE", "phases": 2, "volts": 240, "legv": 120 },
+    { "id": "main", "type": "breaker", "x": 150, "y": 210, "poles": 2, "state": "closed", "label": "MAIN 2P" },
+    { "id": "l1bus", "type": "busbar", "x": 270, "y": 70,  "taps": 2, "label": "L1", "color": "#c0453e" },
+    { "id": "l2bus", "type": "busbar", "x": 270, "y": 210, "taps": 2, "label": "L2", "color": "#c77d33" },
+    { "id": "nbus", "type": "busbar", "x": 270, "y": 350, "taps": 3, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 270, "y": 480, "taps": 2, "label": "GROUND", "color": "#3f8f4b" },
+    { "id": "brmwbc", "type": "breaker", "x": 390, "y": 110, "poles": 2, "state": "closed", "label": "MWBC 2P (handle-tie)" },
+    { "id": "ltA", "type": "light", "x": 640, "y": 70, "color": "#facc15", "label": "COUNTER A (60W)", "watts": 60 },
+    { "id": "ltB", "type": "light", "x": 640, "y": 200, "color": "#facc15", "label": "COUNTER B (600W)", "watts": 600 },
+    { "id": "sn", "type": "run", "x": 470, "y": 330, "label": "SHARED NEUTRAL", "awg": "12" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L1", "b": "main|in0", "net": "hot" },
+    { "id": "w2", "a": "src|L2", "b": "main|in1", "net": "hot" },
+    { "id": "w3", "a": "main|out0", "b": "l1bus|in", "net": "hot" },
+    { "id": "w4", "a": "main|out1", "b": "l2bus|in", "net": "hot" },
+    { "id": "w5", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w6", "a": "src|G", "b": "gbus|in", "net": "gnd" },
+    { "id": "w7", "a": "gbus|p1", "b": "nbus|p2", "net": "bond" },
+    { "id": "w8", "a": "l1bus|p0", "b": "brmwbc|in0", "net": "hot" },
+    { "id": "w9", "a": "l2bus|p0", "b": "brmwbc|in1", "net": "hot" },
+    { "id": "w10", "a": "brmwbc|out0", "b": "ltA|a", "net": "hot" },
+    { "id": "w11", "a": "brmwbc|out1", "b": "ltB|a", "net": "hot" },
+    { "id": "w12", "a": "ltA|b", "b": "sn|out", "net": "ret" },
+    { "id": "w13", "a": "ltB|b", "b": "sn|out", "net": "ret" },
+    { "id": "w14", "a": "sn|in", "b": "nbus|p0", "net": "ret" }
+  ]
+}

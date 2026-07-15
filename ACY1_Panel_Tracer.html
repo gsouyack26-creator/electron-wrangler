@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ACY1 RME — Panel Path Tracer</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Panel Tracer">
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 <style>
 :root{
   --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3038; --edge:#30363d;
@@ -168,6 +173,18 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 .cmd-item:hover,.cmd-item.sel{background:var(--accent);color:#04211d}
 .ampslbl{fill:var(--accent2);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
 .coilind.lit{fill:var(--live)!important;filter:drop-shadow(0 0 5px var(--live))}
+
+/* --- extras4 (features 38-49) --- */
+.motorbody.hum{animation:hum .12s linear infinite}
+@keyframes hum{0%,100%{transform:translate(0,0)}25%{transform:translate(.6px,-.6px)}75%{transform:translate(-.6px,.6px)}}
+.compbox.singlephase .sym{stroke:var(--warn);stroke-dasharray:4 2}
+.compbox.singlephase .motorM{fill:var(--warn)}
+.cbsafe .wire.live{stroke-dasharray:2 3;stroke-width:3.2}
+.cbsafe .wire.flow{stroke-dasharray:10 4}
+.cbsafe .energized .sym{stroke-width:2.6}
+.pmrow{padding:5px 2px;border-bottom:1px solid var(--line)}
+.pmrow label{display:flex;gap:8px;align-items:center;cursor:pointer;font-size:12px}
+#qr-vid{max-height:60vh}
 </style>
 </head>
 <body>
@@ -186,6 +203,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <button class="tbtn" id="btnPlay" title="Play/pause a timed sequence (Space)">▶ Play</button>
     <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡A</button>
     <button class="tbtn" id="btnProj" title="Project mode: multiple panels in tabs">🗂 Panels</button>
+    <button class="tbtn" id="btnCb" title="Colorblind-safe mode (shape/pattern cues)">👁 CB</button>
     <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
     <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
     <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>

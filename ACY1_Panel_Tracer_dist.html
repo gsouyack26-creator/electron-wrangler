@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ACY1 RME — Panel Path Tracer</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Panel Tracer">
+<link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkFDWTEgUk1FIFBhbmVsIFBhdGggVHJhY2VyIiwKICAic2hvcnRfbmFtZSI6ICJQYW5lbCBUcmFjZXIiLAogICJkZXNjcmlwdGlvbiI6ICJPZmZsaW5lIGludGVyYWN0aXZlIGVsZWN0cmljYWwtcGFuZWwgc2ltdWxhdG9yIGZvciB0cm91Ymxlc2hvb3RpbmcuIiwKICAic3RhcnRfdXJsIjogIkFDWTFfUGFuZWxfVHJhY2VyLmh0bWwiLAogICJzY29wZSI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAib3JpZW50YXRpb24iOiAiYW55IiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGQxMTE3IiwKICAidGhlbWVfY29sb3IiOiAiIzBkMTExNyIsCiAgImljb25zIjogWwogICAgeyAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTkyIDE5MiclM0UlM0NyZWN0IHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyByeD0nMjgnIGZpbGw9JyUyMzBkMTExNycvJTNFJTNDcGF0aCBkPSdNNDAgOTZoMzBsMTQtNDAgMjQgODAgMTQtNDBoMzAnIHN0cm9rZT0nJTIzMmRkNGJmJyBzdHJva2Utd2lkdGg9JzknIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcgc3Ryb2tlLWxpbmVqb2luPSdyb3VuZCcvJTNFJTNDL3N2ZyUzRSIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSIgfSwKICAgIHsgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNFJTNDcmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9Jzc2JyBmaWxsPSclMjMwZDExMTcnLyUzRSUzQ3BhdGggZD0nTTEwNiAyNTZoODBsMzgtMTA4IDY0IDIxNiAzOC0xMDhoODAnIHN0cm9rZT0nJTIzMmRkNGJmJyBzdHJva2Utd2lkdGg9JzI0JyBmaWxsPSdub25lJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnLyUzRSUzQy9zdmclM0UiLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLCAicHVycG9zZSI6ICJhbnkiIH0KICBdCn0K">
+<script>if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 <style>
 :root{
   --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3038; --edge:#30363d;
@@ -168,6 +173,18 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 .cmd-item:hover,.cmd-item.sel{background:var(--accent);color:#04211d}
 .ampslbl{fill:var(--accent2);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
 .coilind.lit{fill:var(--live)!important;filter:drop-shadow(0 0 5px var(--live))}
+
+/* --- extras4 (features 38-49) --- */
+.motorbody.hum{animation:hum .12s linear infinite}
+@keyframes hum{0%,100%{transform:translate(0,0)}25%{transform:translate(.6px,-.6px)}75%{transform:translate(-.6px,.6px)}}
+.compbox.singlephase .sym{stroke:var(--warn);stroke-dasharray:4 2}
+.compbox.singlephase .motorM{fill:var(--warn)}
+.cbsafe .wire.live{stroke-dasharray:2 3;stroke-width:3.2}
+.cbsafe .wire.flow{stroke-dasharray:10 4}
+.cbsafe .energized .sym{stroke-width:2.6}
+.pmrow{padding:5px 2px;border-bottom:1px solid var(--line)}
+.pmrow label{display:flex;gap:8px;align-items:center;cursor:pointer;font-size:12px}
+#qr-vid{max-height:60vh}
 </style>
 </head>
 <body>
@@ -186,6 +203,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <button class="tbtn" id="btnPlay" title="Play/pause a timed sequence (Space)">▶ Play</button>
     <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡A</button>
     <button class="tbtn" id="btnProj" title="Project mode: multiple panels in tabs">🗂 Panels</button>
+    <button class="tbtn" id="btnCb" title="Colorblind-safe mode (shape/pattern cues)">👁 CB</button>
     <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
     <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
     <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>
@@ -401,6 +419,7 @@ let encOn=true;
 let viewMode='sch';
 let showWireNo=false, meterMode=false, probes=[], hoverComp=null, hoverData=null, quiz=null, bootSim=false;
 let showVolts=false, orthoWire=false, logMode=false, measurements=[], pinMode=false, selSet=[], marquee=null, netHi=null;
+let phaseMap=null;
 const svg=$('#svg');
 function nid(p){return p+(uid++);}
 
@@ -447,11 +466,17 @@ function solve(){
   }
   if(changed && typeof console!=='undefined') console.warn('panel-tracer: solver did not converge after 12 iterations (oscillating circuit?)');
   const {_isHot,_isRet,_key}=solve;
+  // per-node phase tracking (single-phasing detection)
+  const _puf=solve._uf, _phaseOf={};
+  comps.forEach(c=>{ if(c.type==='source'){ const ph=c.phases||1; termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_puf.find(_key(c,t.id)); (_phaseOf[r]=_phaseOf[r]||new Set()).add(ph===3?t.id:'L'); } }); } });
+  solve._phaseOf=_phaseOf; const _phasesAt=k=>_phaseOf[_puf.find(k)]||new Set();
+  phaseMap=_phaseOf;
   // energized terminals + load on-states
   comps.forEach(c=>{ const d=compDef(c);
     termList(c).forEach(t=>{ const k=_key(c,t.id); c._energT[t.id]= _isHot(k); });
     if(d.load){ const ph=c.phases||(c.type==='motor'?3:1);
-      if(c.type==='motor'&&ph===3){ c._on = ['U','V','W'].every(t=>_isHot(_key(c,t))); }
+      if(c.type==='motor'&&ph===3){ const mp=new Set(); ['U','V','W'].forEach(t=>_phasesAt(_key(c,t)).forEach(p=>mp.add(p)));
+        c._nPhases=mp.size; c._singlePhase=(mp.size===2); c._on=(mp.size>=3); }
       else { const ts=termList(c); const a=ts[0].id,b=ts[1].id;
         c._on=( _isHot(_key(c,a))&&_isRet(_key(c,b)) )||( _isRet(_key(c,a))&&_isHot(_key(c,b)) ); }
     }
@@ -479,7 +504,8 @@ function solve(){
   comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_vuf.find(_key(c,t.id)); hotV[r]=Math.max(hotV[r]||0,nv); } }); } });
   solve._hotV=hotV;
   PANEL.wires.forEach(w=>{ if(w.cut){w._v=null;return;}
-    w._v = _isHot(w.a)?(hotV[_vuf.find(w.a)]||0) : _isRet(w.a)?0 : _isHot(w.b)?(hotV[_vuf.find(w.b)]||0) : _isRet(w.b)?0 : null; });
+    w._v = _isHot(w.a)?(hotV[_vuf.find(w.a)]||0) : _isRet(w.a)?0 : _isHot(w.b)?(hotV[_vuf.find(w.b)]||0) : _isRet(w.b)?0 : null;
+    const _wp=_phasesAt(w.a); w._phase=_wp.size===1?[...__setget(_wp)][0]:(_wp.size>1?'mix':null); });
   // display voltages with high-resistance drop (separate graph: hi-Z links are resistive, not shorts)
   { const g=new UF();
     PANEL.wires.forEach(w=>{ if(!w.cut)g.union(w.a,w.b); });
@@ -490,6 +516,7 @@ function solve(){
     PANEL.wires.forEach(w=>{ if(w.cut){w._dispV=null;return;} const r=g.find(w.a); w._dispV=(V[r]!=null)?Math.round(V[r]):w._v; }); }
   updateFooter();
 }
+function __setget(s){ return Array.from(s); }
 class UF{ constructor(){this.p={};} find(x){if(this.p[x]===undefined)this.p[x]=x; while(this.p[x]!==x){this.p[x]=this.p[this.p[x]];x=this.p[x];} return x;} union(a,b){this.p[this.find(a)]=this.find(b);} }
 
 /* ---------- ideal-path diagnostic ---------- */
@@ -570,16 +597,18 @@ function render(){
   PANEL.wires.forEach(w=>{ const a=endPos(w.a),b=endPos(w.b); if(!a||!b)return;
     const mx=(a.x+b.x)/2;
     const cls=['wire',w.net||'ctrl']; if(w.cut)cls.push('cut'); if(w._live)cls.push('live'); if(w._flow)cls.push('flow'); if(selWire===w)cls.push('hit'); if(hoverData&&hoverData.wires.has(w.id))cls.push('hover'); if(netHi&&netHi.wires.has(w.id))cls.push('nethi');
-    s+=`<path class="${cls.join(' ')}" data-wire="${w.id}" d="${wirePath(a,b)}"/>`;
+    let _pstyle=''; if(showPhase&&mode==='sim'&&w._phase&&w._phase!=='mix'&&PHASE_COLOR[w._phase]) _pstyle=` style="stroke:${PHASE_COLOR[w._phase]}"`;
+    s+=`<path class="${cls.join(' ')}" data-wire="${w.id}"${_pstyle} d="${wirePath(a,b)}"/>`;
     if(showWireNo&&w.label) s+=`<text class="wireno" x="${mx}" y="${(a.y+b.y)/2-3}">${esc(w.label)}</text>`;
     const _vv=(w._dispV!=null?w._dispV:w._v); if(showVolts&&mode==='sim'&&_vv!=null) s+=`<text class="voltlbl" x="${mx}" y="${(a.y+b.y)/2+9}">${_vv}V</text>`; });
   // components
   PANEL.components.forEach(c=>{ const d=compDef(c);
-    const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath');
+    const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath'); if(mode==='sim'&&c._singlePhase)cls.push('singlephase');
     let body=d.body(c);
     // live overlays in sim
     if(mode==='sim'){
       if(c.type==='motor'&&c._on) body=body.replace('motorbody','motorbody spin').replace('class="comp-label motorM"','class="comp-label motorM lit"');
+      else if(c.type==='motor'&&c._singlePhase) body=body.replace('motorbody','motorbody hum');
       if(c.type==='light'&&c._on) body=body.replace('lampbody','lampbody lit');
       if((c.type==='contactor'||c.type==='relay')&&c._coilOn) body=body.replace('coilind','coilind lit');
       if(compDef(c).timer&&c._out) body=body.replace('coilind','coilind lit');
@@ -592,6 +621,9 @@ function render(){
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;
     if(mode==='sim'&&showAmps&&c._on&&c.type==='motor'&&(c.fla||c.hp)) s+=`<text class="ampslbl" x="${d.w/2}" y="${d.h+(c.link?30:18)}">${motorAmps(c)}A</text>`;
+    if(showTherm&&c.temp) s+=`<rect x="-3" y="-3" width="${d.w+6}" height="${d.h+6}" rx="5" fill="none" stroke="${tempColor(c.temp)}" stroke-width="3" opacity=".85"/><text x="${d.w-3}" y="${d.h-2}" style="fill:${tempColor(c.temp)};font:bold 8px sans-serif;text-anchor:end">${c.temp}\u00b0</text>`;
+    if(c.health&&c.health!=='ok') s+=`<circle cx="3" cy="3" r="4" fill="${healthColor(c.health)}" stroke="#0d1117"/>`;
+    if(cbSafe&&mode==='sim'){ const g=c.fault||c.hiZ?'\u26a0':c._singlePhase?'1\u00d8':(anyEnerg(c)?'\u26a1':''); if(g)s+=`<text x="${d.w/2}" y="${d.h/2+3}" style="fill:#fff;font:bold 10px sans-serif;text-anchor:middle;paint-order:stroke;stroke:#000;stroke-width:3px">${g}</text>`; }
     s+=`</g>`; });
   // wire-in-progress
   if(wireStart){ const p=endPos(wireStart.comp+'|'+wireStart.term); if(p) s+=`<circle cx="${p.x}" cy="${p.y}" r="6" fill="none" stroke="var(--accent)" stroke-width="2" class="pulse"/>`; }
@@ -648,7 +680,7 @@ svg.addEventListener('pointerdown',ev=>{
   if(mode==='build'&&pinMode){ const p=toWorld(ev); const lbl=prompt('Pin label / linked component tag (blank = none):','');
     if(lbl!==null){ PANEL.pins=PANEL.pins||[]; const lc=PANEL.components.find(c=>(c.label||'').toLowerCase()===lbl.trim().toLowerCase()); PANEL.pins.push({x:Math.round(p.x),y:Math.round(p.y),comp:lc?lc.id:null,label:lbl}); persist(); render(); } return; }
   if(mode==='sim'&&logMode&&term){ logMeasure(term.dataset.comp+'|'+term.dataset.term); return; }
-  if(mode==='sim'&&meterMode&&term){ addProbe(term.dataset.comp+'|'+term.dataset.term); return; }
+  if(mode==='sim'&&(meterMode||contMode)&&term){ addProbe(term.dataset.comp+'|'+term.dataset.term); return; }
   if(tool==='wire'||wireStart){ if(term){ handleWireClick(term.dataset.comp,term.dataset.term); return; } }
   if(mode==='build'&&tool&&T[tool]){ const p=toWorld(ev); addComponent(tool,p.x,p.y); return; }
   if(term && mode==='build'){ handleWireClick(term.dataset.comp,term.dataset.term); return; }
@@ -747,6 +779,9 @@ function renderInspector(){ const box=$('#inspector');
   if(c.type==='timerON'||c.type==='timerOFF') h+=`<div class="field"><label>Preset (seconds)</label><input id="ip-preset" type="number" step="0.1" value="${esc((c.preset||2000)/1000)}"></div>`;
   h+=`<div class="field"><label>Part number (APN)</label><input id="ip-apn" value="${esc(c.apn||'')}" placeholder="Amazon part #"></div>`;
   h+=`<button class="tbtn" id="ip-parts" style="width:100%;margin-bottom:6px">🔎 Find in Parts Search</button>`;
+  h+=`<div class="field"><label>Health</label><select id="ip-health">${['ok','aging','due','failed'].map(v=>`<option ${((c.health||'ok')===v)?'selected':''}>${v}</option>`).join('')}</select></div>`;
+  h+=`<div class="field"><label>Hot-spot temp (\u00b0F)</label><input id="ip-temp" type="number" value="${esc(c.temp||'')}" placeholder="IR scan"></div>`;
+  h+=`<div class="field"><label>Last serviced</label><input id="ip-serv" type="date" value="${esc(c.serviced||'')}"></div>`;
   h+=`<button class="tbtn warn" id="ip-del" style="margin-top:8px">🗑 Delete</button>`;
   box.innerHTML=(viewMode==='phys'&&sel?physInfo(sel):'')+h;
   $('#ip-label').oninput=e=>{c.label=e.target.value;persist();render();};
@@ -763,6 +798,9 @@ function renderInspector(){ const box=$('#inspector');
   const _pre=$('#ip-preset'); if(_pre)_pre.oninput=e=>{c.preset=Math.round((+e.target.value||2)*1000);persist();render();};
   const _apn=$('#ip-apn'); if(_apn)_apn.oninput=e=>{c.apn=e.target.value;persist();};
   const _bpp=$('#ip-parts'); if(_bpp)_bpp.onclick=()=>partsLink(c);
+  const _hh=$('#ip-health'); if(_hh)_hh.onchange=e=>{c.health=e.target.value;persist();render();};
+  const _tp=$('#ip-temp'); if(_tp)_tp.oninput=e=>{c.temp=+e.target.value||'';persist();render();};
+  const _sv=$('#ip-serv'); if(_sv)_sv.oninput=e=>{c.serviced=e.target.value;persist();};
   $('#ip-del').onclick=()=>delComp(c);
 }
 function fixWires(c){ const valid=new Set(termList(c).map(t=>c.id+'|'+t.id));
@@ -776,6 +814,9 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     <button class="tbtn" id="sim-quiz" style="width:100%;margin-bottom:6px">🎓 ${quiz?'End quiz':'Quiz me (inject hidden fault)'}</button>
     <button class="tbtn ${showVolts?'on':''}" id="sim-volts" style="width:100%;margin-bottom:6px">⚡ ${showVolts?'Hide':'Show'} live voltages</button>
     <button class="tbtn ${logMode?'on':''}" id="sim-log" style="width:100%;margin-bottom:6px">📝 ${logMode?'Logging as-found (ON)':'As-found meter log'}</button>
+    <button class="tbtn ${contMode?'on':''}" id="sim-cont" style="width:100%;margin-bottom:6px">🔌 ${contMode?'Continuity (ON — dead test)':'Continuity / ohmmeter (dead)'}</button>
+    <button class="tbtn ${showPhase?'on':''}" id="sim-phase" style="width:100%;margin-bottom:6px">Φ ${showPhase?'Hide phases':'Show L1/L2/L3 phases'}</button>
+    <button class="tbtn ${showTherm?'on':''}" id="sim-therm" style="width:100%;margin-bottom:6px">🌡 ${showTherm?'Hide thermal':'Thermal overlay'}</button>
     <div id="simextra"></div>
     <div class="hint">Click any device to operate it.<br>• Breakers/E-stops/buttons cycle open⇄closed<br>• Blow fuses & trip breakers to inject faults<br>• Click a <b>dead load</b> to diagnose<br>• Hover a device to highlight its live path</div>`;
     $('#sim-dead').onclick=showPanelReport;
@@ -783,7 +824,11 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     $('#sim-quiz').onclick=()=>{ if(quiz){quizEnd();} else {startQuiz();} };
     $('#sim-volts').onclick=()=>{showVolts=!showVolts;render();renderSimInspector();};
     $('#sim-log').onclick=()=>{logMode=!logMode;render();renderSimInspector();};
-    if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog();
+    $('#sim-cont').onclick=()=>{contMode=!contMode;meterMode=false;probes=[];render();renderSimInspector();};
+    $('#sim-phase').onclick=()=>{showPhase=!showPhase;render();renderSimInspector();};
+    $('#sim-therm').onclick=()=>{showTherm=!showTherm;render();renderSimInspector();};
+    if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog(); if(contMode) renderCont();
+    if(scenario&&!scenario.done){ const _d=$('#simextra'); if(_d)_d.innerHTML+='<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>'; }
     return; }
   const d=compDef(c); let h=`<h3>${c.label?esc(c.label)+' — ':''}${d.name}</h3>`;
   if(d.sw){ const cur=c.state; const cls=(cur==='closed'||cur==='ok'||cur==='on')?'closed':(cur==='tripped'||cur==='blown')?'fault':'open';
@@ -791,6 +836,8 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   // fault injection universal
   h+=`<button class="statebtn ${c.fault?'fault':''}" id="sim-fault">${c.fault?'⚠ FAULTED (open) — clear':'Inject fault (open device)'}</button>`;
   h+=`<button class="statebtn ${c.hiZ?'fault':''}" id="sim-hiz">${c.hiZ?'⚠ HIGH-RESISTANCE — clear':'Inject high-resistance (voltage drop)'}</button>`;
+  h+=`<button class="tbtn" id="sim-bolt" style="width:100%">⚡ Bolted fault here → trips protection</button>`;
+  if(scenario&&!scenario.done) h+=`<button class="tbtn" id="sim-scen" style="width:100%;margin-top:6px">🎯 Check: is this the scenario fault?</button>`;
   if(compDef(c).load||compDef(c).coil){ h+=`<div class="hint" style="margin:6px 0">Status: <b style="color:${c._on?'var(--live)':'var(--dim)'}">${c._on?'ENERGIZED / RUNNING':'DEAD'}</b></div>`;
     if(!c._on) h+=`<button class="tbtn" id="sim-diag" style="width:100%">🔎 Diagnose why it's dead</button><div id="diag"></div>`; }
   if(quiz&&!quiz.answered) h+=`<button class="tbtn" id="sim-qz-check" style="width:100%;margin-top:8px">\ud83c\udf93 Check: is this the fault?</button>`;
@@ -801,15 +848,18 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   const tg=$('#sim-toggle'); if(tg)tg.onclick=()=>{operate(c);};
   $('#sim-fault').onclick=()=>{c.fault=!c.fault;render();renderSimInspector();};
   const _hz=$('#sim-hiz'); if(_hz)_hz.onclick=()=>{c.hiZ=!c.hiZ;render();renderSimInspector();};
+  const _bf=$('#sim-bolt'); if(_bf)_bf.onclick=()=>boltedFault(c);
+  const _sc=$('#sim-scen'); if(_sc)_sc.onclick=scenarioGuess;
   const dg=$('#sim-diag'); if(dg)dg.onclick=()=>runDiag(c);
 }
 function runDiag(c){ const r=diagnose(c); const box=$('#diag');
+  if(c._singlePhase){ box.innerHTML=`<div class="hint" style="color:var(--warn)">SINGLE-PHASING: only 2 of 3 phases present at the motor — it will hum/overheat but not turn. Check for a blown fuse, open pole, or loose lead on the missing phase.</div>`; return; }
   if(!r.ok){ box.innerHTML=`<div class="hint" style="color:var(--warn)">${r.msg}</div>`; return; }
   if(!r.suspects.length){ box.innerHTML=`<div class="hint">Path is intact & every device is closed — check upstream source voltage or the load itself.</div>`; return; }
   box.innerHTML=`<div class="hint" style="margin:6px 0">${r.suspects.length} break(s) in the path to source — closest first:</div>`+
     r.suspects.map((s,i)=>`<div class="suspect" data-i="${i}"><b>${i+1}. ${esc(s.label)}</b><br>${s.why}</div>`).join('')+
     `<button class="tbtn" id="diag-walk" style="width:100%;margin-top:6px">▶ Walk me through it</button><div id="walkout"></div>`;
-  const _wb=box.querySelector('#diag-walk'); if(_wb)_wb.onclick=()=>{ const steps=guidedWalk(c); $('#walkout').innerHTML=steps.map(t=>`<div class="suspect" style="cursor:default;border-color:var(--accent)">${esc(t)}</div>`).join(''); };
+  const _wb=box.querySelector('#diag-walk'); if(_wb)_wb.onclick=()=>{ const steps=guidedWalk(c); $('#walkout').innerHTML=steps.map(t=>`<div class="suspect" style="cursor:default;border-color:var(--accent)">${esc(t)}</div>`).join('')+`<button class="tbtn" id="walk-say" style="width:100%;margin-top:6px">\ud83d\udd0a Read aloud</button>`; const _sa=$('#walk-say'); if(_sa)_sa.onclick=()=>speak(steps); };
   box.querySelectorAll('.suspect[data-i]').forEach(el=>el.onclick=()=>{ const s=r.suspects[+el.dataset.i];
     if(s.ref.comp){sel=findComp(s.ref.comp);render();flash(s.ref.comp);renderSimInspector();}
     if(s.ref.wire){selWire=PANEL.wires.find(w=>w.id===s.ref.wire);render();} });
@@ -1024,6 +1074,7 @@ function init(){ $('#ver').textContent='v'+VERSION;
   initExtras();
   initExtras2();
   initExtras3();
+  initExtras4();
   if(bootSim) setMode('sim');
   window.addEventListener('resize',render);
 }
@@ -1401,6 +1452,12 @@ function openTools(){ openModal('Tools',
   +'<button class="tbtn" id="tk-term">\U0001F5C2 Terminal strip</button>'
   +'<button class="tbtn" id="tk-ladder">\u2630 Ladderize control</button>'
   +'<button class="tbtn" id="tk-snap">\U0001F4F7 Snapshots</button>'
+  +'<button class="tbtn" id="tk-coord">\u26a1 Coordination study</button>'
+  +'<button class="tbtn" id="tk-health">\U0001FA7A Health report</button>'
+  +'<button class="tbtn" id="tk-pm">\u2705 PM checklist</button>'
+  +'<button class="tbtn" id="tk-scen">\U0001F393 Training scenarios</button>'
+  +'<button class="tbtn" id="tk-lib">\U0001F4DA Panel library</button>'
+  +'<button class="tbtn" id="tk-qr2">\U0001F4F7 Scan QR to open</button>'
   +'<button class="tbtn" id="tk-diff">\u21c4 Diff vs saved file</button>'
   +'</div><div id="toolout" style="margin-top:12px"></div>');
   $('#tk-bom').onclick=()=>{ $('#toolout').innerHTML=buildBOM()
@@ -1437,6 +1494,16 @@ function openTools(){ openModal('Tools',
   $('#tk-term').onclick=terminalReport;
   $('#tk-ladder').onclick=ladderize;
   $('#tk-snap').onclick=openSnapshots;
+  $('#tk-coord').onclick=()=>{ const r=coordinationStudy();
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
+  $('#tk-health').onclick=()=>{ const r=healthReport();
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
+  $('#tk-pm').onclick=openPM;
+  $('#tk-scen').onclick=openScenarios;
+  $('#tk-lib').onclick=openLibraryManager;
+  $('#tk-qr2').onclick=scanQR;
   $('#tk-diff').onclick=()=>$('#fileDiff').click();
 }
 
@@ -1812,6 +1879,181 @@ function initExtras3(){ projRestore(); renderTabs();
     else if((ev.ctrlKey||ev.metaKey)&&(ev.key==='v'||ev.key==='V')){ pasteSel(); }
     else if(ev.key===' '&&mode==='sim'&&!_playing){ ev.preventDefault(); play(); }
     else if(ev.key===' '&&_playing){ ev.preventDefault(); stopPlay(); } }); }
+
+/* =========================================================================
+   PANEL TRACER — EXTRAS4 (features 38-49). fn decls hoist; state via var.
+   ========================================================================= */
+var showPhase=false, contMode=false, showTherm=false, cbSafe=false, _pointers={}, _pinch=null, scenario=null, _scenTimer=0;
+var PHASE_COLOR={L1:'#b45309',L2:'#ea580c',L3:'#eab308',L:'#38bdf8'};
+
+/* ---------- 2: continuity / ohmmeter (dead test) ---------- */
+function continuityCheck(){ if(probes.length<2)return null; const uf=new UF(); const key=(c,t)=>c.id+'|'+t;
+  PANEL.wires.forEach(w=>{ if(!w.cut)uf.union(w.a,w.b); });
+  PANEL.components.forEach(c=>{ compDef(c).links(c).forEach(([x,y])=>uf.union(key(c,x),key(c,y))); });
+  const [a,b]=probes; if(uf.find(a)!==uf.find(b)) return {txt:'OPEN \u2014 no continuity (OL / \u221e \u03a9)', ok:false};
+  const root=uf.find(a);
+  const hiz=PANEL.components.some(c=>c.hiZ&&compDef(c).links(c).length&&termList(c).some(t=>uf.find(key(c,t.id))===root));
+  return hiz?{txt:'CONTINUITY but HIGH RESISTANCE \u2014 suspect a loose/corroded connection', ok:false}
+           :{txt:'CONTINUITY \u2014 good path (~0 \u03a9) \u2014 beep', ok:true}; }
+function renderCont(){ const box=$('#simextra'); if(!box)return; const r=continuityCheck();
+  let h='<div class="hint" style="margin:8px 0 4px">\ud83d\udd0c Dead test \u2014 assume power is <b>OFF/LOTO</b>. Click point <b style="color:#ff5b4a">A</b> then <b style="color:#38bdf8">B</b> to ring it out.</div>';
+  if(probes.length) h+='<div class="hint">A: '+esc(probes[0])+'</div>';
+  if(probes.length>1) h+='<div class="hint">B: '+esc(probes[1])+'</div>';
+  if(r) h+='<div class="statebtn '+(r.ok?'closed':'open')+'" style="margin-top:6px">'+esc(r.txt)+'</div>';
+  if(probes.length) h+='<button class="tbtn" id="ct-clr" style="width:100%">Clear</button>';
+  box.innerHTML=h; const c=$('#ct-clr'); if(c)c.onclick=()=>{probes=[];render();renderSimInspector();}; }
+
+/* ---------- 3: short-circuit / coordination ---------- */
+function nearestProtector(comp){ const key=(c,t)=>c.id+'|'+t; const adj={};
+  const add=(a,b)=>{ (adj[a]=adj[a]||[]).push(b); (adj[b]=adj[b]||[]).push(a); };
+  PANEL.wires.forEach(w=>{ if(!w.cut)add(w.a,w.b); });
+  PANEL.components.forEach(c=>{ compDef(c).links(c).forEach(([x,y])=>add(key(c,x),key(c,y))); });
+  const starts=termList(comp).map(t=>key(comp,t.id));
+  const q=starts.map(s=>[s,0]); const seen=new Set(starts); const found=[];
+  while(q.length){ const [n,dist]=q.shift(); const cid=n.split('|')[0]; const c=findComp(cid);
+    if(c&&c!==comp&&['breaker','fuse','disc'].includes(c.type)){ if(!found.some(f=>f.c===c))found.push({c,dist}); }
+    (adj[n]||[]).forEach(m=>{ if(!seen.has(m)){ seen.add(m); q.push([m,dist+1]); } }); }
+  found.sort((a,b)=>a.dist-b.dist); return found; }
+function boltedFault(comp){ const prot=nearestProtector(comp);
+  if(!prot.length){ toast('No breaker/fuse between here and the source \u2014 unprotected!'); return; }
+  const p=prot[0].c; if(p.type==='fuse')p.state='blown'; else p.state='tripped';
+  solve(); render(); renderSimInspector();
+  const sel2=prot.length>1?(' Upstream '+(prot[1].c.label||prot[1].c.type)+' held (good selectivity).'):'';
+  toast('\u26a1 Bolted fault \u2192 '+(p.label||p.type)+' cleared it.'+sel2); }
+function coordinationStudy(){ solve(); const prot=PANEL.components.filter(c=>['breaker','fuse','disc'].includes(c.type));
+  const issues=[]; const key=(c,t)=>c.id+'|'+t; const uf=solve._uf;
+  prot.forEach(p=>{ const proots=new Set(termList(p).map(t=>uf.find(key(p,t.id))));
+    const downLoads=PANEL.components.filter(c=>(compDef(c).load||compDef(c).coil)&&termList(c).some(t=>proots.has(uf.find(key(c,t.id)))));
+    const downProt=prot.filter(x=>x!==p&&termList(x).some(t=>proots.has(uf.find(key(x,t.id)))));
+    issues.push({lvl:downProt.length?'ok':'info', msg:(p.label||p.type)+(p.amps?(' ('+p.amps+'A)'):'')+' protects '+downLoads.length+' load(s)'+(downProt.length?', with '+downProt.length+' downstream device(s) for selectivity':' \u2014 last device before the load'), ref:p.id}); });
+  if(!issues.length) issues.push({lvl:'info',msg:'No protective devices in this panel.'});
+  return {issues}; }
+
+/* ---------- 4: component health + thermal ---------- */
+function healthColor(h){ return h==='failed'?'#ef4444':h==='due'?'#f97316':h==='aging'?'#eab308':'#22c55e'; }
+function tempColor(t){ t=+t||0; return t>=175?'#ef4444':t>=140?'#f97316':t>=100?'#eab308':'#22c55e'; }
+function healthReport(){ const issues=[];
+  PANEL.components.forEach(c=>{ if(c.health&&c.health!=='ok') issues.push({lvl:c.health==='failed'?'warn':'info',msg:(c.label||compDef(c).name)+': '+c.health.toUpperCase()+(c.serviced?(' \u00b7 last service '+c.serviced):''),ref:c.id});
+    if(c.temp&&+c.temp>=140) issues.push({lvl:'warn',msg:(c.label||compDef(c).name)+': hot spot '+c.temp+'\u00b0F \u2014 investigate/torque',ref:c.id}); });
+  if(!issues.length) issues.push({lvl:'ok',msg:'All components OK \u2014 no aging/overdue/hot items flagged.'});
+  return {issues}; }
+
+/* ---------- 5: PM checklist ---------- */
+const PM_DEFAULT=['Lock out / tag out verified','Thermal scan of terminations','Torque check power lugs','Tighten control terminals','Inspect contactor tips','Test E-stop & safety string','Clean enclosure / check filters','Verify labels & schematic current'];
+function openPM(){ PANEL.pm=PANEL.pm||PM_DEFAULT.map(t=>({text:t,done:false}));
+  const rows=PANEL.pm.map((it,i)=>'<div class="pmrow"><label><input type="checkbox" data-i="'+i+'"'+(it.done?' checked':'')+'> '+esc(it.text)+'</label></div>').join('');
+  openModal('PM checklist \u2014 '+esc(PANEL.name||''), rows
+    +'<div style="margin-top:8px;display:flex;gap:6px"><input id="pm-add" placeholder="Add item\u2026" style="flex:1;background:var(--panel2);border:1px solid var(--edge);border-radius:6px;color:var(--txt);padding:6px"><button class="tbtn" id="pm-addb">Add</button></div>'
+    +'<button class="tbtn" id="pm-print" style="width:100%;margin-top:8px">\ud83d\udda8 Print checklist</button>');
+  document.querySelectorAll('[data-i]').forEach(el=>el.onchange=()=>{ PANEL.pm[+el.dataset.i].done=el.checked; persist(); });
+  $('#pm-addb').onclick=()=>{ const v=$('#pm-add').value.trim(); if(v){ PANEL.pm.push({text:v,done:false}); persist(); openPM(); } };
+  $('#pm-print').onclick=()=>{ const w=window.open('','_blank'); if(!w)return;
+    w.document.write('<!doctype html><meta charset=utf-8><title>PM \u2014 '+esc(PANEL.name||'')+'</title><style>body{font:14px Segoe UI,Arial;margin:26px}li{margin:8px 0}h1{font-size:18px}</style>'
+      +'<h1>Preventive Maintenance \u2014 '+esc(PANEL.name||'')+'</h1><div>Date ______  Tech ______</div><ul>'
+      +PANEL.pm.map(it=>'<li>\u2610 '+esc(it.text)+'</li>').join('')+'</ul>'); w.document.close(); setTimeout(()=>{try{w.print();}catch(e){}},300); }; }
+
+/* ---------- 6: scenario library + scoring ---------- */
+var SCEN=[
+  {id:'trip',name:'Conveyor dead \u2014 no run',prompt:'The conveyor won\u2019t start and nothing is energized downstream. Find the fault.'},
+  {id:'estop',name:'E-stop won\u2019t reset',prompt:'Operators report the line won\u2019t start after an E-stop event. Find what\u2019s open.'},
+  {id:'ol',name:'Motor trips on start',prompt:'Motor tries to start then everything drops. Find the tripped protection.'},
+  {id:'sp',name:'Motor hums, won\u2019t turn',prompt:'Motor buzzes/hums but will not rotate (classic symptom). Find the cause.'}
+];
+function scenarioPanel(kind){ const P={name:'Scenario',backdrop:null,components:[],wires:[]}; let u=1;
+  const add=(t,x,y,e)=>{const d=T[t];const c=Object.assign({id:t+(u++),type:t,x,y,label:''},e||{});if(['disc','breaker','contactor','overload'].includes(t))c.poles=c.poles||3;if(d.sw&&!c.state)c.state=d.states[0];P.components.push(c);return c;};
+  const w=(a,ta,b,tb,net)=>P.wires.push({id:'w'+(u++),a:a.id+'|'+ta,b:b.id+'|'+tb,net});
+  const src=add('source',40,60,{phases:3,volts:'480V',label:'PWR'});
+  const cb=add('breaker',170,60,{label:'CB1',state:'closed'});
+  const ct=add('contactor',300,52,{label:'M1'});
+  const ol=add('overload',430,56,{label:'OL1',state:'ok'});
+  const mt=add('motor',570,150,{phases:3,label:'CONV',hp:5,volts:'480V'});
+  for(let i=0;i<3;i++){w(src,'L'+(i+1),cb,'in'+i,'hot');w(cb,'out'+i,ct,'L'+(i+1),'hot');w(ct,'T'+(i+1),ol,'L'+(i+1),'hot');}
+  w(ol,'T1',mt,'U','hot');w(ol,'T2',mt,'V','hot');w(ol,'T3',mt,'W','hot');
+  const cs=add('source',40,300,{phases:1,volts:'120V',label:'CTRL'});
+  const es=add('estop',150,290,{state:'closed',label:'ESTOP'});
+  const stop=add('pbNC',240,290,{state:'closed',label:'STOP'});
+  const start=add('pbNO',330,290,{state:'closed',label:'START'});
+  w(cs,'L',es,'a','hot');w(es,'b',stop,'a','ctrl');w(stop,'b',start,'a','ctrl');w(start,'b',ct,'A1','ctrl');w(ct,'A2',cs,'N','ret');
+  let answer=cb.id;
+  if(kind==='trip'){ cb.state='tripped'; answer=cb.id; }
+  else if(kind==='estop'){ es.state='open'; answer=es.id; }
+  else if(kind==='ol'){ ol.state='tripped'; answer=ol.id; }
+  else if(kind==='sp'){ P.wires=P.wires.filter(x=>x.a!==cb.id+'|out2'&&x.b!==cb.id+'|out2'); answer=cb.id; }
+  return {panel:P, answer}; }
+function startScenario(kind){ const def=SCEN.find(s=>s.id===kind); const sp=scenarioPanel(kind);
+  PANEL=validatePanel(sp.panel); restoreUid(); scenario={id:kind, answer:sp.answer, t0:Date.now(), done:false};
+  sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
+  toast('\u25b6 Scenario: '+def.name); }
+function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspect first'); return; }
+  const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=sel.id===scenario.answer; scenario.done=true;
+  let best=null; try{ best=+localStorage.getItem('pt_scen_'+scenario.id)||null; }catch(e){}
+  if(ok&&(!best||secs<best)){ try{localStorage.setItem('pt_scen_'+scenario.id,secs);}catch(e){} }
+  toast(ok?('\u2705 Correct in '+secs+'s'+(best&&secs<best?' \u2014 new best!':best?(' (best '+best+'s)'):'')):'\u274c Not it \u2014 keep tracing');
+  renderSimInspector(); }
+function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStorage.getItem('pt_scen_'+s.id);}catch(e){}});
+  openModal('Training scenarios', SCEN.map(s=>'<div class="suspect" style="cursor:pointer" data-s="'+s.id+'"><b>'+esc(s.name)+'</b>'+(best[s.id]?' <span style="color:var(--ok)">\u00b7 best '+best[s.id]+'s</span>':'')+'<br><span class="hint">'+esc(s.prompt)+'</span></div>').join(''));
+  document.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
+
+/* ---------- 7: colorblind-safe ---------- */
+function applyCb(){ const st=document.getElementById('stage'); if(st)st.classList.toggle('cbsafe',cbSafe);
+  const b=$('#btnCb'); if(b)b.classList.toggle('on',cbSafe);
+  try{localStorage.setItem('pt_cb',cbSafe?'1':'0');}catch(e){} }
+
+/* ---------- 9: touch pinch-zoom ---------- */
+function _rect(){ return svg.getBoundingClientRect(); }
+function initPinch(){
+  svg.addEventListener('pointerdown',e=>{ _pointers[e.pointerId]={x:e.clientX,y:e.clientY}; },true);
+  svg.addEventListener('pointermove',e=>{ if(_pointers[e.pointerId])_pointers[e.pointerId]={x:e.clientX,y:e.clientY};
+    const ids=Object.keys(_pointers); if(ids.length>=2){ panning=null; drag=null;
+      const p=_pointers[ids[0]], q=_pointers[ids[1]]; const dist=Math.hypot(p.x-q.x,p.y-q.y); const r=_rect();
+      const mx=(p.x+q.x)/2-r.left, my=(p.y+q.y)/2-r.top;
+      if(_pinch){ const nk=Math.max(.25,Math.min(4,_pinch.k*(dist/_pinch.d)));
+        view.x=mx-(mx-_pinch.vx)*(nk/_pinch.k); view.y=my-(my-_pinch.vy)*(nk/_pinch.k); view.k=nk; render(); }
+      else _pinch={d:dist,k:view.k,vx:view.x,vy:view.y}; } },true);
+  const end=e=>{ delete _pointers[e.pointerId]; if(Object.keys(_pointers).length<2)_pinch=null; };
+  svg.addEventListener('pointerup',end,true); svg.addEventListener('pointercancel',end,true); }
+
+/* ---------- 10: read-aloud ---------- */
+function speak(lines){ if(typeof speechSynthesis==='undefined'){ toast('Speech not supported in this browser'); return; }
+  speechSynthesis.cancel(); const arr=[].concat(lines);
+  arr.forEach(t=>{ const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,'')); u.rate=0.98; speechSynthesis.speak(u); }); }
+
+/* ---------- 11: library manager ---------- */
+function userLib(){ try{ return JSON.parse(localStorage.getItem('pt_userlib')||'{}'); }catch(e){ return {}; } }
+function saveUserLib(o){ try{ localStorage.setItem('pt_userlib',JSON.stringify(o)); }catch(e){} }
+function saveToLibrary(){ const n=prompt('Save current panel to your library as:',PANEL.name||''); if(!n)return; const o=userLib(); o[n]=JSON.parse(JSON.stringify({name:n,backdrop:PANEL.backdrop,components:PANEL.components,wires:PANEL.wires})); saveUserLib(o); toast('Saved to library: '+n); openLibraryManager(); }
+function openLibraryManager(){ const lib=window.PANEL_LIBRARY||{}, mine=userLib();
+  const row=(k,src)=>'<div class="suspect" style="cursor:pointer;display:flex;justify-content:space-between;gap:8px" data-k="'+esc(k)+'" data-src="'+src+'"><span>'+esc(k)+'</span><span class="hint">'+src+(src==='mine'?' \u00b7 <b data-del="'+esc(k)+'" style="color:var(--bad)">delete</b>':'')+'</span></div>';
+  const body='<input id="lib-q" placeholder="Search panels\u2026" style="width:100%;padding:8px;margin-bottom:8px;background:var(--panel2);border:1px solid var(--edge);border-radius:7px;color:var(--txt)">'
+    +'<div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn" id="lib-save" style="flex:1">\ud83d\udcbe Save current</button><button class="tbtn" id="lib-imp" style="flex:1">\ud83d\udcc2 Import files</button></div>'
+    +'<div id="lib-list">'+Object.keys(lib).map(k=>row(k,'built-in')).join('')+Object.keys(mine).map(k=>row(k,'mine')).join('')+'</div>'
+    +'<input type="file" id="lib-files" accept=".json,application/json" multiple style="display:none">';
+  openModal('Panel library ('+(Object.keys(lib).length+Object.keys(mine).length)+')', body);
+  const filt=()=>{ const q=($('#lib-q').value||'').toLowerCase(); $('#lib-list').querySelectorAll('[data-k]').forEach(el=>{ el.style.display=el.dataset.k.toLowerCase().includes(q)?'':'none'; }); };
+  $('#lib-q').oninput=filt;
+  $('#lib-save').onclick=saveToLibrary; $('#lib-imp').onclick=()=>$('#lib-files').click();
+  $('#lib-files').onchange=e=>{ const fs=[...e.target.files]; const o=userLib(); let n=0; let pend=fs.length;
+    fs.forEach(f=>{ const r=new FileReader(); r.onload=()=>{ try{ const p=JSON.parse(r.result); const nm=p.name||f.name.replace(/\.panel\.json$|\.json$/,''); o[nm]=p; n++; }catch(err){} if(--pend===0){ saveUserLib(o); toast(n+' panel(s) imported'); openLibraryManager(); } }; r.readAsText(f); }); e.target.value=''; };
+  $('#lib-list').querySelectorAll('[data-k]').forEach(el=>el.onclick=ev=>{ if(ev.target.dataset.del){ const o=userLib(); delete o[ev.target.dataset.del]; saveUserLib(o); openLibraryManager(); return; }
+    const k=el.dataset.k; const src=el.dataset.src; const p=src==='mine'?userLib()[k]:lib[k];
+    PANEL=validatePanel(JSON.parse(JSON.stringify(p))); restoreUid(); sel=null;selWire=null; persist(); applyEnc(); if(typeof applyView==='function')applyView(); render(); renderInspector(); closeModal(); toast('Loaded: '+k); }); }
+
+/* ---------- 12: QR-scan to open ---------- */
+function scanQR(){ if(typeof BarcodeDetector==='undefined'){ openModal('QR scan','<div class="hint">This browser has no built-in QR scanner (needs Chrome/Edge on Android or a recent desktop). Use \ud83d\udd17 Copy share link instead.</div>'); return; }
+  openModal('Scan a panel QR','<video id="qr-vid" playsinline style="width:100%;border-radius:8px;background:#000"></video><div class="hint" style="margin-top:6px">Point the camera at a Panel Tracer QR code.</div>');
+  const vid=$('#qr-vid'); const det=new BarcodeDetector({formats:['qr_code']}); let stream=null, stop=false;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{ stream=s; vid.srcObject=s; vid.play();
+    const scan=async()=>{ if(stop)return; try{ const codes=await det.detect(vid); if(codes&&codes.length){ const raw=codes[0].rawValue;
+      stop=true; if(stream)stream.getTracks().forEach(t=>t.stop());
+      const h=raw.indexOf('#'); location.hash=h>=0?raw.slice(h):raw; if(typeof applyHash==='function'&&applyHash()){ sel=null;selWire=null; applyEnc(); render(); renderInspector(); } closeModal(); toast('Loaded from QR'); return; } }catch(e){}
+      requestAnimationFrame(scan); }; requestAnimationFrame(scan);
+  }).catch(()=>{ $('#toolout')&&($('#toolout').innerHTML=''); openModal('Scan a panel QR','<div class="hint" style="color:var(--warn)">Camera access denied or unavailable.</div>'); });
+  const m=$('#modal'); if(m){ const bg=m.querySelector('.modal-bg'); if(bg)bg.addEventListener('click',()=>{stop=true;if(stream)stream.getTracks().forEach(t=>t.stop());},{once:true}); } }
+
+/* ---------- init ---------- */
+function initExtras4(){ try{cbSafe=localStorage.getItem('pt_cb')==='1';}catch(e){} applyCb();
+  const bc=$('#btnCb'); if(bc)bc.onclick=()=>{cbSafe=!cbSafe;applyCb();render();};
+  initPinch(); }
 
 </script>
 </body>

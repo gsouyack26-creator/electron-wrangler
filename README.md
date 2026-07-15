@@ -43,7 +43,10 @@ pilot light, E-stop, start/stop push-buttons, selector, sensor/photo-eye, PLC in
 ```
 Wire endpoints are `"<componentId>|<terminalId>"`. Net = `hot` | `ret` | `ctrl`.
 
-## Feature set (37)
+## Feature set (49)
+**Advanced electrical model:** single-phasing / **phase-loss** detection (L1/L2/L3 tracking, motor hums) ·
+**continuity / ohmmeter** dead-test mode · **short-circuit / coordination** study + bolted-fault injection ·
+
 **Dynamic simulation:** time-based sequence playback with **TON/TOF timers** (▶ Play / Space) ·
 live-voltage overlay · running-**amps** display + breaker/wire **load sizing** check ·
 **high-resistance / voltage-drop** faults (partial sag, not just open).
@@ -70,6 +73,12 @@ panel diff (vs saved file).
 **Output & share:** BOM (+ CSV) · print / PNG / SVG export with title block ·
 deep-link share URL · self-contained QR code (no CDN) · cross-panel jump links.
 
+**Maintenance & training:** component **health tags** + thermal overlay · per-panel **PM checklist** ·
+**training scenarios** with scoring · **read-aloud** diagnosis.
+
+**Platform & accessibility:** **PWA install** (offline service worker) · touch **pinch-zoom** ·
+**colorblind-safe** mode · searchable **panel-library manager** + folder import · **QR-scan** to open.
+
 ## Repo layout
 ```
 ACY1_Panel_Tracer.html       shell + styles (edit this + panel_tracer.js)
@@ -79,6 +88,7 @@ build.py                     inlines JS + all *.panel.json + layout into the dis
 extract_layout.py            helper: derive a physical-layout map from a drawing
 layout_cc566.json            physical backplate layout (embedded by build)
 *.panel.json                 real ACY1 13XP33 / CC566 panel definitions (the library)
+manifest.json / sw.js       PWA manifest + offline service worker
 EXTRACTION_SPEC.md           schema/spec for AI panel extraction
 ```
 

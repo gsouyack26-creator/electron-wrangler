@@ -36,6 +36,15 @@ inject = ("<script>window.PANEL_LIBRARY=" + json.dumps(lib, separators=(",", ":"
 out = html.replace('<script src="panel_tracer.js"></script>', inject, 1)
 if out == html:
     raise SystemExit("ERROR: <script src=\"panel_tracer.js\"> anchor not found in template")
+# inline the PWA manifest as a data URI so the single-file dist stays portable
+import base64 as _b64
+_mpath = os.path.join(HERE, "manifest.json")
+if os.path.exists(_mpath) and '<link rel="manifest" href="manifest.json">' in out:
+    with open(_mpath, encoding="utf-8") as _f:
+        _mraw = _f.read()
+    _durl = "data:application/manifest+json;base64," + _b64.b64encode(_mraw.encode("utf-8")).decode("ascii")
+    out = out.replace('<link rel="manifest" href="manifest.json">', '<link rel="manifest" href="' + _durl + '">', 1)
+
 dist = os.path.join(HERE, "ACY1_Panel_Tracer_dist.html")
 with open(dist, "w", encoding="utf-8") as _f:
     _f.write(out)

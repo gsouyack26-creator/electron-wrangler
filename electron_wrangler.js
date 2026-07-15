@@ -1485,6 +1485,12 @@ function initExtras(){
   if(sb){ sb.addEventListener('keydown',e=>{ if(e.key==='Enter') jumpTo(sb.value); });
           sb.addEventListener('change',()=>jumpTo(sb.value)); }
   const bt=$('#btnTools'); if(bt) bt.onclick=openTools;
+  const bm=$('#btnMore'), mm=$('#moreMenu');
+  if(bm&&mm){
+    bm.onclick=e=>{ e.stopPropagation(); mm.hidden=!mm.hidden; };
+    mm.addEventListener('click',()=>setTimeout(()=>{ mm.hidden=true; },0));
+    document.addEventListener('click',e=>{ if(!mm.hidden && !mm.contains(e.target) && e.target!==bm) mm.hidden=true; });
+  }
   const bw=$('#btnWireNo'); if(bw) bw.onclick=()=>{ showWireNo=!showWireNo; bw.classList.toggle('on',showWireNo); render(); };
   const fd=$('#fileDiff'); if(fd) fd.onchange=onDiffFile;
   svg.addEventListener('mouseover',ev=>{ if(mode!=='sim')return;

@@ -133,6 +133,14 @@ const T = {
       <rect class="sym" x="16.5" y="31" width="2.4" height="7"/><rect class="sym" x="23" y="31" width="2.4" height="7"/>
       <text x="21" y="2" class="comp-sub" style="font-size:6px">${esc(c.label||'RCPT')}</text>`,
     links:()=>[['Hin','Hout'],['Nin','Nout'],['Gin','Gout']] },
+  run:{ name:'Conductor Run', w:64, h:24, sw:false,
+    terms:()=>[{id:'in',x:0,y:12},{id:'out',x:64,y:12}],
+    body:c=>{ var lbl=esc(c.label||(c.runft?c.runft+' ft':'RUN')); var awg=c.awg?(' #'+esc(c.awg)):'';
+      return `<line class="sym" x1="0" y1="12" x2="10" y2="12"/>
+        <path class="sym" fill="none" d="M10 12 q4 -8 8 0 q4 8 8 0 q4 -8 8 0 q4 8 8 0 q4 -8 8 0"/>
+        <line class="sym" x1="54" y1="12" x2="64" y2="12"/>
+        <text x="32" y="1" class="comp-sub" style="font-size:6px">`+lbl+awg+`</text>`; },
+    links:()=>[['in','out']] },
   busbar:{ name:'Bus Bar', w:18, h:96, sw:false,
     terms:c=>{ const n=c.taps||6, ar=[{id:'in',x:0,y:10}]; for(let i=0;i<n;i++){ ar.push({id:'p'+i,x:18,y:10+i*15}); } return ar; },
     body:c=>{ const n=c.taps||6; let g=`<rect class="sym fillbody" x="6" y="4" width="6" height="${6+(n-1)*15}" rx="2" style="fill:${esc(c.color||'#3f4652')}"/>`
@@ -2110,6 +2118,9 @@ var SEV=[
   ,{id:'r-afci-trip', cat:'building', diff:2, kind:'AFCI tripped', limit:260, panel:'Residential \u2014 AFCI-Protected Bedroom Circuit (120V)',
    name:'Bedroom keeps going dark \u2014 breaker looks fine', symptom:'A bedroom light and both bedroom receptacles keep going dead. The panel breaker for that room is a special one with its own TEST button, and it has snapped to the middle TRIPPED position. Find and reset the protective device.',
    find:function(P){return _sevSet(P,{type:'afci',state:'tripped'});}}
+  ,{id:'r-longrun-vdrop', cat:'building', diff:2, kind:'long-run voltage drop', limit:280, panel:'Residential \u2014 Detached Garage Sub-Feed (long run, 120V)',
+   name:'Garage lights dim & tools bog down at the far end', symptom:'The detached-garage light glows weak and power tools bog down out there, but the breaker is on and nothing is tripped. Voltage reads fine at the panel yet sags out at the garage under load. Find where the volts are being lost.',
+   find:function(P){return _sevHiZ(P,{type:'run'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2256,6 +2267,7 @@ var FIXMAP={
   'single-phasing':{why:'One of the three phases feeding the motor is open (blown fuse / loose lug / open pole). The motor gets only two phases: it hums, will not start, overheats and draws high current.',fix:'Find the open phase — check fuses, lugs and poles per leg with a meter. Restore all three phases and inspect the motor for damage before running.'},
   'GFCI tripped':{why:'A GFCI protects everything wired to its LOAD terminals. It sensed a ground-fault imbalance (or was test-tripped) and opened its hot AND neutral, killing its own face and every downstream receptacle \u2014 while its LINE side and the branch breaker stay live. That is why the breaker looks fine but the outlets are dead.',fix:'Find the GFCI protecting the circuit (often in a bathroom, garage, or the first box in the run), clear/​inspect the downstream fault or wet device, then press RESET. Confirm the button latches and downstream power returns.'},
   'AFCI tripped':{why:'An AFCI (arc-fault) breaker watches for the high-frequency signature of arcing \u2014 a loose termination arcing in series, or damaged insulation arcing line-to-neutral. When it sees that pattern (or a real overload/short, or a shared-neutral wiring error) it snaps to the mid TRIPPED position and the whole branch goes dead, even though it is not a plain overload.',fix:'Reset it once (push fully OFF, then ON). If it holds, the trip was a transient. If it trips again, unplug/isolate loads and disconnect the branch, then hunt the arc source: re-torque every backstabbed/loose device termination, look for pinched or nail-nicked cable, and confirm the AFCI neutral pigtail lands on ITS terminal (a shared/crossed neutral is the #1 nuisance-trip cause). Reconnect one section at a time to localize it.'},
+  'long-run voltage drop':{why:'This is voltage drop over distance, not a fault. Every foot of conductor has resistance; on a long run to a detached structure that resistance is in SERIES with the load, so under load the wire itself eats a share of the volts (Vdrop = I x Rwire). The panel reads ~120V at no load, but out at the garage it sags well below 120V the moment a real load draws current \u2014 lights dim, motors bog and run hot. Undersized wire (#14 where #12/#10 was needed) or too long a run is the usual cause; NEC targets <=3% drop on a branch, <=5% total.',fix:'Meter volts at the panel breaker, then at the far end WITH the load running \u2014 the difference is the drop. If it exceeds ~3-5%, the run is undersized or too long: upsize the conductor (e.g. #14->#12 or #10), shorten the run, or reduce the load. Also rule out a loose/corroded lug adding series resistance before blaming length.'},
   'lost a leg':{why:'One of the two 240V service legs is open (blown main lug, a failed half of a 2-pole, or an open feeder). Every 120V circuit on that leg dies and every 240V load loses half its supply, while the OTHER leg keeps working \u2014 that split symptom is the giveaway.',fix:'Meter each leg to neutral (both should read ~120V). The dead leg reads 0. Trace that leg back \u2014 lug, breaker pole, or feeder \u2014 restore it and confirm 240V leg-to-leg returns.'},
   'lost 240V leg':{why:'A 240V appliance needs BOTH hot legs. One leg to it is open, so it sees no potential across its element and cannot heat \u2014 even though its 2-pole breaker looks on.',fix:'Meter both legs at the appliance to neutral, then leg-to-leg (should be 240V). Find the open pole/conductor on the dead leg and restore it.'},
   'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},

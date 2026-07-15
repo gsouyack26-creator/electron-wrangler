@@ -1,0 +1,30 @@
+{
+  "name": "Residential \u2014 Detached Garage Sub-Feed (long run, 120V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 200, "label": "SERVICE", "phases": 1, "volts": 120 },
+    { "id": "main", "type": "breaker", "x": 150, "y": 176, "poles": 1, "state": "closed", "label": "MAIN" },
+    { "id": "hotbus", "type": "busbar", "x": 250, "y": 110, "taps": 3, "label": "HOT", "color": "#b0413e" },
+    { "id": "nbus", "type": "busbar", "x": 250, "y": 320, "taps": 3, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 250, "y": 460, "taps": 2, "label": "GROUND", "color": "#3f8f4b" },
+    { "id": "br1", "type": "breaker", "x": 360, "y": 120, "poles": 1, "state": "closed", "label": "BR1 GARAGE" },
+    { "id": "runh", "type": "run", "x": 470, "y": 108, "label": "150 ft", "awg": "14", "runft": 150 },
+    { "id": "runn", "type": "run", "x": 470, "y": 300, "label": "150 ft", "awg": "14", "runft": 150 },
+    { "id": "garlt", "type": "light", "x": 720, "y": 150, "color": "#facc15", "label": "GARAGE LT" },
+    { "id": "garrcpt", "type": "recept", "x": 640, "y": 300, "label": "GARAGE RCPT" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L", "b": "main|in0", "net": "hot" },
+    { "id": "w2", "a": "main|out0", "b": "hotbus|in", "net": "hot" },
+    { "id": "w3", "a": "hotbus|p0", "b": "br1|in0", "net": "hot" },
+    { "id": "w4", "a": "br1|out0", "b": "runh|in", "net": "hot" },
+    { "id": "w5", "a": "runh|out", "b": "garlt|a", "net": "hot" },
+    { "id": "w6", "a": "garlt|b", "b": "runn|out", "net": "ret" },
+    { "id": "w7", "a": "runn|in", "b": "nbus|p0", "net": "ret" },
+    { "id": "w8", "a": "runh|out", "b": "garrcpt|Hin", "net": "hot" },
+    { "id": "w9", "a": "garrcpt|Nin", "b": "runn|out", "net": "ret" },
+    { "id": "w10", "a": "garrcpt|Gin", "b": "gbus|p0", "net": "gnd" },
+    { "id": "w11", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w12", "a": "gbus|in", "b": "nbus|p1", "net": "bond" }
+  ]
+}

@@ -157,6 +157,12 @@ const T = {
       <rect class="sym" x="24" y="21" width="3.6" height="3.6" rx="1" fill="none"/>
       <text x="23" y="2" class="comp-sub" style="font-size:6px">`+esc(c.label||'GFCI')+`</text>`; },
     links:c=>(c.state==='tripped'||c.fault)?[['Gin','Gout']]:[['Hin','Hout'],['Nin','Nout'],['Gin','Gout']] },
+  afci:{ name:'AFCI Breaker', w:44,h:48, sw:true, states:['closed','open','tripped'],
+    terms:c=>polePairs(c.poles||1,44,48),
+    body:c=>{ var t=(c.state==='tripped'); return poleSym(c,'AF')
+      +`<circle class="sym" cx="33" cy="9" r="4.2" style="fill:`+(t?'#ef4444':'#7dd3fc')+`"/>
+        <text x="33" y="11.4" style="font-size:5px;fill:#0b0e14;text-anchor:middle;font-weight:700">T</text>`; },
+    links:c=>(c.state==='closed'&&!c.fault)?poleLinks(c.poles||1):[] },
   plcIn:{ name:'PLC Input', w:44,h:26, sw:false, load:true,
     terms:()=>[{id:'in',x:0,y:13},{id:'c',x:44,y:13,rail:'ret'}],
     body:c=>`<rect class="sym fillbody" x="6" y="3" width="32" height="20" rx="3"/>
@@ -2101,6 +2107,9 @@ var SEV=[
   ,{id:'r-4way-trav', cat:'building', diff:3, kind:'broken conductor', limit:320, panel:'Residential \u2014 3-Way / 4-Way Stairway Light (120V)',
    name:'Stairway light works from only some switch positions', symptom:'A 3-way/4-way stairway light (3 switch locations) only comes on in certain switch combinations \u2014 one traveler between the middle 4-way and a 3-way is open. Find the broken traveler.',
    find:function(P){return _sevCut(P,{type:'sw4',term:'A1'});}}
+  ,{id:'r-afci-trip', cat:'building', diff:2, kind:'AFCI tripped', limit:260, panel:'Residential \u2014 AFCI-Protected Bedroom Circuit (120V)',
+   name:'Bedroom keeps going dark \u2014 breaker looks fine', symptom:'A bedroom light and both bedroom receptacles keep going dead. The panel breaker for that room is a special one with its own TEST button, and it has snapped to the middle TRIPPED position. Find and reset the protective device.',
+   find:function(P){return _sevSet(P,{type:'afci',state:'tripped'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }
@@ -2246,6 +2255,7 @@ var FIXMAP={
   'high-resistance':{why:'A connection has gone high-resistance (loose lug / corrosion). It still passes current, so nothing looks dead — but voltage sags under load and the device runs weak or nuisance-trips.',fix:'Meter voltage DROP across suspect joints under load. The bad one drops significant voltage. De-energize, clean/re-torque the termination, look for heat discoloration.'},
   'single-phasing':{why:'One of the three phases feeding the motor is open (blown fuse / loose lug / open pole). The motor gets only two phases: it hums, will not start, overheats and draws high current.',fix:'Find the open phase — check fuses, lugs and poles per leg with a meter. Restore all three phases and inspect the motor for damage before running.'},
   'GFCI tripped':{why:'A GFCI protects everything wired to its LOAD terminals. It sensed a ground-fault imbalance (or was test-tripped) and opened its hot AND neutral, killing its own face and every downstream receptacle \u2014 while its LINE side and the branch breaker stay live. That is why the breaker looks fine but the outlets are dead.',fix:'Find the GFCI protecting the circuit (often in a bathroom, garage, or the first box in the run), clear/​inspect the downstream fault or wet device, then press RESET. Confirm the button latches and downstream power returns.'},
+  'AFCI tripped':{why:'An AFCI (arc-fault) breaker watches for the high-frequency signature of arcing \u2014 a loose termination arcing in series, or damaged insulation arcing line-to-neutral. When it sees that pattern (or a real overload/short, or a shared-neutral wiring error) it snaps to the mid TRIPPED position and the whole branch goes dead, even though it is not a plain overload.',fix:'Reset it once (push fully OFF, then ON). If it holds, the trip was a transient. If it trips again, unplug/isolate loads and disconnect the branch, then hunt the arc source: re-torque every backstabbed/loose device termination, look for pinched or nail-nicked cable, and confirm the AFCI neutral pigtail lands on ITS terminal (a shared/crossed neutral is the #1 nuisance-trip cause). Reconnect one section at a time to localize it.'},
   'lost a leg':{why:'One of the two 240V service legs is open (blown main lug, a failed half of a 2-pole, or an open feeder). Every 120V circuit on that leg dies and every 240V load loses half its supply, while the OTHER leg keeps working \u2014 that split symptom is the giveaway.',fix:'Meter each leg to neutral (both should read ~120V). The dead leg reads 0. Trace that leg back \u2014 lug, breaker pole, or feeder \u2014 restore it and confirm 240V leg-to-leg returns.'},
   'lost 240V leg':{why:'A 240V appliance needs BOTH hot legs. One leg to it is open, so it sees no potential across its element and cannot heat \u2014 even though its 2-pole breaker looks on.',fix:'Meter both legs at the appliance to neutral, then leg-to-leg (should be 240V). Find the open pole/conductor on the dead leg and restore it.'},
   'lost supply input':{why:'A power supply lost its incoming AC feed, so its DC output branch went dead and the monitor relay dropped.',fix:'Meter the supply input. Trace back through its feed disconnect / wiring to restore incoming power.'},

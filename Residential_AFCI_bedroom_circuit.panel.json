@@ -1,0 +1,30 @@
+{
+  "name": "Residential \u2014 AFCI-Protected Bedroom Circuit (120V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 200, "label": "SERVICE", "phases": 1, "volts": 120 },
+    { "id": "main", "type": "breaker", "x": 150, "y": 176, "poles": 1, "state": "closed", "label": "MAIN" },
+    { "id": "hotbus", "type": "busbar", "x": 260, "y": 110, "taps": 3, "label": "HOT", "color": "#b0413e" },
+    { "id": "nbus", "type": "busbar", "x": 260, "y": 320, "taps": 4, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 260, "y": 470, "taps": 3, "label": "GROUND", "color": "#3f8f4b" },
+    { "id": "afci", "type": "afci", "x": 380, "y": 140, "poles": 1, "state": "closed", "label": "BR3 BEDROOM AFCI" },
+    { "id": "bedlt", "type": "light", "x": 560, "y": 96, "color": "#facc15", "label": "BEDROOM LT" },
+    { "id": "rcpt1", "type": "recept", "x": 540, "y": 220, "label": "BED RCPT1" },
+    { "id": "rcpt2", "type": "recept", "x": 680, "y": 220, "label": "BED RCPT2" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L", "b": "main|in0", "net": "hot" },
+    { "id": "w2", "a": "main|out0", "b": "hotbus|in", "net": "hot" },
+    { "id": "w3", "a": "hotbus|p0", "b": "afci|in0", "net": "hot" },
+    { "id": "w4", "a": "afci|out0", "b": "bedlt|a", "net": "hot" },
+    { "id": "w5", "a": "bedlt|b", "b": "nbus|p0", "net": "ret" },
+    { "id": "w6", "a": "afci|out0", "b": "rcpt1|Hin", "net": "hot" },
+    { "id": "w7", "a": "rcpt1|Nin", "b": "nbus|p1", "net": "ret" },
+    { "id": "w8", "a": "rcpt1|Gin", "b": "gbus|p0", "net": "gnd" },
+    { "id": "w9", "a": "rcpt1|Hout", "b": "rcpt2|Hin", "net": "hot" },
+    { "id": "w10", "a": "rcpt1|Nout", "b": "rcpt2|Nin", "net": "ret" },
+    { "id": "w11", "a": "rcpt1|Gout", "b": "rcpt2|Gin", "net": "gnd" },
+    { "id": "w12", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w13", "a": "gbus|in", "b": "nbus|p2", "net": "bond" }
+  ]
+}

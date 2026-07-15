@@ -1,0 +1,33 @@
+{
+  "name": "Residential \u2014 Lighting Load Center + 3-Way Circuit (120V)",
+  "backdrop": null,
+  "components": [
+    { "id": "src", "type": "source", "x": 40, "y": 200, "label": "SERVICE", "phases": 1, "volts": 120 },
+    { "id": "main", "type": "breaker", "x": 150, "y": 176, "poles": 1, "state": "closed", "label": "MAIN" },
+    { "id": "hotbus", "type": "busbar", "x": 260, "y": 110, "taps": 4, "label": "HOT", "color": "#b0413e" },
+    { "id": "nbus", "type": "busbar", "x": 260, "y": 320, "taps": 4, "label": "NEUTRAL", "color": "#9aa4af" },
+    { "id": "gbus", "type": "busbar", "x": 260, "y": 470, "taps": 3, "label": "GROUND", "color": "#3f8f4b" },
+    { "id": "br1", "type": "breaker", "x": 370, "y": 100, "poles": 1, "state": "closed", "label": "BR1 LTG" },
+    { "id": "br2", "type": "breaker", "x": 370, "y": 200, "poles": 1, "state": "closed", "label": "BR2 RCPT" },
+    { "id": "s1", "type": "sw3", "x": 490, "y": 70, "state": "t1", "label": "S1" },
+    { "id": "s2", "type": "sw3", "x": 610, "y": 70, "state": "t1", "label": "S2" },
+    { "id": "hall", "type": "light", "x": 710, "y": 96, "color": "#facc15", "label": "HALL" },
+    { "id": "rcpt1", "type": "recept", "x": 490, "y": 210, "label": "RCPT1" }
+  ],
+  "wires": [
+    { "id": "w1", "a": "src|L", "b": "main|in0", "net": "hot" },
+    { "id": "w2", "a": "main|out0", "b": "hotbus|in", "net": "hot" },
+    { "id": "w3", "a": "hotbus|p0", "b": "br1|in0", "net": "hot" },
+    { "id": "w4", "a": "hotbus|p1", "b": "br2|in0", "net": "hot" },
+    { "id": "w5", "a": "br1|out0", "b": "s1|COM", "net": "hot" },
+    { "id": "w6", "a": "s1|T1", "b": "s2|T1", "net": "traveler" },
+    { "id": "w7", "a": "s1|T2", "b": "s2|T2", "net": "traveler" },
+    { "id": "w8", "a": "s2|COM", "b": "hall|a", "net": "switched" },
+    { "id": "w9", "a": "hall|b", "b": "nbus|p0", "net": "ret" },
+    { "id": "w10", "a": "src|N", "b": "nbus|in", "net": "ret" },
+    { "id": "w11", "a": "br2|out0", "b": "rcpt1|Hin", "net": "hot" },
+    { "id": "w12", "a": "rcpt1|Nin", "b": "nbus|p1", "net": "ret" },
+    { "id": "w13", "a": "rcpt1|Gin", "b": "gbus|p0", "net": "gnd" },
+    { "id": "w14", "a": "gbus|in", "b": "nbus|p2", "net": "bond" }
+  ]
+}

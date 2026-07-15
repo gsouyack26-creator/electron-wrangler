@@ -105,6 +105,30 @@ const T = {
       <line class="sym" x1="9" y1="9" x2="23" y2="23"/><line class="sym" x1="23" y1="9" x2="9" y2="23"/>
       <line class="sym" x1="16" y1="0" x2="16" y2="6"/><line class="sym" x1="16" y1="26" x2="16" y2="34"/>`,
     links:()=>[] },
+  sw3:{ name:'3-Way Switch', w:40,h:46, sw:true, states:['t1','t2'],
+    terms:()=>[{id:'T1',x:8,y:0},{id:'T2',x:32,y:0},{id:'COM',x:20,y:46}],
+    body:c=>`<rect class="sym fillbody" x="4" y="8" width="32" height="30" rx="4"/>
+      <line class="sym" x1="8" y1="0" x2="8" y2="12"/><line class="sym" x1="32" y1="0" x2="32" y2="12"/>
+      <line class="sym" x1="20" y1="38" x2="20" y2="46"/>
+      <circle class="sym" cx="20" cy="30" r="2.4"/>
+      <line class="sym" x1="20" y1="30" x2="${c.state==='t1'?8:32}" y2="14"/>
+      <text x="20" y="22" class="comp-sub">3W</text>`,
+    links:c=>c.fault?[]:(c.state==='t1'?[['COM','T1']]:[['COM','T2']]) },
+  recept:{ name:'Receptacle', w:42,h:54, sw:false,
+    terms:()=>[{id:'Hin',x:0,y:12},{id:'Nin',x:0,y:27,rail:null},{id:'Gin',x:0,y:42},
+      {id:'Hout',x:42,y:12},{id:'Nout',x:42,y:27},{id:'Gout',x:42,y:42}],
+    body:c=>`<rect class="sym fillbody" x="9" y="4" width="24" height="46" rx="6"/>
+      <rect class="sym" x="16.5" y="11" width="2.4" height="9"/><rect class="sym" x="23" y="11" width="2.4" height="9"/>
+      <path class="sym" d="M18 34 h6 v6 a3 3 0 0 1 -6 0 z" fill="none"/>
+      <rect class="sym" x="16.5" y="31" width="2.4" height="7"/><rect class="sym" x="23" y="31" width="2.4" height="7"/>
+      <text x="21" y="2" class="comp-sub" style="font-size:6px">${esc(c.label||'RCPT')}</text>`,
+    links:()=>[['Hin','Hout'],['Nin','Nout'],['Gin','Gout']] },
+  busbar:{ name:'Bus Bar', w:18, h:96, sw:false,
+    terms:c=>{ const n=c.taps||6, ar=[{id:'in',x:0,y:10}]; for(let i=0;i<n;i++){ ar.push({id:'p'+i,x:18,y:10+i*15}); } return ar; },
+    body:c=>{ const n=c.taps||6; let g=`<rect class="sym fillbody" x="6" y="4" width="6" height="${6+(n-1)*15}" rx="2" style="fill:${esc(c.color||'#3f4652')}"/>`
+      +`<line class="sym" x1="0" y1="10" x2="6" y2="10"/><text x="9" y="2" class="comp-sub" style="font-size:6px">${esc(c.label||'BUS')}</text>`;
+      for(let i=0;i<n;i++){ g+=`<line class="sym" x1="12" y1="${10+i*15}" x2="18" y2="${10+i*15}"/><circle class="sym" cx="12" cy="${10+i*15}" r="1.6"/>`; } return g; },
+    links:c=>{ const n=c.taps||6, l=[['in','p0']]; for(let i=1;i<n;i++)l.push(['p0','p'+i]); return l; } },
   plcIn:{ name:'PLC Input', w:44,h:26, sw:false, load:true,
     terms:()=>[{id:'in',x:0,y:13},{id:'c',x:44,y:13,rail:'ret'}],
     body:c=>`<rect class="sym fillbody" x="6" y="3" width="32" height="20" rx="3"/>
@@ -1930,8 +1954,8 @@ function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStor
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
 
 /* ---------- 6b: Sev Event trainer (timed) ---------- */
-var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'},multi:{name:'\U0001F3AF Compound \u2014 find ALL faults',col:'#e879f9'},custom:{name:'\U0001F4CB My Calls',col:'#94a3b8'}};
-var CAT_ORDER=['power','motor','open','vdrop','safety','controls','multi','custom'];
+var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'},building:{name:'\U0001F3E0 Building / Residential',col:'#f97316'},multi:{name:'\U0001F3AF Compound \u2014 find ALL faults',col:'#e879f9'},custom:{name:'\U0001F4CB My Calls',col:'#94a3b8'}};
+var CAT_ORDER=['power','motor','open','vdrop','safety','controls','building','multi','custom'];
 function _stars(n){return '\u2605'.repeat(n)+'\u2606'.repeat(Math.max(0,3-n));}
 var _sevGuided=false; try{_sevGuided=localStorage.getItem('pt_guided')==='1';}catch(e){}
 var SEV=[
@@ -2016,6 +2040,15 @@ var SEV=[
    name:'CP83 \u2014 multiple faults', symptom:'CP83 is faulted with more than one problem \u2014 a dead interposing-relay output AND a dropped field input. Find every fault.',
    finds:[ {fn:function(P){return _sevFault(P,{type:'relay'});}, kind:'failed relay'},
            {fn:function(P){return _sevSet(P,{type:'sensor',state:'open'});}, kind:'open field device'} ]}
+  ,{id:'r-light-dead', cat:'building', diff:1, kind:'tripped breaker', limit:200, panel:'Residential \u2014 Lighting Load Center + 3-Way Circuit (120V)',
+   name:'Hallway light dead \u2014 both switches', symptom:'A homeowner says the hallway light will not come on from EITHER 3-way switch. The receptacle on the same panel still works. Find why the lighting circuit is dead.',
+   find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',label:'BR1'});}}
+  ,{id:'r-3way-oneside', cat:'building', diff:2, kind:'broken conductor', limit:280, panel:'Residential \u2014 Lighting Load Center + 3-Way Circuit (120V)',
+   name:'3-way light works from only ONE switch', symptom:'The hall light works from switch S2 but NOT from S1 \u2014 or it behaves backwards. Classic 3-way traveler problem. Find the open conductor.',
+   find:function(P){return _sevCut(P,{type:'sw3',label:'S1',term:'T1'});}}
+  ,{id:'r-dead-recept', cat:'building', diff:1, kind:'tripped breaker', limit:180, panel:'Residential \u2014 Lighting Load Center + 3-Way Circuit (120V)',
+   name:'Dead receptacle', symptom:'A wall receptacle has no power (tester shows nothing hot-to-neutral). The lights on the panel still work. Find why RCPT1 is dead.',
+   find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',label:'BR2'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }

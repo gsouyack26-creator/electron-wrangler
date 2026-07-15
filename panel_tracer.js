@@ -1369,7 +1369,7 @@ function openTools(){ openModal('Tools',
   +'<button class="tbtn" id="tk-health">\U0001FA7A Health report</button>'
   +'<button class="tbtn" id="tk-pm">\u2705 PM checklist</button>'
   +'<button class="tbtn" id="tk-scen">\U0001F393 Training scenarios</button>'
-  +'<button class="tbtn" id="tk-sev">\U0001F6A8 Sev Event trainer</button>'
+  +'<button class="tbtn" id="tk-sev">\U0001F6E0 Trouble Call trainer</button>'
   +'<button class="tbtn" id="tk-lib">\U0001F4DA Panel library</button>'
   +'<button class="tbtn" id="tk-qr2">\U0001F4F7 Scan QR to open</button>'
   +'<button class="tbtn" id="tk-diff">\u21c4 Diff vs saved file</button>'
@@ -1920,70 +1920,73 @@ function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStor
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
 
 /* ---------- 6b: Sev Event trainer (timed) ---------- */
+var CATS={power:{name:'\u26a1 Power & Protection',col:'#f59e0b'},open:{name:'\U0001F50C Open Circuits & Loose Wires',col:'#3b82f6'},motor:{name:'\U0001F300 Motor Faults',col:'#a855f7'},vdrop:{name:'\U0001F4C9 Voltage Drop / High-Resistance',col:'#14b8a6'},safety:{name:'\U0001F6E1 Safety Circuits',col:'#ef4444'},controls:{name:'\U0001F9E0 Controls & PLC I/O',col:'#22c55e'}};
+var CAT_ORDER=['power','motor','open','vdrop','safety','controls'];
+function _stars(n){return '\u2605'.repeat(n)+'\u2606'.repeat(Math.max(0,3-n));}
 var SEV=[
   /* ===== SEV 3 — basic / new-tech drills (one obvious fault, generous clock) ===== */
-  {id:'sev-t-breaker', sev:3, kind:'tripped breaker', limit:240, panel:'Standard 12-Belt Induction Power \u2014 30A (M-16-00264 IND30 sh061-063)',
+  {id:'sev-t-breaker', cat:'power', diff:1, kind:'tripped breaker', limit:240, panel:'Standard 12-Belt Induction Power \u2014 30A (M-16-00264 IND30 sh061-063)',
    name:'Belt panel dead \u2014 obvious trip', symptom:'A 12-belt induction panel is completely dead. Something obvious tripped upstream. Find and identify the tripped breaker.',
    find:function(P){return _sevSet(P,{type:'breaker',state:'tripped'});}},
-  {id:'sev-t-estop', sev:3, kind:'E-stop pressed', limit:240, panel:'LS4000 \u2014 E-Stop Safety Chain + Run Enable (rep.)',
+  {id:'sev-t-estop', cat:'safety', diff:1, kind:'E-stop pressed', limit:240, panel:'LS4000 \u2014 E-Stop Safety Chain + Run Enable (rep.)',
    name:'Someone left an E-stop pressed', symptom:'The line won\u2019t enable. Walk the safety chain and find the pressed / open E-stop.',
    find:function(P){return _sevSet(P,{type:'estop',state:'open'});}},
-  {id:'sev-t-disc', sev:3, kind:'disconnect open', limit:210, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
+  {id:'sev-t-disc', cat:'power', diff:1, kind:'disconnect open', limit:210, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
    name:'Disconnect bumped open', symptom:'One induction belt is dead while others run. A disconnect got switched off. Find the open disconnect.',
    find:function(P){return _sevSet(P,{type:'disc',state:'open'});}},
-  {id:'sev-t-loose', sev:3, kind:'loose wire', limit:240, panel:'DCP Vision IR Item-Detection Panel (M-16-00264 DCP_VIS sh2-3)',
+  {id:'sev-t-loose', cat:'open', diff:1, kind:'loose wire', limit:240, panel:'DCP Vision IR Item-Detection Panel (M-16-00264 DCP_VIS sh2-3)',
    name:'Loose wire \u2014 device dead', symptom:'A device on the vision panel went dark. A conductor worked loose at a termination. Find the dead device / open connection.',
    find:function(P){return _sevCut(P,{type:'light'});}},
 
   /* ===== SEV 2 — major (must trace) ===== */
-  {id:'sev-ol', sev:2, kind:'overload tripped', limit:210, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
+  {id:'sev-ol', cat:'motor', diff:2, kind:'overload tripped', limit:210, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
    name:'Belt motor keeps dropping', symptom:'Induction belt motor tries to start then the whole belt drops out. Find the tripped motor protection.',
    find:function(P){return _sevSet(P,{type:'overload',state:'tripped'});}},
-  {id:'sev-pull', sev:2, kind:'pull-cord latched', limit:200, panel:'Standard Induction I/O \u2014 E-Stop Safety Loop (M-16-00264 INDIO sh063/130)',
+  {id:'sev-pull', cat:'safety', diff:2, kind:'pull-cord latched', limit:200, panel:'Standard Induction I/O \u2014 E-Stop Safety Loop (M-16-00264 INDIO sh063/130)',
    name:'Induction safety loop open', symptom:'Induction station safety loop is broken \u2014 the safety relay will not pull in. Find the latched pull-cord.',
    find:function(P){return _sevSet(P,{type:'pullcord',state:'open'});}},
-  {id:'sev-gate', sev:2, kind:'guard open', limit:240, panel:'LS4000 Safety Gate Junction Box \u2014 6-gate safety loop (M-16-00264 SAFEGATE sh01121-27)',
+  {id:'sev-gate', cat:'safety', diff:2, kind:'guard open', limit:240, panel:'LS4000 Safety Gate Junction Box \u2014 6-gate safety loop (M-16-00264 SAFEGATE sh01121-27)',
    name:'Guard gate fault', symptom:'A guard gate reads open on the safety controller and the zone will not enable. Find the open gate switch.',
    find:function(P){return _sevSet(P,{type:'sensor',state:'open'});}},
-  {id:'sev-disc', sev:2, kind:'disconnect open', limit:220, panel:'LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)',
+  {id:'sev-disc', cat:'power', diff:2, kind:'disconnect open', limit:220, panel:'LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)',
    name:'LSM drive lost power', symptom:'The LSM 480V VFD drive is completely dark \u2014 no incoming power at the drive. Find the open disconnect.',
    find:function(P){return _sevSet(P,{type:'disc',state:'open'});}},
-  {id:'sev-failcon', sev:2, kind:'failed contactor', limit:240, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
+  {id:'sev-failcon', cat:'motor', diff:2, kind:'failed contactor', limit:240, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
    name:'Motor won\u2019t pull in', symptom:'Control voltage is present and the coil is called, but the motor never starts. The contactor has failed open (burned tips / open coil). Find the failed device.',
    find:function(P){return _sevFault(P,{type:'contactor'});}},
-  {id:'sev-cut-ctrl', sev:2, kind:'open control wire', limit:270, panel:'ACY1 13XP33 CC566 \u2014 E-STOP Safety Chain (Hytrol 2000/2303/5000)',
+  {id:'sev-cut-ctrl', cat:'controls', diff:2, kind:'open control wire', limit:270, panel:'ACY1 13XP33 CC566 \u2014 E-STOP Safety Chain (Hytrol 2000/2303/5000)',
    name:'Contactor won\u2019t seal in', symptom:'The starter drops out as soon as you release START. There is an open in the control string feeding the contactor coil. Find the affected device.',
    find:function(P){return _sevCut(P,{type:'contactor',term:'A1'})||_sevCut(P,{type:'relay'});}},
-  {id:'sev-hiz-light', sev:2, kind:'high-resistance', limit:270, panel:'CP82 Main Power Distribution (M-16-00264 p.82060-61)',
+  {id:'sev-hiz-light', cat:'vdrop', diff:2, kind:'high-resistance', limit:270, panel:'CP82 Main Power Distribution (M-16-00264 p.82060-61)',
    name:'Dim light / weak circuit', symptom:'A device runs weak and voltage sags under load \u2014 classic high-resistance (loose/corroded) connection. Use the meter to find the voltage drop, then identify the bad device.',
    find:function(P){return _sevHiZ(P,{type:'light'});}},
 
   /* ===== SEV 1 — critical / deep dive (complex, subtle, tight) ===== */
-  {id:'sev-main', sev:1, kind:'feeder tripped', limit:180, panel:'ACY1 13XP33-2100 \u2014 CC566 460V MPCB Feeders to Remote Panels',
+  {id:'sev-main', cat:'power', diff:2, kind:'feeder tripped', limit:180, panel:'ACY1 13XP33-2100 \u2014 CC566 460V MPCB Feeders to Remote Panels',
    name:'Remote panel dead \u2014 no 460V', symptom:'A remote conveyor panel is completely dead \u2014 no 460V downstream. Find the tripped feeder breaker.',
    find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',pick:'last'});}},
-  {id:'sev-singlephase', sev:1, kind:'single-phasing', limit:240, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
+  {id:'sev-singlephase', cat:'motor', diff:3, kind:'single-phasing', limit:240, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
    name:'Motor hums, won\u2019t turn', symptom:'Motor buzzes/hums, won\u2019t rotate, draws high current and heats up \u2014 textbook single-phasing. One phase conductor is open. Find the lost phase / affected motor.',
    find:function(P){return _sevPhase(P,{});}},
-  {id:'sev-fuse', sev:1, kind:'blown fuse', limit:180, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
+  {id:'sev-fuse', cat:'power', diff:2, kind:'blown fuse', limit:180, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
    name:'One induction belt dead', symptom:'A single induction belt on the 60A panel is dead while the rest run. Find the blown branch fuse.',
    find:function(P){return _sevSet(P,{type:'fuse',state:'blown'});}},
-  {id:'sev-hiz-vfd', sev:1, kind:'high-resistance', limit:300, panel:'LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)',
+  {id:'sev-hiz-vfd', cat:'vdrop', diff:3, kind:'high-resistance', limit:300, panel:'LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)',
    name:'VFD undervolt / motor sluggish', symptom:'The LSM drive nuisance-trips on undervoltage and the motor is sluggish. A resistive joint on an incoming phase is dropping voltage under load. Meter the phases and find the bad connection.',
    find:function(P){return _sevHiZ(P,{type:'disc'})||_sevHiZ(P,{type:'breaker'});}},
-  {id:'sev-cp83', sev:1, kind:'open field device', limit:300, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
+  {id:'sev-cp83', cat:'controls', diff:3, kind:'open field device', limit:300, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
    name:'CP83 sorter fault \u2014 input dropped', symptom:'CP83 sorter faulted and won\u2019t clear. A field device on a Beckhoff input card has gone open-circuit. Trace the input chain and find the open field switch.',
    find:function(P){return _sevSet(P,{type:'sensor',state:'open'});}},
-  {id:'sev-cp83-relay', sev:1, kind:'failed relay', limit:300, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
+  {id:'sev-cp83-relay', cat:'controls', diff:3, kind:'failed relay', limit:300, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
    name:'CP83 output dead \u2014 beacon out', symptom:'A CP83 interposing-relay output is dead \u2014 the driven beacon / device never energizes though the PLC commands it. Find the failed interposing relay.',
    find:function(P){return _sevFault(P,{type:'relay'});}},
-  {id:'sev-cp83-cut', sev:1, kind:'broken conductor', limit:330, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
+  {id:'sev-cp83-cut', cat:'open', diff:3, kind:'broken conductor', limit:330, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
    name:'CP83 input channel dead', symptom:'One CP83 input channel reads permanently open. The field switch tests good \u2014 the fault is a broken conductor between the device and the input card. Trace it and find the affected device.',
    find:function(P){return _sevCut(P,{type:'sensor'});}},
-  {id:'sev-psu', sev:1, kind:'lost supply input', limit:270, panel:'DCP 24VDC Distributed Control \u2014 3x PS + monitor relays (M-16-00264 DCP_PS24 sh061)',
+  {id:'sev-psu', cat:'power', diff:3, kind:'lost supply input', limit:270, panel:'DCP 24VDC Distributed Control \u2014 3x PS + monitor relays (M-16-00264 DCP_PS24 sh061)',
    name:'24VDC branch lost', symptom:'A 24VDC branch is dead and its monitor relay dropped. One of the parallel supplies lost its incoming AC feed. Find the supply that\u2019s dark.',
    find:function(P){return _sevCut(P,{type:'psu',term:'Lin'});}},
-  {id:'sev-safety-deep', sev:1, kind:'one channel open', limit:300, panel:'LS4000 E-Stop Junction Box \u2014 dual-channel loop (M-16-00264 ESTOPJB sh121)',
+  {id:'sev-safety-deep', cat:'safety', diff:3, kind:'one channel open', limit:300, panel:'LS4000 E-Stop Junction Box \u2014 dual-channel loop (M-16-00264 ESTOPJB sh121)',
    name:'Dual-channel safety won\u2019t reset', symptom:'The safety relay won\u2019t reset even though the E-stops look closed. This is a dual-channel loop \u2014 only ONE channel is open. Find the device breaking that channel.',
    find:function(P){return _sevSet(P,{type:'estop',state:'open',pick:'last'});}}
 ];
@@ -2013,13 +2016,13 @@ function _sevStop(){ if(_scenTimer){ clearInterval(_scenTimer); _scenTimer=0; } 
 function _sevHud(){ var el=document.getElementById('sev-hud');
   if(!scenario||!scenario.isSev){ if(el)el.parentNode.removeChild(el); return; }
   if(!el){ el=document.createElement('div'); el.id='sev-hud';
-    el.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#141414;border:2px solid '+(scenario.sev===1?'#ef4444':scenario.sev===2?'#f59e0b':'#3b82f6')+';border-radius:10px;padding:8px 16px;color:#eee;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.55);text-align:center;pointer-events:none';
+    el.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#141414;border:2px solid '+((CATS[scenario.cat]||{}).col||'#ef4444')+';border-radius:10px;padding:8px 16px;color:#eee;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.55);text-align:center;pointer-events:none';
     document.body.appendChild(el); }
   var r=_sevRemain(), done=scenario.done, clock;
   if(done==='timeout') clock='<span style="color:#ef4444">\u23f1 TIME EXPIRED</span>';
   else if(done) clock='<span style="color:#22c55e">\u2705 SOLVED '+(scenario._solveT|0)+'s</span>';
   else clock='<span style="color:'+(r<=15?'#ef4444':r<=45?'#f59e0b':'#22c55e')+'">'+_fmtClock(r)+'</span>';
-  el.innerHTML='<div style="color:'+(scenario.sev===1?'#ef4444':scenario.sev===2?'#f59e0b':'#3b82f6')+';font-weight:800;letter-spacing:.5px">'+(scenario.sev===3?'\ud83c\udf93 TRAINING DRILL':'\ud83d\udea8 SEV'+scenario.sev+' EVENT')+'</div>'
+  el.innerHTML='<div style="color:'+((CATS[scenario.cat]||{}).col||'#ef4444')+';font-weight:800;letter-spacing:.5px">\U0001F6A8 TROUBLE CALL \u00b7 '+esc((CATS[scenario.cat]||{}).name||'')+' <span style=\'color:#fbbf24\'>'+_stars(scenario.diff||1)+'</span></div>'
     +'<div style="margin:2px 0 3px;font-weight:600">'+esc(scenario.name)+'</div>'
     +'<div style="font-size:24px;font-weight:800;line-height:1">'+clock+'</div>'
     +'<div style="font-size:11px;color:#aaa;max-width:440px;margin-top:5px">'+esc(scenario.symptom)+'</div>'; }
@@ -2035,26 +2038,28 @@ function startSev(id){ var def=SEV.find(function(s){return s.id===id;}); if(!def
   _sevStop();
   var P; try{ P=validatePanel(JSON.parse(JSON.stringify(base))); }catch(e){ toast('Could not load panel'); return; }
   var answer=def.find(P);
-  if(!answer){ toast('Could not stage this Sev event on '+def.panel); return; }
+  if(!answer){ toast('Could not stage this call on '+def.panel); return; }
   PANEL=P; restoreUid();
-  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, sev:def.sev, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true};
+  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, cat:def.cat, diff:def.diff, kind:def.kind, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true};
   sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
   _sevHud(); _scenTimer=setInterval(_sevTick,1000);
-  toast('\ud83d\udea8 SEV'+def.sev+': '+def.name+' \u2014 clock running!'); }
+  toast('\U0001F6A8 CALL: '+def.name+' \u2014 clock running!'); }
 function openSevEvents(){ var meta={};
   SEV.forEach(function(s){ try{ meta[s.id]={best:localStorage.getItem('pt_sev_'+s.id),pass:+localStorage.getItem('pt_sev_'+s.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+s.id+'_fail')||0}; }catch(e){ meta[s.id]={}; } });
-  function card(s){ var m=meta[s.id]||{};
-    var col=s.sev===1?'#ef4444':s.sev===2?'#f59e0b':'#3b82f6';
-    var badge='<span style="display:inline-block;font-weight:800;font-size:11px;padding:1px 7px;border-radius:4px;color:#fff;background:'+col+'">'+(s.sev===3?'DRILL':'SEV'+s.sev)+'</span>';
+  function card(s){ var m=meta[s.id]||{}; var col=(CATS[s.cat]||{}).col||'#888';
+    var stars='<span style="color:#fbbf24;font-size:11px">'+_stars(s.diff||1)+'</span>';
     var kind=s.kind?' <span style="display:inline-block;font-size:10px;padding:0 6px;border-radius:8px;border:1px solid var(--edge);color:var(--dim)">'+esc(s.kind)+'</span>':'';
     var stat=''; if(m.best)stat+=' <span style="color:var(--ok)">\u00b7 best '+esc(String(m.best))+'s</span>';
     if(m.pass||m.fail)stat+=' <span class="hint">('+(m.pass||0)+'\u2705 / '+(m.fail||0)+'\u274c)</span>';
-    return '<div class="suspect" style="cursor:pointer" data-sev="'+s.id+'">'+badge+kind+' <b>'+esc(s.name)+'</b> <span class="hint">\u00b7 '+_fmtClock(s.limit)+' limit</span>'+stat+'<br><span class="hint">'+esc(s.symptom)+'</span></div>'; }
-  var body='<div class="hint" style="margin-bottom:8px">Pick an event. A real site panel loads with a hidden fault injected and a countdown starts. Trace the circuit, click your suspect device, then <b>Check</b> before time runs out. Fault classes: trips, failed-open devices, loose/broken conductors, high-resistance joints (meter them), single-phasing.</div>'
-    +'<div style="font-weight:700;margin:6px 0 2px">\ud83c\udf93 Training drills \u2014 basic, generous clock</div>'+SEV.filter(function(s){return s.sev===3;}).map(card).join('')
-    +'<div style="font-weight:700;margin:10px 0 2px">\ud83d\udfe0 Sev 2 \u2014 major</div>'+SEV.filter(function(s){return s.sev===2;}).map(card).join('')
-    +'<div style="font-weight:700;margin:10px 0 2px">\ud83d\udd34 Sev 1 \u2014 critical / deep dive</div>'+SEV.filter(function(s){return s.sev===1;}).map(card).join('');
-  openModal('\ud83d\udea8 Sev Event trainer', body);
+    return '<div class="suspect" style="cursor:pointer;border-left:3px solid '+col+';padding-left:8px" data-sev="'+s.id+'">'+stars+kind+' <b>'+esc(s.name)+'</b> <span class="hint">\u00b7 '+_fmtClock(s.limit)+' target</span>'+stat+'<br><span class="hint">'+esc(s.symptom)+'</span></div>'; }
+  function solvedCount(cat){ var t=SEV.filter(function(s){return s.cat===cat;}); var done=t.filter(function(s){return (meta[s.id]||{}).pass;}).length; return done+'/'+t.length; }
+  var body='<div class="hint" style="margin-bottom:8px">Pick a call off the board. A real site panel loads with a hidden fault and a response clock starts. Trace the circuit, click your suspect device, then <b>Check</b> before the clock runs out. Calls are grouped by <b>fault type</b> \u2014 the skill each one builds. \u2605 = difficulty.</div>';
+  CAT_ORDER.forEach(function(cat){ var list=SEV.filter(function(s){return s.cat===cat;}); if(!list.length)return;
+    var c=CATS[cat]||{name:cat,col:'#888'};
+    body+='<div style="font-weight:700;margin:12px 0 3px;color:'+c.col+'">'+esc(c.name)+' <span class="hint" style="font-weight:400">\u00b7 '+solvedCount(cat)+' cleared</span></div>';
+    list.sort(function(a,b){return (a.diff||1)-(b.diff||1);});
+    body+=list.map(card).join(''); });
+  openModal('\U0001F6E0 Trouble Call board', body);
   (document.querySelector('#modal')||document).querySelectorAll('[data-sev]').forEach(function(el){ el.onclick=function(){ startSev(el.dataset.sev); }; }); }
 
 /* ---------- 7: colorblind-safe ---------- */

@@ -28,10 +28,11 @@ layout_js = ""
 if os.path.exists(layout_path):
     with open(layout_path, encoding="utf-8") as _f:
         layout = json.load(_f)
-    layout_js = "window.PANEL_LAYOUT=" + json.dumps(layout, separators=(",", ":")) + ";"
+    layout_js = "window.PANEL_LAYOUT=" + json.dumps(layout, separators=(",", ":")).replace("</", "<\\/") + ";"
     print("embedded layout map:", len(layout), "devices")
 
-inject = ("<script>window.PANEL_LIBRARY=" + json.dumps(lib, separators=(",", ":")) + ";"
+lib_json = json.dumps(lib, separators=(",", ":")).replace("</", "<\\/")
+inject = ("<script>window.PANEL_LIBRARY=" + lib_json + ";"
           + layout_js + "</script>\n<script>\n" + js + "\n</script>")
 out = html.replace('<script src="panel_tracer.js"></script>', inject, 1)
 if out == html:

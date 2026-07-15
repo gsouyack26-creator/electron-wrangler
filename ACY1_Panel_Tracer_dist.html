@@ -203,7 +203,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <button class="tbtn" id="btnPlay" title="Play/pause a timed sequence (Space)">▶ Play</button>
     <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡A</button>
     <button class="tbtn" id="btnProj" title="Project mode: multiple panels in tabs">🗂 Panels</button>
-    <button class="tbtn" id="btnCb" title="Colorblind-safe mode (shape/pattern cues)">👁 CB</button>
+    <button class="tbtn" id="btnCb" aria-pressed="false" title="Colorblind-safe mode (shape/pattern cues)">👁 CB</button>
     <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
     <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
     <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>
@@ -591,19 +591,19 @@ function render(){
   if(encOn) s+=backplate();
   // backdrop
   if(PANEL.backdrop){ const o=($('#opacity').value)/100;
-    s+=`<image href="${PANEL.backdrop}" x="0" y="0" width="${PANEL.bw||1200}" height="${PANEL.bh||800}" opacity="${o}" preserveAspectRatio="xMidYMid meet"/>`; }
+    s+=`<image href="${esc(PANEL.backdrop)}" x="0" y="0" width="${PANEL.bw||1200}" height="${PANEL.bh||800}" opacity="${o}" preserveAspectRatio="xMidYMid meet"/>`; }
   (PANEL.pins||[]).forEach((pn,i)=>{ s+=`<g class="pin" data-pin="${i}" transform="translate(${pn.x},${pn.y})"><circle r="11" fill="#ef4444" stroke="#fff" stroke-width="2"/><text y="4" style="fill:#fff;font:bold 11px sans-serif;text-anchor:middle">${i+1}</text></g>`; });
   // wires
   PANEL.wires.forEach(w=>{ const a=endPos(w.a),b=endPos(w.b); if(!a||!b)return;
     const mx=(a.x+b.x)/2;
     const cls=['wire',w.net||'ctrl']; if(w.cut)cls.push('cut'); if(w._live)cls.push('live'); if(w._flow)cls.push('flow'); if(selWire===w)cls.push('hit'); if(hoverData&&hoverData.wires.has(w.id))cls.push('hover'); if(netHi&&netHi.wires.has(w.id))cls.push('nethi');
-    let _pstyle=''; if(showPhase&&mode==='sim'&&w._phase&&w._phase!=='mix'&&PHASE_COLOR[w._phase]) _pstyle=` style="stroke:${PHASE_COLOR[w._phase]}"`;
+    let _pstyle=''; if(showPhase&&mode==='sim'&&w._live&&w._phase&&w._phase!=='mix'&&PHASE_COLOR[w._phase]) _pstyle=` style="stroke:${PHASE_COLOR[w._phase]}"`;
     s+=`<path class="${cls.join(' ')}" data-wire="${w.id}"${_pstyle} d="${wirePath(a,b)}"/>`;
     if(showWireNo&&w.label) s+=`<text class="wireno" x="${mx}" y="${(a.y+b.y)/2-3}">${esc(w.label)}</text>`;
     const _vv=(w._dispV!=null?w._dispV:w._v); if(showVolts&&mode==='sim'&&_vv!=null) s+=`<text class="voltlbl" x="${mx}" y="${(a.y+b.y)/2+9}">${_vv}V</text>`; });
   // components
   PANEL.components.forEach(c=>{ const d=compDef(c);
-    const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath'); if(mode==='sim'&&c._singlePhase)cls.push('singlephase');
+    const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c)&&!c._singlePhase)cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath'); if(mode==='sim'&&c._singlePhase)cls.push('singlephase');
     let body=d.body(c);
     // live overlays in sim
     if(mode==='sim'){
@@ -623,7 +623,7 @@ function render(){
     if(mode==='sim'&&showAmps&&c._on&&c.type==='motor'&&(c.fla||c.hp)) s+=`<text class="ampslbl" x="${d.w/2}" y="${d.h+(c.link?30:18)}">${motorAmps(c)}A</text>`;
     if(showTherm&&c.temp) s+=`<rect x="-3" y="-3" width="${d.w+6}" height="${d.h+6}" rx="5" fill="none" stroke="${tempColor(c.temp)}" stroke-width="3" opacity=".85"/><text x="${d.w-3}" y="${d.h-2}" style="fill:${tempColor(c.temp)};font:bold 8px sans-serif;text-anchor:end">${c.temp}\u00b0</text>`;
     if(c.health&&c.health!=='ok') s+=`<circle cx="3" cy="3" r="4" fill="${healthColor(c.health)}" stroke="#0d1117"/>`;
-    if(cbSafe&&mode==='sim'){ const g=c.fault||c.hiZ?'\u26a0':c._singlePhase?'1\u00d8':(anyEnerg(c)?'\u26a1':''); if(g)s+=`<text x="${d.w/2}" y="${d.h/2+3}" style="fill:#fff;font:bold 10px sans-serif;text-anchor:middle;paint-order:stroke;stroke:#000;stroke-width:3px">${g}</text>`; }
+    if(cbSafe&&mode==='sim'){ const g=c.fault||c.hiZ?'\u26a0':c._singlePhase?'1\u00d8':(anyEnerg(c)?'\u26a1':''); if(g)s+=`<text x="${d.w-3}" y="9" style="fill:#fff;font:bold 9px sans-serif;text-anchor:end;paint-order:stroke;stroke:#000;stroke-width:3px">${g}</text>`; }
     s+=`</g>`; });
   // wire-in-progress
   if(wireStart){ const p=endPos(wireStart.comp+'|'+wireStart.term); if(p) s+=`<circle cx="${p.x}" cy="${p.y}" r="6" fill="none" stroke="var(--accent)" stroke-width="2" class="pulse"/>`; }
@@ -820,7 +820,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     <div id="simextra"></div>
     <div class="hint">Click any device to operate it.<br>• Breakers/E-stops/buttons cycle open⇄closed<br>• Blow fuses & trip breakers to inject faults<br>• Click a <b>dead load</b> to diagnose<br>• Hover a device to highlight its live path</div>`;
     $('#sim-dead').onclick=showPanelReport;
-    $('#sim-meter').onclick=()=>{meterMode=!meterMode;probes=[];render();renderSimInspector();};
+    $('#sim-meter').onclick=()=>{meterMode=!meterMode;contMode=false;probes=[];render();renderSimInspector();};
     $('#sim-quiz').onclick=()=>{ if(quiz){quizEnd();} else {startQuiz();} };
     $('#sim-volts').onclick=()=>{showVolts=!showVolts;render();renderSimInspector();};
     $('#sim-log').onclick=()=>{logMode=!logMode;render();renderSimInspector();};
@@ -832,7 +832,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     return; }
   const d=compDef(c); let h=`<h3>${c.label?esc(c.label)+' — ':''}${d.name}</h3>`;
   if(d.sw){ const cur=c.state; const cls=(cur==='closed'||cur==='ok'||cur==='on')?'closed':(cur==='tripped'||cur==='blown')?'fault':'open';
-    h+=`<button class="statebtn ${cls}" id="sim-toggle">State: ${cur.toUpperCase()} — click to change</button>`; }
+    h+=`<button class="statebtn ${cls}" id="sim-toggle">State: ${esc(cur.toUpperCase())} — click to change</button>`; }
   // fault injection universal
   h+=`<button class="statebtn ${c.fault?'fault':''}" id="sim-fault">${c.fault?'⚠ FAULTED (open) — clear':'Inject fault (open device)'}</button>`;
   h+=`<button class="statebtn ${c.hiZ?'fault':''}" id="sim-hiz">${c.hiZ?'⚠ HIGH-RESISTANCE — clear':'Inject high-resistance (voltage drop)'}</button>`;
@@ -876,7 +876,7 @@ function setTool(t){ tool=(t==='wire')?'wire':t; wireStart=null;
   $('#btnWire').classList.toggle('on',t==='wire');
   svg.className.baseVal=(t==='wire')?'wire':(t&&T[t])?'place':''; }
 $('#btnWire').onclick=()=>setTool(tool==='wire'?null:'wire');
-function setMode(m){ mode=m; wireStart=null;tool=null;setTool(null); meterMode=false; probes=[]; hoverComp=null; hoverData=null; logMode=false; showVolts=false; pinMode=false; selSet=[]; marquee=null; netHi=null; if(quiz) quizEnd();
+function setMode(m){ if(typeof _playing!=='undefined'&&_playing&&typeof stopPlay==='function')stopPlay(); mode=m; wireStart=null;tool=null;setTool(null); meterMode=false; probes=[]; hoverComp=null; hoverData=null; logMode=false; showVolts=false; pinMode=false; selSet=[]; marquee=null; netHi=null; if(quiz) quizEnd();
   $('#mBuild').classList.toggle('on',m==='build'); $('#mSim').classList.toggle('on',m==='sim');
   $('#left').style.opacity=m==='sim'?.4:1; $('#left').style.pointerEvents=m==='sim'?'none':'auto';
   sel=null;selWire=null; if(typeof applyView==='function')applyView(); renderInspector(); render(); }
@@ -887,9 +887,17 @@ const CSS_COLOR=/^#[0-9a-fA-F]{3,8}$|^rgb|^hsl|^[a-zA-Z]+$/;
 function sanColor(v,fb){ return (typeof v==='string'&&CSS_COLOR.test(v))?v:fb; }
 function validatePanel(p){
   if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)) throw new Error('bad panel schema');
+  const VALID_HEALTH={ok:1,aging:1,due:1,failed:1};
+  if(p.pins&&!Array.isArray(p.pins)) p.pins=[];
+  (p.pins||[]).forEach(pn=>{ if(!isFinite(pn.x))pn.x=0; if(!isFinite(pn.y))pn.y=0; });
+  if(p.pm&&!Array.isArray(p.pm)) p.pm=[];
+  if(p.backdrop!=null&&(typeof p.backdrop!=='string'||!/^data:image\//i.test(p.backdrop))) p.backdrop=null;
   p.components.forEach(c=>{ if(!c||!c.id||!T[c.type]) throw new Error('bad component'); 
     if(!isFinite(c.x)) c.x=0; if(!isFinite(c.y)) c.y=0; 
-    if(c.color) c.color=sanColor(c.color,'#22c55e'); });
+    if(c.color) c.color=sanColor(c.color,'#22c55e');
+    if(c.health&&!VALID_HEALTH[c.health]) c.health='ok';
+    if(c.state!=null&&typeof c.state!=='string') c.state='';
+    ['amps','hp','fla','temp','preset'].forEach(k=>{ if(c[k]!=null&&!isFinite(+c[k])) delete c[k]; }); });
   return p;
 }
 function persist(){ try{ localStorage.setItem('acy1_panel', JSON.stringify(PANEL)); }
@@ -901,7 +909,7 @@ $('#btnSave').onclick=()=>{ const blob=new Blob([JSON.stringify(PANEL,null,2)],{
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(PANEL.name||'panel')+'.panel.json'; a.click(); toast('Panel saved'); };
 $('#btnLoad').onclick=()=>$('#fileJson').click();
 $('#fileJson').onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
-  r.onload=()=>{ try{ PANEL=validatePanel(JSON.parse(r.result)); uid=Date.now()%1e6; restoreUid(); sel=null;selWire=null; persist(); applyEnc();render(); renderInspector(); toast('Panel loaded'); }catch(err){toast('Bad file');} }; r.readAsText(f); e.target.value=''; };
+  r.onload=()=>{ try{ PANEL=validatePanel(JSON.parse(r.result)); uid=Date.now()%1e6; restoreUid(); sel=null;selWire=null; if(typeof PROJECT!=='undefined'&&PROJECT&&typeof projSaveActive==='function')projSaveActive(); persist(); applyEnc();render(); renderInspector(); toast('Panel loaded'); }catch(err){toast('Bad file');} }; r.readAsText(f); e.target.value=''; };
 function restoreUid(){ const num=x=>+((String(x).match(/\d+/)||[0])[0])||0;
   const mx=Math.max(0,...PANEL.components.map(c=>num(c.id)),...PANEL.wires.map(w=>num(w.id))); uid=mx+1; }
 $('#btnClear').onclick=()=>{ if(!confirm('Start a new blank panel? (Save first if needed)'))return; PANEL={name:'Untitled',backdrop:null,components:[],wires:[]}; uid=1; sel=null;selWire=null; persist(); applyEnc();render(); renderInspector(); };
@@ -1046,7 +1054,7 @@ function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label|
     +'<b>'+esc(c.label||c.type)+'</b> \u2014 '+compDef(c).name+'<br>'
     +'Live: <b style="color:'+(anyEnerg(c)?'var(--live)':'var(--dim)')+'">'+(anyEnerg(c)?'ENERGIZED':'\u2014')+'</b>'
     +(bad?' \u00b7 <span style="color:var(--warn)">'+bad+'</span>':'')+'<br>'
-    +'<span style="color:var(--dim)">Wired to:</span> '+(nb.join(', ')||'(nothing)')+'</div>'; }
+    +'<span style="color:var(--dim)">Wired to:</span> '+(nb.map(esc).join(', ')||'(nothing)')+'</div>'; }
 function applyView(){ const dim=(viewMode==='phys'||mode==='sim'); const l=document.getElementById('left');
   if(l){ l.style.opacity=dim?'.4':'1'; l.style.pointerEvents=dim?'none':'auto'; } }
 
@@ -1765,7 +1773,8 @@ function printWorksheet(){ const w=window.open('','_blank'); if(!w){toast('Popup
 /* ---------- 6: part number + Parts Search ---------- */
 function partsLink(c){ const url=(function(){try{return (localStorage.getItem('pt_parts_url')||'').trim();}catch(e){return '';}})();
   if(!c.apn){ toast('Set an APN / part number on this device first'); return; }
-  if(url){ window.open(url+(url.includes('?')?'&':'?')+'q='+encodeURIComponent(c.apn),'_blank'); }
+  if(url&&/^https?:\/\//i.test(url)){ window.open(url+(url.includes('?')?'&':'?')+'q='+encodeURIComponent(c.apn),'_blank'); }
+  else if(url){ toast('Parts URL must start with http(s)://'); }
   else { try{ navigator.clipboard&&navigator.clipboard.writeText(c.apn); }catch(e){} toast('APN '+c.apn+' copied \u2014 paste into Parts Search'); } }
 
 /* ---------- 8: in-panel snapshots ---------- */
@@ -1778,10 +1787,10 @@ function openSnapshots(){ const snaps=PANEL._snaps||[];
     +(snaps.length?snaps.map((s,i)=>'<div class="suspect" style="cursor:default"><b>'+esc(s.name)+'</b> \u00b7 '+new Date(s.ts).toLocaleString()
       +'<br><button class="tbtn" data-r="'+i+'" style="margin-top:4px">Restore</button> <button class="tbtn" data-d="'+i+'">Diff vs current</button></div>').join(''):'<div class="hint">No snapshots yet \u2014 save one before you start changing states.</div>'));
   $('#snap-new').onclick=snapSave;
-  document.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.r];
+  (document.querySelector('#modal')||document).querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.r];
     if(confirm('Restore snapshot \u201c'+s.name+'\u201d? Current layout is replaced.')){ const keep=PANEL._snaps;
       PANEL=validatePanel(JSON.parse(JSON.stringify(s.data))); PANEL._snaps=keep; restoreUid(); persist(); applyEnc(); render(); renderInspector(); closeModal(); toast('Restored '+s.name); } });
-  document.querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.d]; const d=diffPanels(s.data);
+  (document.querySelector('#modal')||document).querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.d]; const d=diffPanels(s.data);
     const out=d.length?d.map(x=>'<div class="suspect" style="border-color:'+(x.t==='add'?'var(--ok)':x.t==='del'?'var(--bad)':'var(--warn)')+'">'+esc(x.msg)+'</div>').join(''):'<div class="hint" style="color:var(--ok)">Identical.</div>';
     openModal('Diff: '+s.name+' \u2192 current', out); }); }
 
@@ -1811,13 +1820,13 @@ function terminalReport(){ const terms=PANEL.components.filter(c=>c.type==='term
   openModal('Terminal strip', html); }
 
 /* ---------- 7: project / tabs ---------- */
-function projPersist(){ if(PROJECT){ try{ localStorage.setItem('acy1_project',JSON.stringify(PROJECT)); }catch(e){} } }
-function projRestore(){ try{ const s=localStorage.getItem('acy1_project'); if(s){ PROJECT=JSON.parse(s); return true; } }catch(e){} return false; }
+function projPersist(){ if(PROJECT){ try{ localStorage.setItem('acy1_project',JSON.stringify(PROJECT)); }catch(e){ if(typeof toast==='function') toast('Project auto-save failed'); } } }
+function projRestore(){ try{ const s=localStorage.getItem('acy1_project'); if(s){ PROJECT=JSON.parse(s); if(PROJECT&&Array.isArray(PROJECT.panels)){ PROJECT.panels=PROJECT.panels.map(p=>{ try{return validatePanel(p);}catch(e){return {name:'Corrupt',components:[],wires:[]};} }); } return true; } }catch(e){} return false; }
 function projEnsure(){ if(!PROJECT){ PROJECT={name:'Project', panels:[JSON.parse(JSON.stringify(PANEL))], active:0}; } }
 function projSaveActive(){ if(PROJECT){ PROJECT.panels[PROJECT.active]=JSON.parse(JSON.stringify(PANEL)); projPersist(); } }
 function projSwitch(i){ if(!PROJECT||i<0||i>=PROJECT.panels.length)return; projSaveActive(); PROJECT.active=i;
   PANEL=validatePanel(JSON.parse(JSON.stringify(PROJECT.panels[i]))); restoreUid(); sel=null;selWire=null;selSet=[];netHi=null;
-  persist(); applyEnc(); if(typeof applyView==='function')applyView(); render(); renderInspector(); renderTabs(); }
+  _hist=[];_histFwd=[];_lastSnap=JSON.stringify(PANEL);_histLock=true; persist(); _histLock=false; applyEnc(); if(typeof applyView==='function')applyView(); render(); renderInspector(); renderTabs(); }
 function projAdd(){ projEnsure(); projSaveActive(); PROJECT.panels.push({name:'Panel '+(PROJECT.panels.length+1),backdrop:null,components:[],wires:[]}); projSwitch(PROJECT.panels.length-1); }
 function projRename(){ projEnsure(); const n=prompt('Panel name:',PANEL.name||''); if(n===null)return; PANEL.name=n; PROJECT.panels[PROJECT.active].name=n; persist(); projPersist(); render(); renderTabs(); }
 function projClose(i){ if(!PROJECT||PROJECT.panels.length<=1){ toast('A project needs at least one panel'); return; }
@@ -1945,7 +1954,7 @@ function openPM(){ PANEL.pm=PANEL.pm||PM_DEFAULT.map(t=>({text:t,done:false}));
   openModal('PM checklist \u2014 '+esc(PANEL.name||''), rows
     +'<div style="margin-top:8px;display:flex;gap:6px"><input id="pm-add" placeholder="Add item\u2026" style="flex:1;background:var(--panel2);border:1px solid var(--edge);border-radius:6px;color:var(--txt);padding:6px"><button class="tbtn" id="pm-addb">Add</button></div>'
     +'<button class="tbtn" id="pm-print" style="width:100%;margin-top:8px">\ud83d\udda8 Print checklist</button>');
-  document.querySelectorAll('[data-i]').forEach(el=>el.onchange=()=>{ PANEL.pm[+el.dataset.i].done=el.checked; persist(); });
+  (document.querySelector('#modal')||document).querySelectorAll('[data-i]').forEach(el=>el.onchange=()=>{ PANEL.pm[+el.dataset.i].done=el.checked; persist(); });
   $('#pm-addb').onclick=()=>{ const v=$('#pm-add').value.trim(); if(v){ PANEL.pm.push({text:v,done:false}); persist(); openPM(); } };
   $('#pm-print').onclick=()=>{ const w=window.open('','_blank'); if(!w)return;
     w.document.write('<!doctype html><meta charset=utf-8><title>PM \u2014 '+esc(PANEL.name||'')+'</title><style>body{font:14px Segoe UI,Arial;margin:26px}li{margin:8px 0}h1{font-size:18px}</style>'
@@ -1991,26 +2000,26 @@ function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspe
   toast(ok?('\u2705 Correct in '+secs+'s'+(best&&secs<best?' \u2014 new best!':best?(' (best '+best+'s)'):'')):'\u274c Not it \u2014 keep tracing');
   renderSimInspector(); }
 function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStorage.getItem('pt_scen_'+s.id);}catch(e){}});
-  openModal('Training scenarios', SCEN.map(s=>'<div class="suspect" style="cursor:pointer" data-s="'+s.id+'"><b>'+esc(s.name)+'</b>'+(best[s.id]?' <span style="color:var(--ok)">\u00b7 best '+best[s.id]+'s</span>':'')+'<br><span class="hint">'+esc(s.prompt)+'</span></div>').join(''));
-  document.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
+  openModal('Training scenarios', SCEN.map(s=>'<div class="suspect" style="cursor:pointer" data-s="'+s.id+'"><b>'+esc(s.name)+'</b>'+(best[s.id]?' <span style="color:var(--ok)">\u00b7 best '+esc(String(best[s.id]))+'s</span>':'')+'<br><span class="hint">'+esc(s.prompt)+'</span></div>').join(''));
+  (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
 
 /* ---------- 7: colorblind-safe ---------- */
 function applyCb(){ const st=document.getElementById('stage'); if(st)st.classList.toggle('cbsafe',cbSafe);
-  const b=$('#btnCb'); if(b)b.classList.toggle('on',cbSafe);
+  const b=$('#btnCb'); if(b){b.classList.toggle('on',cbSafe); b.setAttribute('aria-pressed',cbSafe?'true':'false');}
   try{localStorage.setItem('pt_cb',cbSafe?'1':'0');}catch(e){} }
 
 /* ---------- 9: touch pinch-zoom ---------- */
 function _rect(){ return svg.getBoundingClientRect(); }
 function initPinch(){
-  svg.addEventListener('pointerdown',e=>{ _pointers[e.pointerId]={x:e.clientX,y:e.clientY}; },true);
+  svg.addEventListener('pointerdown',e=>{ _pointers[e.pointerId]={x:e.clientX,y:e.clientY}; try{ svg.setPointerCapture(e.pointerId); }catch(_){} },true);
   svg.addEventListener('pointermove',e=>{ if(_pointers[e.pointerId])_pointers[e.pointerId]={x:e.clientX,y:e.clientY};
-    const ids=Object.keys(_pointers); if(ids.length>=2){ panning=null; drag=null;
+    const ids=Object.keys(_pointers); if(ids.length>=2){ if(typeof drag!=='undefined'&&drag&&typeof persist==='function')persist(); panning=null; drag=null;
       const p=_pointers[ids[0]], q=_pointers[ids[1]]; const dist=Math.hypot(p.x-q.x,p.y-q.y); const r=_rect();
       const mx=(p.x+q.x)/2-r.left, my=(p.y+q.y)/2-r.top;
-      if(_pinch){ const nk=Math.max(.25,Math.min(4,_pinch.k*(dist/_pinch.d)));
-        view.x=mx-(mx-_pinch.vx)*(nk/_pinch.k); view.y=my-(my-_pinch.vy)*(nk/_pinch.k); view.k=nk; render(); }
-      else _pinch={d:dist,k:view.k,vx:view.x,vy:view.y}; } },true);
-  const end=e=>{ delete _pointers[e.pointerId]; if(Object.keys(_pointers).length<2)_pinch=null; };
+      if(_pinch){ const nk=Math.max(.25,Math.min(4,view.k*(dist/_pinch.d)));
+        view.x=mx-(mx-view.x)*(nk/view.k); view.y=my-(my-view.y)*(nk/view.k); view.k=nk; _pinch.d=dist; render(); }
+      else _pinch={d:dist}; } },true);
+  const end=e=>{ delete _pointers[e.pointerId]; if(Object.keys(_pointers).length<2)_pinch=null; try{ svg.releasePointerCapture(e.pointerId); }catch(_){} };
   svg.addEventListener('pointerup',end,true); svg.addEventListener('pointercancel',end,true); }
 
 /* ---------- 10: read-aloud ---------- */
@@ -2020,7 +2029,7 @@ function speak(lines){ if(typeof speechSynthesis==='undefined'){ toast('Speech n
 
 /* ---------- 11: library manager ---------- */
 function userLib(){ try{ return JSON.parse(localStorage.getItem('pt_userlib')||'{}'); }catch(e){ return {}; } }
-function saveUserLib(o){ try{ localStorage.setItem('pt_userlib',JSON.stringify(o)); }catch(e){} }
+function saveUserLib(o){ try{ localStorage.setItem('pt_userlib',JSON.stringify(o)); }catch(e){ if(typeof toast==='function') toast('Library save failed'); } }
 function saveToLibrary(){ const n=prompt('Save current panel to your library as:',PANEL.name||''); if(!n)return; const o=userLib(); o[n]=JSON.parse(JSON.stringify({name:n,backdrop:PANEL.backdrop,components:PANEL.components,wires:PANEL.wires})); saveUserLib(o); toast('Saved to library: '+n); openLibraryManager(); }
 function openLibraryManager(){ const lib=window.PANEL_LIBRARY||{}, mine=userLib();
   const row=(k,src)=>'<div class="suspect" style="cursor:pointer;display:flex;justify-content:space-between;gap:8px" data-k="'+esc(k)+'" data-src="'+src+'"><span>'+esc(k)+'</span><span class="hint">'+src+(src==='mine'?' \u00b7 <b data-del="'+esc(k)+'" style="color:var(--bad)">delete</b>':'')+'</span></div>';
@@ -2033,7 +2042,7 @@ function openLibraryManager(){ const lib=window.PANEL_LIBRARY||{}, mine=userLib(
   $('#lib-q').oninput=filt;
   $('#lib-save').onclick=saveToLibrary; $('#lib-imp').onclick=()=>$('#lib-files').click();
   $('#lib-files').onchange=e=>{ const fs=[...e.target.files]; const o=userLib(); let n=0; let pend=fs.length;
-    fs.forEach(f=>{ const r=new FileReader(); r.onload=()=>{ try{ const p=JSON.parse(r.result); const nm=p.name||f.name.replace(/\.panel\.json$|\.json$/,''); o[nm]=p; n++; }catch(err){} if(--pend===0){ saveUserLib(o); toast(n+' panel(s) imported'); openLibraryManager(); } }; r.readAsText(f); }); e.target.value=''; };
+    fs.forEach(f=>{ const r=new FileReader(); r.onload=()=>{ try{ const p=JSON.parse(r.result); validatePanel(p); const nm=p.name||f.name.replace(/\.panel\.json$|\.json$/,''); o[nm]=p; n++; }catch(err){} if(--pend===0){ saveUserLib(o); toast(n+' panel(s) imported'); openLibraryManager(); } }; r.readAsText(f); }); e.target.value=''; };
   $('#lib-list').querySelectorAll('[data-k]').forEach(el=>el.onclick=ev=>{ if(ev.target.dataset.del){ const o=userLib(); delete o[ev.target.dataset.del]; saveUserLib(o); openLibraryManager(); return; }
     const k=el.dataset.k; const src=el.dataset.src; const p=src==='mine'?userLib()[k]:lib[k];
     PANEL=validatePanel(JSON.parse(JSON.stringify(p))); restoreUid(); sel=null;selWire=null; persist(); applyEnc(); if(typeof applyView==='function')applyView(); render(); renderInspector(); closeModal(); toast('Loaded: '+k); }); }

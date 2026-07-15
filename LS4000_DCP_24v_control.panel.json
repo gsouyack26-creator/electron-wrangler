@@ -1,0 +1,143 @@
+{
+  "name": "LS4000 DCP \u2014 24VDC Control Power (rep.)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 120,
+      "label": "120VAC CTRL",
+      "phases": 1,
+      "volts": 120
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 160,
+      "y": 120,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB1"
+    },
+    {
+      "id": "ps",
+      "type": "psu",
+      "x": 270,
+      "y": 110,
+      "dcv": 24,
+      "label": "PS1"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 250,
+      "y": 300,
+      "label": "0V/PE"
+    },
+    {
+      "id": "tb",
+      "type": "tstrip",
+      "x": 420,
+      "y": 40,
+      "label": "TB24"
+    },
+    {
+      "id": "di",
+      "type": "plcInCard",
+      "x": 540,
+      "y": 40,
+      "label": "DI"
+    },
+    {
+      "id": "do",
+      "type": "plcOutCard",
+      "x": 680,
+      "y": 40,
+      "label": "DO"
+    },
+    {
+      "id": "pe",
+      "type": "sensor",
+      "x": 430,
+      "y": 320,
+      "state": "closed",
+      "label": "PE1 (belt)"
+    },
+    {
+      "id": "sol",
+      "type": "light",
+      "x": 820,
+      "y": 120,
+      "label": "DIV SOL"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "cb|out0",
+      "b": "ps|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|N",
+      "b": "ps|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w4",
+      "a": "ps|Vp",
+      "b": "tb|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ps|Vn",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w6",
+      "a": "tb|R1",
+      "b": "pe|a",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "pe|b",
+      "b": "di|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "di|C",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w9",
+      "a": "tb|R1",
+      "b": "do|C",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "do|out0",
+      "b": "sol|a",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "sol|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    }
+  ]
+}

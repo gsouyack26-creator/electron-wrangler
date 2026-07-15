@@ -1,6 +1,6 @@
 /* Panel Tracer service worker — network-first for freshness, cache fallback offline */
 const CACHE = 'panel-tracer-v2';
-const ASSETS = ['./', 'ACY1_Panel_Tracer.html', 'panel_tracer.js', 'manifest.json'];
+const ASSETS = ['./', 'ACY1_Panel_Tracer.html', 'ACY1_Panel_Tracer_dist.html', 'panel_tracer.js', 'manifest.json'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(()=>{})); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener('fetch', e => {

@@ -1,0 +1,809 @@
+{
+  "name": "LS4000 Induction \u2014 6-Belt Power Panel (rep.)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 240,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "md",
+      "type": "disc",
+      "x": 150,
+      "y": 220,
+      "poles": 3,
+      "state": "closed",
+      "label": "MAIN"
+    },
+    {
+      "id": "csrc",
+      "type": "source",
+      "x": 40,
+      "y": 600,
+      "label": "120VAC CTRL",
+      "phases": 1,
+      "volts": 120
+    },
+    {
+      "id": "cb0",
+      "type": "breaker",
+      "x": 280,
+      "y": 40,
+      "poles": 3,
+      "state": "closed",
+      "label": "B1 CB"
+    },
+    {
+      "id": "ct0",
+      "type": "contactor",
+      "x": 400,
+      "y": 40,
+      "poles": 3,
+      "label": "B1"
+    },
+    {
+      "id": "ol0",
+      "type": "overload",
+      "x": 530,
+      "y": 40,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL1"
+    },
+    {
+      "id": "m0",
+      "type": "motor",
+      "x": 660,
+      "y": 60,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 1"
+    },
+    {
+      "id": "cb1",
+      "type": "breaker",
+      "x": 280,
+      "y": 130,
+      "poles": 3,
+      "state": "closed",
+      "label": "B2 CB"
+    },
+    {
+      "id": "ct1",
+      "type": "contactor",
+      "x": 400,
+      "y": 130,
+      "poles": 3,
+      "label": "B2"
+    },
+    {
+      "id": "ol1",
+      "type": "overload",
+      "x": 530,
+      "y": 130,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL2"
+    },
+    {
+      "id": "m1",
+      "type": "motor",
+      "x": 660,
+      "y": 150,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 2"
+    },
+    {
+      "id": "cb2",
+      "type": "breaker",
+      "x": 280,
+      "y": 220,
+      "poles": 3,
+      "state": "closed",
+      "label": "B3 CB"
+    },
+    {
+      "id": "ct2",
+      "type": "contactor",
+      "x": 400,
+      "y": 220,
+      "poles": 3,
+      "label": "B3"
+    },
+    {
+      "id": "ol2",
+      "type": "overload",
+      "x": 530,
+      "y": 220,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL3"
+    },
+    {
+      "id": "m2",
+      "type": "motor",
+      "x": 660,
+      "y": 240,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 3"
+    },
+    {
+      "id": "cb3",
+      "type": "breaker",
+      "x": 280,
+      "y": 310,
+      "poles": 3,
+      "state": "closed",
+      "label": "B4 CB"
+    },
+    {
+      "id": "ct3",
+      "type": "contactor",
+      "x": 400,
+      "y": 310,
+      "poles": 3,
+      "label": "B4"
+    },
+    {
+      "id": "ol3",
+      "type": "overload",
+      "x": 530,
+      "y": 310,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL4"
+    },
+    {
+      "id": "m3",
+      "type": "motor",
+      "x": 660,
+      "y": 330,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 4"
+    },
+    {
+      "id": "cb4",
+      "type": "breaker",
+      "x": 280,
+      "y": 400,
+      "poles": 3,
+      "state": "closed",
+      "label": "B5 CB"
+    },
+    {
+      "id": "ct4",
+      "type": "contactor",
+      "x": 400,
+      "y": 400,
+      "poles": 3,
+      "label": "B5"
+    },
+    {
+      "id": "ol4",
+      "type": "overload",
+      "x": 530,
+      "y": 400,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL5"
+    },
+    {
+      "id": "m4",
+      "type": "motor",
+      "x": 660,
+      "y": 420,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 5"
+    },
+    {
+      "id": "cb5",
+      "type": "breaker",
+      "x": 280,
+      "y": 490,
+      "poles": 3,
+      "state": "closed",
+      "label": "B6 CB"
+    },
+    {
+      "id": "ct5",
+      "type": "contactor",
+      "x": 400,
+      "y": 490,
+      "poles": 3,
+      "label": "B6"
+    },
+    {
+      "id": "ol5",
+      "type": "overload",
+      "x": 530,
+      "y": 490,
+      "poles": 3,
+      "state": "ok",
+      "label": "OL6"
+    },
+    {
+      "id": "m5",
+      "type": "motor",
+      "x": 660,
+      "y": 510,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "BELT 6"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "md|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "md|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "md|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "md|out0",
+      "b": "cb0|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "cb0|out0",
+      "b": "ct0|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ct0|T1",
+      "b": "ol0|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "md|out1",
+      "b": "cb0|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "cb0|out1",
+      "b": "ct0|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "ct0|T2",
+      "b": "ol0|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "md|out2",
+      "b": "cb0|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "cb0|out2",
+      "b": "ct0|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "ct0|T3",
+      "b": "ol0|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "ol0|T1",
+      "b": "m0|U",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "ol0|T2",
+      "b": "m0|V",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "ol0|T3",
+      "b": "m0|W",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "csrc|L",
+      "b": "ct0|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "ct0|A2",
+      "b": "ol0|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w18",
+      "a": "ol0|96",
+      "b": "csrc|N",
+      "net": "ret"
+    },
+    {
+      "id": "w19",
+      "a": "md|out0",
+      "b": "cb1|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "cb1|out0",
+      "b": "ct1|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w21",
+      "a": "ct1|T1",
+      "b": "ol1|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w22",
+      "a": "md|out1",
+      "b": "cb1|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "cb1|out1",
+      "b": "ct1|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w24",
+      "a": "ct1|T2",
+      "b": "ol1|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w25",
+      "a": "md|out2",
+      "b": "cb1|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w26",
+      "a": "cb1|out2",
+      "b": "ct1|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w27",
+      "a": "ct1|T3",
+      "b": "ol1|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w28",
+      "a": "ol1|T1",
+      "b": "m1|U",
+      "net": "hot"
+    },
+    {
+      "id": "w29",
+      "a": "ol1|T2",
+      "b": "m1|V",
+      "net": "hot"
+    },
+    {
+      "id": "w30",
+      "a": "ol1|T3",
+      "b": "m1|W",
+      "net": "hot"
+    },
+    {
+      "id": "w31",
+      "a": "csrc|L",
+      "b": "ct1|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w32",
+      "a": "ct1|A2",
+      "b": "ol1|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w33",
+      "a": "ol1|96",
+      "b": "csrc|N",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "md|out0",
+      "b": "cb2|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w35",
+      "a": "cb2|out0",
+      "b": "ct2|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w36",
+      "a": "ct2|T1",
+      "b": "ol2|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w37",
+      "a": "md|out1",
+      "b": "cb2|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w38",
+      "a": "cb2|out1",
+      "b": "ct2|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w39",
+      "a": "ct2|T2",
+      "b": "ol2|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w40",
+      "a": "md|out2",
+      "b": "cb2|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w41",
+      "a": "cb2|out2",
+      "b": "ct2|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w42",
+      "a": "ct2|T3",
+      "b": "ol2|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w43",
+      "a": "ol2|T1",
+      "b": "m2|U",
+      "net": "hot"
+    },
+    {
+      "id": "w44",
+      "a": "ol2|T2",
+      "b": "m2|V",
+      "net": "hot"
+    },
+    {
+      "id": "w45",
+      "a": "ol2|T3",
+      "b": "m2|W",
+      "net": "hot"
+    },
+    {
+      "id": "w46",
+      "a": "csrc|L",
+      "b": "ct2|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w47",
+      "a": "ct2|A2",
+      "b": "ol2|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w48",
+      "a": "ol2|96",
+      "b": "csrc|N",
+      "net": "ret"
+    },
+    {
+      "id": "w49",
+      "a": "md|out0",
+      "b": "cb3|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w50",
+      "a": "cb3|out0",
+      "b": "ct3|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w51",
+      "a": "ct3|T1",
+      "b": "ol3|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w52",
+      "a": "md|out1",
+      "b": "cb3|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w53",
+      "a": "cb3|out1",
+      "b": "ct3|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w54",
+      "a": "ct3|T2",
+      "b": "ol3|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w55",
+      "a": "md|out2",
+      "b": "cb3|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w56",
+      "a": "cb3|out2",
+      "b": "ct3|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w57",
+      "a": "ct3|T3",
+      "b": "ol3|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w58",
+      "a": "ol3|T1",
+      "b": "m3|U",
+      "net": "hot"
+    },
+    {
+      "id": "w59",
+      "a": "ol3|T2",
+      "b": "m3|V",
+      "net": "hot"
+    },
+    {
+      "id": "w60",
+      "a": "ol3|T3",
+      "b": "m3|W",
+      "net": "hot"
+    },
+    {
+      "id": "w61",
+      "a": "csrc|L",
+      "b": "ct3|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w62",
+      "a": "ct3|A2",
+      "b": "ol3|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w63",
+      "a": "ol3|96",
+      "b": "csrc|N",
+      "net": "ret"
+    },
+    {
+      "id": "w64",
+      "a": "md|out0",
+      "b": "cb4|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w65",
+      "a": "cb4|out0",
+      "b": "ct4|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w66",
+      "a": "ct4|T1",
+      "b": "ol4|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w67",
+      "a": "md|out1",
+      "b": "cb4|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w68",
+      "a": "cb4|out1",
+      "b": "ct4|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w69",
+      "a": "ct4|T2",
+      "b": "ol4|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w70",
+      "a": "md|out2",
+      "b": "cb4|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w71",
+      "a": "cb4|out2",
+      "b": "ct4|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w72",
+      "a": "ct4|T3",
+      "b": "ol4|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w73",
+      "a": "ol4|T1",
+      "b": "m4|U",
+      "net": "hot"
+    },
+    {
+      "id": "w74",
+      "a": "ol4|T2",
+      "b": "m4|V",
+      "net": "hot"
+    },
+    {
+      "id": "w75",
+      "a": "ol4|T3",
+      "b": "m4|W",
+      "net": "hot"
+    },
+    {
+      "id": "w76",
+      "a": "csrc|L",
+      "b": "ct4|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w77",
+      "a": "ct4|A2",
+      "b": "ol4|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w78",
+      "a": "ol4|96",
+      "b": "csrc|N",
+      "net": "ret"
+    },
+    {
+      "id": "w79",
+      "a": "md|out0",
+      "b": "cb5|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w80",
+      "a": "cb5|out0",
+      "b": "ct5|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w81",
+      "a": "ct5|T1",
+      "b": "ol5|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w82",
+      "a": "md|out1",
+      "b": "cb5|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w83",
+      "a": "cb5|out1",
+      "b": "ct5|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w84",
+      "a": "ct5|T2",
+      "b": "ol5|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w85",
+      "a": "md|out2",
+      "b": "cb5|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w86",
+      "a": "cb5|out2",
+      "b": "ct5|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w87",
+      "a": "ct5|T3",
+      "b": "ol5|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w88",
+      "a": "ol5|T1",
+      "b": "m5|U",
+      "net": "hot"
+    },
+    {
+      "id": "w89",
+      "a": "ol5|T2",
+      "b": "m5|V",
+      "net": "hot"
+    },
+    {
+      "id": "w90",
+      "a": "ol5|T3",
+      "b": "m5|W",
+      "net": "hot"
+    },
+    {
+      "id": "w91",
+      "a": "csrc|L",
+      "b": "ct5|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w92",
+      "a": "ct5|A2",
+      "b": "ol5|95",
+      "net": "ctrl"
+    },
+    {
+      "id": "w93",
+      "a": "ol5|96",
+      "b": "csrc|N",
+      "net": "ret"
+    }
+  ]
+}

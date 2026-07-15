@@ -32,8 +32,15 @@ Keep `panel_tracer.js` in the same folder. Ships with a demo conveyor motor-star
 - Build a library of your ACY1 panels over time (MCPs, VFD cabinets, sorter controls, etc.).
 
 ## Component library
-Power source (1Ø/3Ø), disconnect, breaker, fuse, contactor, overload, relay, VFD, motor,
-pilot light, E-stop, start/stop push-buttons, selector, sensor/photo-eye, PLC in/out, terminal.
+Power source (1Ø/3Ø), **DC power supply** (AC-in → 24/75V DC-out, output live only when fed),
+disconnect, breaker, fuse, contactor, overload, relay, **safety relay** (dual-channel — outputs
+close only when coil powered *and* the E-stop loop is intact), VFD, motor, pilot light, E-stop,
+start/stop push-buttons, selector, sensor/photo-eye, PLC in/out, **8-ch PLC input card**,
+**8-ch PLC output card**, single terminal, **multi-position terminal strip**, **fused terminal**,
+**ground/PE bar**.
+
+Bundled panel library includes the ACY1 13XP33/CC566 set plus representative **BEUMER/Intelligrated
+LS4000 sorter** panels (DCP 24VDC control power, 6-belt induction power, E-stop safety chain).
 
 ## JSON format (for AI extraction)
 ```json

@@ -1,0 +1,109 @@
+{
+  "name": "LS4000 \u2014 E-Stop Safety Chain + Run Enable (rep.)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 120,
+      "label": "24VDC CTRL",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "es1",
+      "type": "estop",
+      "x": 150,
+      "y": 60,
+      "state": "closed",
+      "label": "ES1 JB"
+    },
+    {
+      "id": "es2",
+      "type": "estop",
+      "x": 250,
+      "y": 60,
+      "state": "closed",
+      "label": "ES2 JB"
+    },
+    {
+      "id": "es3",
+      "type": "estop",
+      "x": 350,
+      "y": 60,
+      "state": "closed",
+      "label": "ES3 GATE"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 470,
+      "y": 80,
+      "label": "MSR"
+    },
+    {
+      "id": "run",
+      "type": "light",
+      "x": 640,
+      "y": 140,
+      "label": "RUN ENABLE"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "sr|A1",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "sr|A2",
+      "b": "src|N",
+      "net": "ret"
+    },
+    {
+      "id": "w3",
+      "a": "src|L",
+      "b": "es1|a",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "es1|b",
+      "b": "es2|a",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "es2|b",
+      "b": "es3|a",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "es3|b",
+      "b": "sr|IN",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "src|L",
+      "b": "sr|14",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "sr|13",
+      "b": "run|a",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "run|b",
+      "b": "src|N",
+      "net": "ret"
+    }
+  ]
+}

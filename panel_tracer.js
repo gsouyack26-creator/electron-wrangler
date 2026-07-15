@@ -129,6 +129,52 @@ const T = {
           +`<text x="18" y="${y+2.4}" style="fill:var(--dim);font:6px sans-serif;text-anchor:middle">${i+1}</text>`; }
       return s; },
     links:c=>{ const l=[]; for(let i=0;i<8;i++)l.push(['L'+(i+1),'R'+(i+1)]); return l; } },
+  psu:{ name:'DC Power Supply', w:56,h:56, sw:false, psu:true, dcv:24,
+    terms:()=>[{id:'Lin',x:0,y:14},{id:'Nin',x:0,y:44},{id:'Vp',x:56,y:14},{id:'Vn',x:56,y:44}],
+    body:c=>`<rect class="sym fillbody" x="6" y="4" width="44" height="48" rx="4"/>
+      <text x="28" y="21" class="comp-label">PSU</text>
+      <text x="28" y="33" class="comp-sub">${esc((c.dcv||24)+'VDC')}</text>
+      <text x="3" y="17" class="comp-sub" style="font-size:7px">L</text><text x="3" y="47" class="comp-sub" style="font-size:7px">N</text>
+      <text x="53" y="17" class="comp-sub" style="font-size:9px;fill:var(--live);text-anchor:end">+</text><text x="53" y="47" class="comp-sub" style="font-size:9px;text-anchor:end">−</text>
+      <circle cx="28" cy="45" r="3.5" style="fill:${c._acOn?'var(--live)':'none'};stroke:var(--edge)"/>`,
+    links:()=>[] },
+  plcInCard:{ name:'PLC Input Card (8ch)', w:52,h:120, sw:false,
+    terms:()=>{ const a=[]; for(let i=0;i<8;i++)a.push({id:'in'+i,x:0,y:14+i*13}); a.push({id:'C',x:52,y:60,rail:'ret'}); return a; },
+    body:c=>{ let s=`<rect class="sym fillbody" x="10" y="4" width="32" height="112" rx="3"/><text x="26" y="2" class="comp-sub" style="font-size:7px">${esc(c.label||'DI')}</text>`;
+      for(let i=0;i<8;i++){ const y=14+i*13; const on=c._energT&&c._energT['in'+i];
+        s+=`<line class="sym" x1="0" y1="${y}" x2="10" y2="${y}"/><circle cx="17" cy="${y}" r="2.6" style="fill:${on?'var(--live)':'#33415580'};stroke:none"/><text x="30" y="${y+2.3}" style="fill:var(--dim);font:6px sans-serif;text-anchor:middle">${i}</text>`; }
+      s+=`<line class="sym" x1="42" y1="60" x2="52" y2="60"/><text x="40" y="57" class="comp-sub" style="font-size:6px;text-anchor:end">0V</text>`; return s; },
+    links:()=>[] },
+  plcOutCard:{ name:'PLC Output Card (8ch)', w:52,h:120, sw:true, states:['off','on'],
+    terms:()=>{ const a=[{id:'C',x:0,y:60}]; for(let i=0;i<8;i++)a.push({id:'out'+i,x:52,y:14+i*13}); return a; },
+    body:c=>{ const on=c.state==='on'; let s=`<rect class="sym fillbody" x="10" y="4" width="32" height="112" rx="3"/><text x="26" y="2" class="comp-sub" style="font-size:7px">${esc(c.label||'DO')}${on?' ●':''}</text>`;
+      s+=`<line class="sym" x1="0" y1="60" x2="10" y2="60"/><text x="13" y="57" class="comp-sub" style="font-size:6px">L+</text>`;
+      for(let i=0;i<8;i++){ const y=14+i*13; const e=c._energT&&c._energT['out'+i];
+        s+=`<line class="sym" x1="42" y1="${y}" x2="52" y2="${y}"/><circle cx="35" cy="${y}" r="2.6" style="fill:${e?'var(--live)':'#33415580'};stroke:none"/><text x="24" y="${y+2.3}" style="fill:var(--dim);font:6px sans-serif;text-anchor:middle">${i}</text>`; }
+      return s; },
+    links:c=>{ if(c.state!=='on')return []; const l=[]; for(let i=0;i<8;i++)l.push(['C','out'+i]); return l; } },
+  ftb:{ name:'Fused Terminal', w:32,h:24, sw:true, states:['ok','blown'],
+    terms:()=>[{id:'a',x:0,y:12},{id:'b',x:32,y:12}],
+    body:c=>{ const ok=c.state!=='blown'; return `<rect class="sym fillbody" x="7" y="4" width="18" height="16" rx="2"/>
+      <line class="sym" x1="0" y1="12" x2="7" y2="12"/><line class="sym" x1="25" y1="12" x2="32" y2="12"/>
+      <rect x="10" y="8" width="12" height="8" rx="1" style="fill:${ok?'none':'var(--warn)'};stroke:${ok?'var(--live)':'var(--warn)'}"/>
+      ${ok?'<line class="sym" x1="10" y1="12" x2="22" y2="12"/>':'<line x1="11" y1="9" x2="21" y2="15" style="stroke:var(--warn)"/>'}
+      <text x="16" y="23" class="comp-sub" style="font-size:6px">${esc(c.label||'F')}</text>`; },
+    links:c=>c.state==='blown'?[]:[['a','b']] },
+  gndbar:{ name:'Ground/PE Bar', w:66,h:22, sw:false,
+    terms:()=>{ const a=[]; for(let i=0;i<6;i++)a.push({id:'g'+i,x:6+i*11,y:0}); return a; },
+    body:c=>{ let s=`<rect class="sym fillbody" x="2" y="8" width="62" height="9" rx="2"/>`;
+      for(let i=0;i<6;i++){ const x=6+i*11; s+=`<circle class="sym" cx="${x}" cy="8" r="1.6"/><line class="sym" x1="${x}" y1="0" x2="${x}" y2="8"/>`; }
+      s+=`<line class="sym" x1="30" y1="17" x2="30" y2="21"/><line class="sym" x1="26" y1="21" x2="34" y2="21"/><line class="sym" x1="27.5" y1="23" x2="32.5" y2="23"/><line class="sym" x1="29" y1="25" x2="31" y2="25"/>`;
+      return s; },
+    links:()=>{ const l=[]; for(let i=1;i<6;i++)l.push(['g0','g'+i]); return l; } },
+  safetyRelay:{ name:'Safety Relay', w:56,h:66, sw:false, coil:{a1:'A1',a2:'A2'}, safetyGate:true,
+    terms:()=>[{id:'A1',x:0,y:12},{id:'IN',x:0,y:33},{id:'A2',x:0,y:54,rail:'ret'},{id:'13',x:56,y:14},{id:'14',x:56,y:26},{id:'23',x:56,y:44},{id:'24',x:56,y:56}],
+    body:c=>`<rect class="sym fillbody" x="6" y="4" width="44" height="58" rx="4"/>
+      <text x="28" y="21" class="comp-label">SR</text><text x="28" y="33" class="comp-sub" style="font-size:7px">SAFETY</text>
+      <text x="2" y="15" class="comp-sub" style="font-size:6px">A1</text><text x="2" y="36" class="comp-sub" style="font-size:6px">IN</text><text x="2" y="57" class="comp-sub" style="font-size:6px">A2</text>
+      <circle cx="28" cy="48" r="5" style="fill:${c._coilOn?'var(--live)':'none'};stroke:var(--edge)"/>`,
+    links:c=>c._coilOn?[['13','14'],['23','24']]:[] },
   timerON:{ name:'On-Delay TON', w:52,h:52, sw:false, timer:true,
     terms:()=>[{id:'IN',x:0,y:14,ctrl:true},{id:'o1',x:0,y:38},{id:'o2',x:52,y:38}],
     body:c=>`<rect class="sym fillbody" x="4" y="2" width="44" height="32" rx="4"/>
@@ -194,13 +240,17 @@ function solve(){
       if(t.rail==='ret')ret.add(uf.find(key(c,t.id)));
     }));
     const isHot=k=>hot.has(uf.find(k)), isRet=k=>ret.has(uf.find(k));
+    // PSU DC output acts as a rail while its AC input was energized (converges over iterations)
+    comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ hot.add(uf.find(key(c,'Vp'))); ret.add(uf.find(key(c,'Vn'))); } });
     // recompute coils
     changed=false;
     comps.forEach(c=>{ const d=compDef(c);
       if(d.coil){ const {a1,a2}=d.coil;
-        const on = a2===null ? isHot(key(c,a1)) : (isHot(key(c,a1))&&isRet(key(c,a2))) || (isRet(key(c,a1))&&isHot(key(c,a2)));
+        let on = a2===null ? isHot(key(c,a1)) : (isHot(key(c,a1))&&isRet(key(c,a2))) || (isRet(key(c,a1))&&isHot(key(c,a2)));
+        if(d.safetyGate) on = on && isHot(key(c,'IN'));
         if(!!c._coilOn!==!!on){c._coilOn=on;changed=true;}
       }
+      if(d.psu){ const on=isHot(key(c,'Lin')); if(!!c._acOn!==!!on){c._acOn=on;changed=true;} }
       if(d.timer){ const inOn=isHot(key(c,'IN')); c._coilOn=inOn;
         if(!_playing){ if(!!c._out!==!!inOn){c._out=inOn;changed=true;} } }
       });
@@ -224,6 +274,7 @@ function solve(){
         c._on=( _isHot(_key(c,a))&&_isRet(_key(c,b)) )||( _isRet(_key(c,a))&&_isHot(_key(c,b)) ); }
     }
     if(d.coil) c._on=c._coilOn;
+    if(d.psu) c._on=!!c._acOn;
     if(d.timer) c._on=!!c._out;
   });
   // current-flow groups: UF2 = potential nodes + union across ON loads/coils
@@ -245,6 +296,7 @@ function solve(){
   });
   const _vuf=solve._uf, hotV={}, _nv=v=>{const m=String(v||'').match(/(\d+(?:\.\d+)?)/);return m?+m[1]:0;};
   comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_vuf.find(_key(c,t.id)); hotV[r]=Math.max(hotV[r]||0,nv); } }); } });
+  comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ const r=_vuf.find(_key(c,'Vp')); hotV[r]=Math.max(hotV[r]||0,+(c.dcv||24)); } });
   solve._hotV=hotV;
   PANEL.wires.forEach(w=>{ if(w.cut){w._v=null;return;}
     w._v = _isHot(w.a)?(hotV[_vuf.find(w.a)]||0) : _isRet(w.a)?0 : _isHot(w.b)?(hotV[_vuf.find(w.b)]||0) : _isRet(w.b)?0 : null;
@@ -253,9 +305,10 @@ function solve(){
   { const g=new UF();
     PANEL.wires.forEach(w=>{ if(!w.cut)g.union(w.a,w.b); });
     comps.forEach(c=>{ if(c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>g.union(_key(c,x),_key(c,y))); });
-    const V={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot')V[r]=Math.max(V[r]||0,nv); if(t.rail==='ret')V[r]=0; }); } });
+    const V={},_srcV={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot'){V[r]=Math.max(V[r]||0,nv);_srcV[r]=1;} if(t.rail==='ret'){V[r]=0;_srcV[r]=1;} }); } });
+    comps.forEach(c=>{ if(compDef(c).psu&&c._acOn){ V[g.find(_key(c,'Vp'))]=Math.max(V[g.find(_key(c,'Vp'))]||0,+(c.dcv||24)); V[g.find(_key(c,'Vn'))]=0; } });
     let ch=true,pass=0; while(ch&&pass++<24){ ch=false; comps.forEach(c=>{ if(!c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>{ const ra=g.find(_key(c,x)),rb=g.find(_key(c,y)); const va=V[ra]||0,vb=V[rb]||0;
-      if(va*0.55>(V[rb]||0)+0.5){V[rb]=va*0.55;ch=true;} if(vb*0.55>(V[ra]||0)+0.5){V[ra]=vb*0.55;ch=true;} }); }); }
+      if(!_srcV[rb]&&va*0.55>(V[rb]||0)+0.5){V[rb]=va*0.55;ch=true;} if(!_srcV[ra]&&vb*0.55>(V[ra]||0)+0.5){V[ra]=vb*0.55;ch=true;} }); }); }
     PANEL.wires.forEach(w=>{ if(w.cut){w._dispV=null;return;} const r=g.find(w.a); w._dispV=(V[r]!=null)?Math.round(V[r]):w._v; }); }
   updateFooter();
 }
@@ -280,6 +333,7 @@ function diagnose(loadComp){
     else if(c.type==='vfd') ideal=[['L1','U'],['L2','V'],['L3','W']];
     else if(c.type==='plcOut') ideal=[['c','out']];
     else if(c.type==='term') ideal=[['a','b'],['a','t'],['a','bt']];
+    else if(c.type==='timerON'||c.type==='timerOFF') ideal=[['o1','o2']];
     if(c.type==='relay'){ add(key(c,'11'),key(c,'14'),{kind:'comp',c,contact:'NO'}); add(key(c,'21'),key(c,'22'),{kind:'comp',c,contact:'NC'}); }
     else if(ideal){ ideal.forEach(([x,y])=>add(key(c,x),key(c,y),{kind:'comp',c})); }
   });
@@ -320,6 +374,7 @@ function broken(c,contact){ if(c.fault)return 'faulted/open';
   if(c.type==='relay'){ if(contact==='NC'){ return c._coilOn?'coil energized (NC contact open)':null; } return c._coilOn?null:'coil not energized'; }
   if(c.type==='vfd'&&!c._coilOn)return 'drive not enabled';
   if(c.type==='plcOut'&&c.state!=='on')return 'PLC output OFF';
+  if((c.type==='timerON'||c.type==='timerOFF')&&!c._out)return 'timer output not active (IN de-energized or not played)';
   return null;
 }
 
@@ -359,7 +414,7 @@ function render(){
     s+=`<g class="${cls.join(' ')}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">
       <rect class="selrect" x="-6" y="-6" width="${d.w+12}" height="${d.h+12}" rx="6"/>
       ${body}
-      <text x="${d.w/2}" y="-9" class="comp-label">${c.label&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut'].includes(c.type)?esc(c.label):''}</text>`;
+      <text x="${d.w/2}" y="-9" class="comp-label">${c.label&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut','plcInCard','plcOutCard','gndbar','psu','safetyRelay'].includes(c.type)?esc(c.label):''}</text>`;
     termList(c).forEach(t=>{ s+=`<circle class="term" data-comp="${c.id}" data-term="${t.id}" cx="${t.x}" cy="${t.y}" r="4"/>`; });
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;
@@ -600,7 +655,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
   if(!r.ok){ box.innerHTML=`<div class="hint" style="color:var(--warn)">${r.msg}</div>`; return; }
   if(!r.suspects.length){ box.innerHTML=`<div class="hint">Path is intact & every device is closed — check upstream source voltage or the load itself.</div>`; return; }
   box.innerHTML=`<div class="hint" style="margin:6px 0">${r.suspects.length} break(s) in the path to source — closest first:</div>`+
-    r.suspects.map((s,i)=>`<div class="suspect" data-i="${i}"><b>${i+1}. ${esc(s.label)}</b><br>${s.why}</div>`).join('')+
+    r.suspects.map((s,i)=>`<div class="suspect" data-i="${i}"><b>${i+1}. ${esc(s.label)}</b><br>${esc(s.why)}</div>`).join('')+
     `<button class="tbtn" id="diag-walk" style="width:100%;margin-top:6px">▶ Walk me through it</button><div id="walkout"></div>`;
   const _wb=box.querySelector('#diag-walk'); if(_wb)_wb.onclick=()=>{ const steps=guidedWalk(c); $('#walkout').innerHTML=steps.map(t=>`<div class="suspect" style="cursor:default;border-color:var(--accent)">${esc(t)}</div>`).join('')+`<button class="tbtn" id="walk-say" style="width:100%;margin-top:6px">\ud83d\udd0a Read aloud</button>`; const _sa=$('#walk-say'); if(_sa)_sa.onclick=()=>speak(steps); };
   box.querySelectorAll('.suspect[data-i]').forEach(el=>el.onclick=()=>{ const s=r.suspects[+el.dataset.i];
@@ -610,7 +665,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
 function flash(id){ const g=svg.querySelector(`[data-comp="${id}"]`); if(g){g.classList.add('faulted');setTimeout(()=>render(),1200);} }
 
 /* ---------- palette / modes ---------- */
-const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','term','tstrip'];
+const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','plcInCard','plcOutCard','psu','term','tstrip','ftb','gndbar','safetyRelay'];
 function buildPalette(){ $('#palette').innerHTML=PAL.map(t=>`<button data-t="${t}"><svg viewBox="0 0 ${T[t].w} ${T[t].h}">${T[t].body(demoStub(t))}</svg>${T[t].name}</button>`).join('');
   $('#palette').querySelectorAll('button').forEach(b=>b.onclick=()=>setTool(b.dataset.t)); }
 function demoStub(t){const c={type:t,label:'',poles:3,phases:3,state:T[t].states?T[t].states[0]:undefined,volts:'480V'};return c;}
@@ -796,7 +851,7 @@ function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label|
   return '<div class="hint" style="margin:0 0 8px;padding:8px;border:1px solid var(--edge);border-radius:6px;background:var(--panel2)">'
     +'<b>'+esc(c.label||c.type)+'</b> \u2014 '+compDef(c).name+'<br>'
     +'Live: <b style="color:'+(anyEnerg(c)?'var(--live)':'var(--dim)')+'">'+(anyEnerg(c)?'ENERGIZED':'\u2014')+'</b>'
-    +(bad?' \u00b7 <span style="color:var(--warn)">'+bad+'</span>':'')+'<br>'
+    +(bad?' \u00b7 <span style="color:var(--warn)">'+esc(bad)+'</span>':'')+'<br>'
     +'<span style="color:var(--dim)">Wired to:</span> '+(nb.map(esc).join(', ')||'(nothing)')+'</div>'; }
 function applyView(){ const dim=(viewMode==='phys'||mode==='sim'); const l=document.getElementById('left');
   if(l){ l.style.opacity=dim?'.4':'1'; l.style.pointerEvents=dim?'none':'auto'; } }
@@ -1224,10 +1279,10 @@ function openTools(){ openModal('Tools',
       +'<div class="hint" style="margin-top:6px">Anyone opening this URL sees the exact same panel and switch states.</div>'; };
   $('#tk-qr').onclick=showQR;
   $('#tk-val').onclick=()=>{ const r=validateSafety();
-    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-lock').onclick=()=>{ const r=validateInterlocks();
-    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-info').onclick=()=>{ $('#toolout').innerHTML=
     '<div class="field"><label>Panel name</label><input id="pi-name" value="'+esc(PANEL.name||'')+'"></div>'
@@ -1238,7 +1293,7 @@ function openTools(){ openModal('Tools',
     $('#pi-rev').oninput=e=>{PANEL.rev=e.target.value;persist();};
     $('#pi-by').oninput=e=>{PANEL.tracedBy=e.target.value;persist();}; };
   $('#tk-load').onclick=()=>{ const r=computeLoads();
-    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-wsched').onclick=exportWireCsv;
   $('#tk-work').onclick=printWorksheet;
@@ -1246,10 +1301,10 @@ function openTools(){ openModal('Tools',
   $('#tk-ladder').onclick=ladderize;
   $('#tk-snap').onclick=openSnapshots;
   $('#tk-coord').onclick=()=>{ const r=coordinationStudy();
-    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-health').onclick=()=>{ const r=healthReport();
-    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-pm').onclick=openPM;
   $('#tk-scen').onclick=openScenarios;
@@ -1668,7 +1723,7 @@ function nearestProtector(comp){ const key=(c,t)=>c.id+'|'+t; const adj={};
   found.sort((a,b)=>a.dist-b.dist); return found; }
 function boltedFault(comp){ const prot=nearestProtector(comp);
   if(!prot.length){ toast('No breaker/fuse between here and the source \u2014 unprotected!'); return; }
-  const p=prot[0].c; if(p.type==='fuse')p.state='blown'; else p.state='tripped';
+  const p=prot[0].c; if(p.type==='fuse')p.state='blown'; else if(p.type==='disc')p.state='open'; else p.state='tripped';
   solve(); render(); renderSimInspector();
   const sel2=prot.length>1?(' Upstream '+(prot[1].c.label||prot[1].c.type)+' held (good selectivity).'):'';
   toast('\u26a1 Bolted fault \u2192 '+(p.label||p.type)+' cleared it.'+sel2); }
@@ -1795,6 +1850,7 @@ function openLibraryManager(){ const lib=window.PANEL_LIBRARY||{}, mine=userLib(
 function scanQR(){ if(typeof BarcodeDetector==='undefined'){ openModal('QR scan','<div class="hint">This browser has no built-in QR scanner (needs Chrome/Edge on Android or a recent desktop). Use \ud83d\udd17 Copy share link instead.</div>'); return; }
   openModal('Scan a panel QR','<video id="qr-vid" playsinline style="width:100%;border-radius:8px;background:#000"></video><div class="hint" style="margin-top:6px">Point the camera at a Panel Tracer QR code.</div>');
   const vid=$('#qr-vid'); const det=new BarcodeDetector({formats:['qr_code']}); let stream=null, stop=false;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ closeModal(); toast('Camera unavailable in this context'); return; }
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{ stream=s; vid.srcObject=s; vid.play();
     const scan=async()=>{ if(stop)return; try{ const codes=await det.detect(vid); if(codes&&codes.length){ const raw=codes[0].rawValue;
       stop=true; if(stream)stream.getTracks().forEach(t=>t.stop());

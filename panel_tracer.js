@@ -562,7 +562,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     $('#sim-phase').onclick=()=>{showPhase=!showPhase;render();renderSimInspector();};
     $('#sim-therm').onclick=()=>{showTherm=!showTherm;render();renderSimInspector();};
     if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog(); if(contMode) renderCont();
-    if(scenario&&!scenario.done){ const _d=$('#simextra'); if(_d)_d.innerHTML+='<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>'; }
+    if(scenario){ const _d=$('#simextra'); if(_d){ _d.innerHTML+=(!scenario.done?'<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>':'')+'<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:8px">← Exit scenario (restore my panel)</button>'; const _e=$('#sim-scen-exit'); if(_e)_e.onclick=exitScenario; } }
     return; }
   const d=compDef(c); let h=`<h3>${c.label?esc(c.label)+' — ':''}${d.name}</h3>`;
   if(d.sw){ const cur=c.state; const cls=(cur==='closed'||cur==='ok'||cur==='on')?'closed':(cur==='tripped'||cur==='blown')?'fault':'open';
@@ -571,7 +571,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   h+=`<button class="statebtn ${c.fault?'fault':''}" id="sim-fault">${c.fault?'⚠ FAULTED (open) — clear':'Inject fault (open device)'}</button>`;
   h+=`<button class="statebtn ${c.hiZ?'fault':''}" id="sim-hiz">${c.hiZ?'⚠ HIGH-RESISTANCE — clear':'Inject high-resistance (voltage drop)'}</button>`;
   h+=`<button class="tbtn" id="sim-bolt" style="width:100%">⚡ Bolted fault here → trips protection</button>`;
-  if(scenario&&!scenario.done) h+=`<button class="tbtn" id="sim-scen" style="width:100%;margin-top:6px">🎯 Check: is this the scenario fault?</button>`;
+  if(scenario){ if(!scenario.done) h+=`<button class="tbtn" id="sim-scen" style="width:100%;margin-top:6px">🎯 Check: is this the scenario fault?</button>`; h+=`<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:6px">← Exit scenario</button>`; }
   if(compDef(c).load||compDef(c).coil){ h+=`<div class="hint" style="margin:6px 0">Status: <b style="color:${c._on?'var(--live)':'var(--dim)'}">${c._on?'ENERGIZED / RUNNING':'DEAD'}</b></div>`;
     if(!c._on) h+=`<button class="tbtn" id="sim-diag" style="width:100%">🔎 Diagnose why it's dead</button><div id="diag"></div>`; }
   if(quiz&&!quiz.answered) h+=`<button class="tbtn" id="sim-qz-check" style="width:100%;margin-top:8px">\ud83c\udf93 Check: is this the fault?</button>`;
@@ -583,7 +583,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   $('#sim-fault').onclick=()=>{c.fault=!c.fault;render();renderSimInspector();};
   const _hz=$('#sim-hiz'); if(_hz)_hz.onclick=()=>{c.hiZ=!c.hiZ;render();renderSimInspector();};
   const _bf=$('#sim-bolt'); if(_bf)_bf.onclick=()=>boltedFault(c);
-  const _sc=$('#sim-scen'); if(_sc)_sc.onclick=scenarioGuess;
+  const _sc=$('#sim-scen'); if(_sc)_sc.onclick=scenarioGuess; const _sce=$('#sim-scen-exit'); if(_sce)_sce.onclick=exitScenario;
   const dg=$('#sim-diag'); if(dg)dg.onclick=()=>runDiag(c);
 }
 function runDiag(c){ const r=diagnose(c); const box=$('#diag');
@@ -1723,16 +1723,17 @@ function scenarioPanel(kind){ const P={name:'Scenario',backdrop:null,components:
   else if(kind==='ol'){ ol.state='tripped'; answer=ol.id; }
   else if(kind==='sp'){ P.wires=P.wires.filter(x=>x.a!==cb.id+'|out2'&&x.b!==cb.id+'|out2'); answer=cb.id; }
   return {panel:P, answer}; }
-function startScenario(kind){ const def=SCEN.find(s=>s.id===kind); const sp=scenarioPanel(kind);
-  PANEL=validatePanel(sp.panel); restoreUid(); scenario={id:kind, answer:sp.answer, t0:Date.now(), done:false};
+function startScenario(kind){ const def=SCEN.find(s=>s.id===kind); const sp=scenarioPanel(kind); const _prev=(scenario&&scenario.prev)?scenario.prev:JSON.stringify(PANEL);
+  PANEL=validatePanel(sp.panel); restoreUid(); scenario={id:kind, answer:sp.answer, t0:Date.now(), done:false, prev:_prev};
   sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
   toast('\u25b6 Scenario: '+def.name); }
 function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspect first'); return; }
-  const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=sel.id===scenario.answer; scenario.done=true;
+  const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=sel.id===scenario.answer; if(ok)scenario.done=true;
   let best=null; try{ best=+localStorage.getItem('pt_scen_'+scenario.id)||null; }catch(e){}
   if(ok&&(!best||secs<best)){ try{localStorage.setItem('pt_scen_'+scenario.id,secs);}catch(e){} }
   toast(ok?('\u2705 Correct in '+secs+'s'+(best&&secs<best?' \u2014 new best!':best?(' (best '+best+'s)'):'')):'\u274c Not it \u2014 keep tracing');
   renderSimInspector(); }
+function exitScenario(){ if(!scenario)return; const prev=scenario.prev; scenario=null; sel=null;selWire=null;selSet=[]; if(prev){ try{ PANEL=validatePanel(JSON.parse(prev)); restoreUid(); }catch(e){} } persist(); render(); renderSimInspector(); toast('← Exited scenario — your panel is back'); }
 function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStorage.getItem('pt_scen_'+s.id);}catch(e){}});
   openModal('Training scenarios', SCEN.map(s=>'<div class="suspect" style="cursor:pointer" data-s="'+s.id+'"><b>'+esc(s.name)+'</b>'+(best[s.id]?' <span style="color:var(--ok)">\u00b7 best '+esc(String(best[s.id]))+'s</span>':'')+'<br><span class="hint">'+esc(s.prompt)+'</span></div>').join(''));
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }

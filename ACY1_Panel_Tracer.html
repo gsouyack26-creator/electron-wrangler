@@ -156,6 +156,18 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 .voltlbl{fill:var(--live);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
 .pin{cursor:pointer}
 .pin:hover circle{filter:brightness(1.2)}
+
+/* --- extras3 (features 26-37) --- */
+#tabbar{display:none;gap:3px;background:var(--panel);border-bottom:1px solid var(--edge);padding:5px 8px 0;overflow-x:auto;flex:0 0 auto}
+.tab{background:var(--panel2);color:var(--dim);border:1px solid var(--edge);border-bottom:none;border-radius:7px 7px 0 0;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tab.on{background:#0d1117;color:var(--accent);border-color:var(--accent)}
+.tab .tabx{color:var(--dim);font-weight:700;font-size:13px}
+.tab .tabx:hover{color:var(--bad)}
+.tab.tabadd{color:var(--accent);border-style:dashed}
+.cmd-item{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px}
+.cmd-item:hover,.cmd-item.sel{background:var(--accent);color:#04211d}
+.ampslbl{fill:var(--accent2);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
+.coilind.lit{fill:var(--live)!important;filter:drop-shadow(0 0 5px var(--live))}
 </style>
 </head>
 <body>
@@ -171,6 +183,9 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
       <button id="mBuild" class="on">🔧 Build</button>
       <button id="mSim">▶ Simulate</button>
     </div>
+    <button class="tbtn" id="btnPlay" title="Play/pause a timed sequence (Space)">▶ Play</button>
+    <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡A</button>
+    <button class="tbtn" id="btnProj" title="Project mode: multiple panels in tabs">🗂 Panels</button>
     <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
     <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
     <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>
@@ -185,6 +200,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <input type="file" id="fileJson" accept=".json,application/json">
     <input type="file" id="fileDiff" accept=".json,application/json">
   </header>
+  <div id="tabbar"></div>
   <main>
     <div id="left">
       <h3>Add Component</h3>
@@ -196,7 +212,8 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
       <h3>Build Tools</h3>
       <button class="tbtn" id="btnTmpl" style="width:100%" title="Insert a pre-wired skeleton">⚙️ Templates</button>
       <button class="tbtn" id="btnPin" style="width:100%;margin-top:5px" title="Drop numbered pins on the photo">📍 Photo pin</button>
-      <div class="hint" style="margin-top:6px">Shift+drag = box-select · right-click a device = quick actions · Ctrl+Z = undo.</div>
+      <button class="tbtn" id="btnGrid" style="width:100%;margin-top:5px" title="Snap components to a grid">▦ Grid snap</button>
+      <div class="hint" style="margin-top:6px">Shift+drag box-select · right-click = quick actions · Ctrl+Z undo · Ctrl+C/V copy · Ctrl+K commands · Space play.</div>
       <div class="hint" style="margin-top:6px">Click a terminal, then another to connect.</div>
       <h3>Backdrop</h3>
       <div class="field">

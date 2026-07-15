@@ -43,7 +43,12 @@ pilot light, E-stop, start/stop push-buttons, selector, sensor/photo-eye, PLC in
 ```
 Wire endpoints are `"<componentId>|<terminalId>"`. Net = `hot` | `ret` | `ctrl`.
 
-## Feature set (25)
+## Feature set (37)
+**Dynamic simulation:** time-based sequence playback with **TON/TOF timers** (▶ Play / Space) ·
+live-voltage overlay · running-**amps** display + breaker/wire **load sizing** check ·
+**high-resistance / voltage-drop** faults (partial sag, not just open).
+
+**Troubleshooting (round 1-2):**
 **Troubleshooting:** panel-wide *What's dead?* report · meter probe (click 2 terminals → expected V) ·
 hover live-path highlight · fault-inject quiz/training mode · guided fault walk-through ·
 live-voltage overlay · as-found measurement log (compare model vs your real readings).
@@ -52,6 +57,12 @@ live-voltage overlay · as-found measurement log (compare model vs your real rea
 right-click quick-menu · undo/redo (`Ctrl+Z` / `Ctrl+Y`) · ortho (right-angle) wire routing ·
 pre-wired templates (motor starter / E-stop string / 24V PLC rung) · photo pin-drop ·
 notes/annotations pinned to components · wire numbers/labels.
+
+**Multi-panel & docs:** project mode with panel **tabs** · in-panel named **snapshots** + diff ·
+**ladder-diagram** auto-layout · **terminal-strip** view · **wire schedule** CSV ·
+printable **troubleshooting worksheet** · part-number (APN) + Parts Search link.
+
+**Build speed:** copy/paste (Ctrl+C/V) · grid snap · **command palette** (Ctrl+K).
 
 **Correctness:** E-stop chain validator · interlock / sequence checker · net highlight ·
 panel diff (vs saved file).

@@ -156,6 +156,18 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 .voltlbl{fill:var(--live);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
 .pin{cursor:pointer}
 .pin:hover circle{filter:brightness(1.2)}
+
+/* --- extras3 (features 26-37) --- */
+#tabbar{display:none;gap:3px;background:var(--panel);border-bottom:1px solid var(--edge);padding:5px 8px 0;overflow-x:auto;flex:0 0 auto}
+.tab{background:var(--panel2);color:var(--dim);border:1px solid var(--edge);border-bottom:none;border-radius:7px 7px 0 0;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tab.on{background:#0d1117;color:var(--accent);border-color:var(--accent)}
+.tab .tabx{color:var(--dim);font-weight:700;font-size:13px}
+.tab .tabx:hover{color:var(--bad)}
+.tab.tabadd{color:var(--accent);border-style:dashed}
+.cmd-item{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px}
+.cmd-item:hover,.cmd-item.sel{background:var(--accent);color:#04211d}
+.ampslbl{fill:var(--accent2);font-size:8px;text-anchor:middle;font-weight:700;paint-order:stroke;stroke:#0d1117;stroke-width:2.5px;pointer-events:none}
+.coilind.lit{fill:var(--live)!important;filter:drop-shadow(0 0 5px var(--live))}
 </style>
 </head>
 <body>
@@ -171,6 +183,9 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
       <button id="mBuild" class="on">🔧 Build</button>
       <button id="mSim">▶ Simulate</button>
     </div>
+    <button class="tbtn" id="btnPlay" title="Play/pause a timed sequence (Space)">▶ Play</button>
+    <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡A</button>
+    <button class="tbtn" id="btnProj" title="Project mode: multiple panels in tabs">🗂 Panels</button>
     <button class="tbtn" id="btnBackdrop">🖼 Drawing</button>
     <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure</button>
     <button class="tbtn" id="btnView" title="Switch between schematic and physical panel layout">&#128452; Physical</button>
@@ -185,6 +200,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <input type="file" id="fileJson" accept=".json,application/json">
     <input type="file" id="fileDiff" accept=".json,application/json">
   </header>
+  <div id="tabbar"></div>
   <main>
     <div id="left">
       <h3>Add Component</h3>
@@ -196,7 +212,8 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
       <h3>Build Tools</h3>
       <button class="tbtn" id="btnTmpl" style="width:100%" title="Insert a pre-wired skeleton">⚙️ Templates</button>
       <button class="tbtn" id="btnPin" style="width:100%;margin-top:5px" title="Drop numbered pins on the photo">📍 Photo pin</button>
-      <div class="hint" style="margin-top:6px">Shift+drag = box-select · right-click a device = quick actions · Ctrl+Z = undo.</div>
+      <button class="tbtn" id="btnGrid" style="width:100%;margin-top:5px" title="Snap components to a grid">▦ Grid snap</button>
+      <div class="hint" style="margin-top:6px">Shift+drag box-select · right-click = quick actions · Ctrl+Z undo · Ctrl+C/V copy · Ctrl+K commands · Space play.</div>
       <div class="hint" style="margin-top:6px">Click a terminal, then another to connect.</div>
       <h3>Backdrop</h3>
       <div class="field">
@@ -351,6 +368,20 @@ const T = {
     body:c=>`<rect class="sym fillbody" x="6" y="2" width="14" height="16" rx="2"/>
       <text x="13" y="14" class="comp-sub">${esc(c.label||'X')}</text>`,
     links:()=>[['a','b'],['a','t'],['a','bt']] },
+  timerON:{ name:'On-Delay TON', w:52,h:52, sw:false, timer:true,
+    terms:()=>[{id:'IN',x:0,y:14,ctrl:true},{id:'o1',x:0,y:38},{id:'o2',x:52,y:38}],
+    body:c=>`<rect class="sym fillbody" x="4" y="2" width="44" height="32" rx="4"/>
+      <text x="26" y="15" class="comp-label">TON</text>
+      <text x="26" y="27" class="comp-sub">${esc(((c.preset||2000)/1000)+'s')}</text>
+      <circle class="sym coilind" cx="26" cy="44" r="5"/>`,
+    links:c=>(!c.fault&&c._out)?[['o1','o2']]:[] },
+  timerOFF:{ name:'Off-Delay TOF', w:52,h:52, sw:false, timer:true,
+    terms:()=>[{id:'IN',x:0,y:14,ctrl:true},{id:'o1',x:0,y:38},{id:'o2',x:52,y:38}],
+    body:c=>`<rect class="sym fillbody" x="4" y="2" width="44" height="32" rx="4"/>
+      <text x="26" y="15" class="comp-label">TOF</text>
+      <text x="26" y="27" class="comp-sub">${esc(((c.preset||2000)/1000)+'s')}</text>
+      <circle class="sym coilind" cx="26" cy="44" r="5"/>`,
+    links:c=>(!c.fault&&c._out)?[['o1','o2']]:[] },
 };
 function polePairs(n,w,h){const ar=[];for(let i=0;i<n;i++){const y=10+i*((h-14)/Math.max(1,n-1||1));ar.push({id:'in'+i,x:0,y:n===1?h/2:y});ar.push({id:'out'+i,x:w,y:n===1?h/2:y});}return ar;}
 function poleLinks(n){const l=[];for(let i=0;i<n;i++)l.push(['in'+i,'out'+i]);return l;}
@@ -407,7 +438,10 @@ function solve(){
       if(d.coil){ const {a1,a2}=d.coil;
         const on = a2===null ? isHot(key(c,a1)) : (isHot(key(c,a1))&&isRet(key(c,a2))) || (isRet(key(c,a1))&&isHot(key(c,a2)));
         if(!!c._coilOn!==!!on){c._coilOn=on;changed=true;}
-      }});
+      }
+      if(d.timer){ const inOn=isHot(key(c,'IN')); c._coilOn=inOn;
+        if(!_playing){ if(!!c._out!==!!inOn){c._out=inOn;changed=true;} } }
+      });
     // stash for post
     solve._uf=uf; solve._hot=hot; solve._ret=ret; solve._isHot=isHot; solve._isRet=isRet; solve._key=key;
   }
@@ -422,6 +456,7 @@ function solve(){
         c._on=( _isHot(_key(c,a))&&_isRet(_key(c,b)) )||( _isRet(_key(c,a))&&_isHot(_key(c,b)) ); }
     }
     if(d.coil) c._on=c._coilOn;
+    if(d.timer) c._on=!!c._out;
   });
   // current-flow groups: UF2 = potential nodes + union across ON loads/coils
   const U2=new UF();
@@ -445,6 +480,14 @@ function solve(){
   solve._hotV=hotV;
   PANEL.wires.forEach(w=>{ if(w.cut){w._v=null;return;}
     w._v = _isHot(w.a)?(hotV[_vuf.find(w.a)]||0) : _isRet(w.a)?0 : _isHot(w.b)?(hotV[_vuf.find(w.b)]||0) : _isRet(w.b)?0 : null; });
+  // display voltages with high-resistance drop (separate graph: hi-Z links are resistive, not shorts)
+  { const g=new UF();
+    PANEL.wires.forEach(w=>{ if(!w.cut)g.union(w.a,w.b); });
+    comps.forEach(c=>{ if(c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>g.union(_key(c,x),_key(c,y))); });
+    const V={}; comps.forEach(c=>{ if(c.type==='source'){ const nv=_nv(c.volts); termList(c).forEach(t=>{ const r=g.find(_key(c,t.id)); if(t.rail==='hot')V[r]=Math.max(V[r]||0,nv); if(t.rail==='ret')V[r]=0; }); } });
+    let ch=true,pass=0; while(ch&&pass++<24){ ch=false; comps.forEach(c=>{ if(!c.hiZ)return; compDef(c).links(c).forEach(([x,y])=>{ const ra=g.find(_key(c,x)),rb=g.find(_key(c,y)); const va=V[ra]||0,vb=V[rb]||0;
+      if(va*0.55>(V[rb]||0)+0.5){V[rb]=va*0.55;ch=true;} if(vb*0.55>(V[ra]||0)+0.5){V[ra]=vb*0.55;ch=true;} }); }); }
+    PANEL.wires.forEach(w=>{ if(w.cut){w._dispV=null;return;} const r=g.find(w.a); w._dispV=(V[r]!=null)?Math.round(V[r]):w._v; }); }
   updateFooter();
 }
 class UF{ constructor(){this.p={};} find(x){if(this.p[x]===undefined)this.p[x]=x; while(this.p[x]!==x){this.p[x]=this.p[this.p[x]];x=this.p[x];} return x;} union(a,b){this.p[this.find(a)]=this.find(b);} }
@@ -529,7 +572,7 @@ function render(){
     const cls=['wire',w.net||'ctrl']; if(w.cut)cls.push('cut'); if(w._live)cls.push('live'); if(w._flow)cls.push('flow'); if(selWire===w)cls.push('hit'); if(hoverData&&hoverData.wires.has(w.id))cls.push('hover'); if(netHi&&netHi.wires.has(w.id))cls.push('nethi');
     s+=`<path class="${cls.join(' ')}" data-wire="${w.id}" d="${wirePath(a,b)}"/>`;
     if(showWireNo&&w.label) s+=`<text class="wireno" x="${mx}" y="${(a.y+b.y)/2-3}">${esc(w.label)}</text>`;
-    if(showVolts&&mode==='sim'&&w._v!=null) s+=`<text class="voltlbl" x="${mx}" y="${(a.y+b.y)/2+9}">${w._v}V</text>`; });
+    const _vv=(w._dispV!=null?w._dispV:w._v); if(showVolts&&mode==='sim'&&_vv!=null) s+=`<text class="voltlbl" x="${mx}" y="${(a.y+b.y)/2+9}">${_vv}V</text>`; });
   // components
   PANEL.components.forEach(c=>{ const d=compDef(c);
     const cls=['compbox']; if(sel===c||selSet.indexOf(c)>=0)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted'); if(hoverData&&hoverData.comps.has(c.id))cls.push('hoverpath');
@@ -539,6 +582,7 @@ function render(){
       if(c.type==='motor'&&c._on) body=body.replace('motorbody','motorbody spin').replace('class="comp-label motorM"','class="comp-label motorM lit"');
       if(c.type==='light'&&c._on) body=body.replace('lampbody','lampbody lit');
       if((c.type==='contactor'||c.type==='relay')&&c._coilOn) body=body.replace('coilind','coilind lit');
+      if(compDef(c).timer&&c._out) body=body.replace('coilind','coilind lit');
     }
     s+=`<g class="${cls.join(' ')}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">
       <rect class="selrect" x="-6" y="-6" width="${d.w+12}" height="${d.h+12}" rx="6"/>
@@ -547,6 +591,7 @@ function render(){
     termList(c).forEach(t=>{ s+=`<circle class="term" data-comp="${c.id}" data-term="${t.id}" cx="${t.x}" cy="${t.y}" r="4"/>`; });
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;
+    if(mode==='sim'&&showAmps&&c._on&&c.type==='motor'&&(c.fla||c.hp)) s+=`<text class="ampslbl" x="${d.w/2}" y="${d.h+(c.link?30:18)}">${motorAmps(c)}A</text>`;
     s+=`</g>`; });
   // wire-in-progress
   if(wireStart){ const p=endPos(wireStart.comp+'|'+wireStart.term); if(p) s+=`<circle cx="${p.x}" cy="${p.y}" r="6" fill="none" stroke="var(--accent)" stroke-width="2" class="pulse"/>`; }
@@ -597,7 +642,7 @@ let drag=null, panning=null;
 svg.addEventListener('pointerdown',ev=>{
   const term=ev.target.closest('.term'), comp=ev.target.closest('.compbox'), wire=ev.target.closest('[data-wire]');
   const linkEl=ev.target.closest('[data-link]');
-  if(linkEl){ loadLibPanel(linkEl.dataset.link); return; }
+  if(linkEl){ followLink(linkEl.dataset.link); return; }
   const pinEl=ev.target.closest('[data-pin]');
   if(pinEl){ const pn=(PANEL.pins||[])[+pinEl.dataset.pin]; if(pn&&pn.comp){ sel=findComp(pn.comp); selWire=null; selSet=[]; renderInspector(); render(); flash(pn.comp); } return; }
   if(mode==='build'&&pinMode){ const p=toWorld(ev); const lbl=prompt('Pin label / linked component tag (blank = none):','');
@@ -623,7 +668,8 @@ svg.addEventListener('pointerdown',ev=>{
 });
 svg.addEventListener('pointermove',ev=>{
   if(marquee){ const p=toWorld(ev); marquee.x1=p.x; marquee.y1=p.y; render(); return; }
-  if(drag){ const p=toWorld(ev); const nx=Math.round(p.x-drag.dx), ny=Math.round(p.y-drag.dy);
+  if(drag){ const p=toWorld(ev); let nx=Math.round(p.x-drag.dx), ny=Math.round(p.y-drag.dy);
+    if(gridSnap){ nx=Math.round(nx/GRID)*GRID; ny=Math.round(ny/GRID)*GRID; }
     if(drag.phys){ drag.c.phys=drag.c.phys||{w:56,h:60}; drag.c.phys.x=nx; drag.c.phys.y=ny; } else { drag.c.x=nx; drag.c.y=ny; } render(); }
   else if(panning){ view.x=panning.vx+(ev.clientX-panning.x); view.y=panning.vy+(ev.clientY-panning.y); render(); }
 });
@@ -696,6 +742,11 @@ function renderInspector(){ const box=$('#inspector');
   if(d.sw) h+=`<div class="field"><label>State</label><select id="ip-state">${d.states.map(s=>`<option ${c.state===s?'selected':''}>${s}</option>`).join('')}</select></div>`;
   h+=`<div class="field"><label>Note / annotation</label><textarea id="ip-note" rows="2" placeholder="pin a note to this device">${esc(c.note||'')}</textarea></div>`;
   h+=`<div class="field"><label>Cross-panel link (library panel name)</label><input id="ip-link" value="${esc(c.link||'')}" placeholder="e.g. ACY1 13XP33 \u2014 2300 Control 24V"></div>`;
+  if(['breaker','fuse','disc'].includes(c.type)) h+=`<div class="field"><label>Amp rating</label><input id="ip-amps" type="number" value="${esc(c.amps||'')}" placeholder="e.g. 30"></div>`;
+  if(c.type==='motor') h+=`<div class="field"><label>HP</label><input id="ip-hp" type="number" value="${esc(c.hp||'')}" placeholder="e.g. 5"></div><div class="field"><label>FLA (overrides HP)</label><input id="ip-fla" type="number" value="${esc(c.fla||'')}" placeholder="amps"></div>`;
+  if(c.type==='timerON'||c.type==='timerOFF') h+=`<div class="field"><label>Preset (seconds)</label><input id="ip-preset" type="number" step="0.1" value="${esc((c.preset||2000)/1000)}"></div>`;
+  h+=`<div class="field"><label>Part number (APN)</label><input id="ip-apn" value="${esc(c.apn||'')}" placeholder="Amazon part #"></div>`;
+  h+=`<button class="tbtn" id="ip-parts" style="width:100%;margin-bottom:6px">🔎 Find in Parts Search</button>`;
   h+=`<button class="tbtn warn" id="ip-del" style="margin-top:8px">🗑 Delete</button>`;
   box.innerHTML=(viewMode==='phys'&&sel?physInfo(sel):'')+h;
   $('#ip-label').oninput=e=>{c.label=e.target.value;persist();render();};
@@ -706,6 +757,12 @@ function renderInspector(){ const box=$('#inspector');
   const st=$('#ip-state'); if(st)st.onchange=e=>{c.state=e.target.value;persist();render();};
   const nt=$('#ip-note'); if(nt) nt.oninput=e=>{c.note=e.target.value;persist();render();};
   const lk=$('#ip-link'); if(lk) lk.oninput=e=>{c.link=e.target.value;persist();render();};
+  const _amps=$('#ip-amps'); if(_amps)_amps.oninput=e=>{c.amps=+e.target.value||'';persist();};
+  const _hp=$('#ip-hp'); if(_hp)_hp.oninput=e=>{c.hp=+e.target.value||'';persist();render();};
+  const _fla=$('#ip-fla'); if(_fla)_fla.oninput=e=>{c.fla=+e.target.value||'';persist();render();};
+  const _pre=$('#ip-preset'); if(_pre)_pre.oninput=e=>{c.preset=Math.round((+e.target.value||2)*1000);persist();render();};
+  const _apn=$('#ip-apn'); if(_apn)_apn.oninput=e=>{c.apn=e.target.value;persist();};
+  const _bpp=$('#ip-parts'); if(_bpp)_bpp.onclick=()=>partsLink(c);
   $('#ip-del').onclick=()=>delComp(c);
 }
 function fixWires(c){ const valid=new Set(termList(c).map(t=>c.id+'|'+t.id));
@@ -733,6 +790,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     h+=`<button class="statebtn ${cls}" id="sim-toggle">State: ${cur.toUpperCase()} — click to change</button>`; }
   // fault injection universal
   h+=`<button class="statebtn ${c.fault?'fault':''}" id="sim-fault">${c.fault?'⚠ FAULTED (open) — clear':'Inject fault (open device)'}</button>`;
+  h+=`<button class="statebtn ${c.hiZ?'fault':''}" id="sim-hiz">${c.hiZ?'⚠ HIGH-RESISTANCE — clear':'Inject high-resistance (voltage drop)'}</button>`;
   if(compDef(c).load||compDef(c).coil){ h+=`<div class="hint" style="margin:6px 0">Status: <b style="color:${c._on?'var(--live)':'var(--dim)'}">${c._on?'ENERGIZED / RUNNING':'DEAD'}</b></div>`;
     if(!c._on) h+=`<button class="tbtn" id="sim-diag" style="width:100%">🔎 Diagnose why it's dead</button><div id="diag"></div>`; }
   if(quiz&&!quiz.answered) h+=`<button class="tbtn" id="sim-qz-check" style="width:100%;margin-top:8px">\ud83c\udf93 Check: is this the fault?</button>`;
@@ -742,6 +800,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   const qr=$('#sim-qz-reveal'); if(qr)qr.onclick=quizReveal;
   const tg=$('#sim-toggle'); if(tg)tg.onclick=()=>{operate(c);};
   $('#sim-fault').onclick=()=>{c.fault=!c.fault;render();renderSimInspector();};
+  const _hz=$('#sim-hiz'); if(_hz)_hz.onclick=()=>{c.hiZ=!c.hiZ;render();renderSimInspector();};
   const dg=$('#sim-diag'); if(dg)dg.onclick=()=>runDiag(c);
 }
 function runDiag(c){ const r=diagnose(c); const box=$('#diag');
@@ -758,7 +817,7 @@ function runDiag(c){ const r=diagnose(c); const box=$('#diag');
 function flash(id){ const g=svg.querySelector(`[data-comp="${id}"]`); if(g){g.classList.add('faulted');setTimeout(()=>render(),1200);} }
 
 /* ---------- palette / modes ---------- */
-const PAL=['source','disc','breaker','fuse','contactor','overload','relay','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','term'];
+const PAL=['source','disc','breaker','fuse','contactor','overload','relay','timerON','timerOFF','vfd','motor','light','estop','pbNO','pbNC','selector','sensor','plcIn','plcOut','term'];
 function buildPalette(){ $('#palette').innerHTML=PAL.map(t=>`<button data-t="${t}"><svg viewBox="0 0 ${T[t].w} ${T[t].h}">${T[t].body(demoStub(t))}</svg>${T[t].name}</button>`).join('');
   $('#palette').querySelectorAll('button').forEach(b=>b.onclick=()=>setTool(b.dataset.t)); }
 function demoStub(t){const c={type:t,label:'',poles:3,phases:3,state:T[t].states?T[t].states[0]:undefined,volts:'480V'};return c;}
@@ -964,6 +1023,7 @@ function init(){ $('#ver').textContent='v'+VERSION;
   initLibrary();
   initExtras();
   initExtras2();
+  initExtras3();
   if(bootSim) setMode('sim');
   window.addEventListener('resize',render);
 }
@@ -1335,6 +1395,12 @@ function openTools(){ openModal('Tools',
   +'<button class="tbtn" id="tk-val">\u2714 Validate E-Stop chain</button>'
   +'<button class="tbtn" id="tk-lock">\U0001F517 Check interlocks</button>'
   +'<button class="tbtn" id="tk-info">\u270e Panel info / title block</button>'
+  +'<button class="tbtn" id="tk-load">\u26a1 Load / breaker sizing</button>'
+  +'<button class="tbtn" id="tk-wsched">\U0001F4C4 Wire schedule CSV</button>'
+  +'<button class="tbtn" id="tk-work">\U0001F5A8 Troubleshooting worksheet</button>'
+  +'<button class="tbtn" id="tk-term">\U0001F5C2 Terminal strip</button>'
+  +'<button class="tbtn" id="tk-ladder">\u2630 Ladderize control</button>'
+  +'<button class="tbtn" id="tk-snap">\U0001F4F7 Snapshots</button>'
   +'<button class="tbtn" id="tk-diff">\u21c4 Diff vs saved file</button>'
   +'</div><div id="toolout" style="margin-top:12px"></div>');
   $('#tk-bom').onclick=()=>{ $('#toolout').innerHTML=buildBOM()
@@ -1363,6 +1429,14 @@ function openTools(){ openModal('Tools',
     $('#pi-name').oninput=e=>{PANEL.name=e.target.value;persist();};
     $('#pi-rev').oninput=e=>{PANEL.rev=e.target.value;persist();};
     $('#pi-by').oninput=e=>{PANEL.tracedBy=e.target.value;persist();}; };
+  $('#tk-load').onclick=()=>{ const r=computeLoads();
+    $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+i.ref+'"':'')+'>'+esc(i.msg)+'</div>').join('');
+    $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
+  $('#tk-wsched').onclick=exportWireCsv;
+  $('#tk-work').onclick=printWorksheet;
+  $('#tk-term').onclick=terminalReport;
+  $('#tk-ladder').onclick=ladderize;
+  $('#tk-snap').onclick=openSnapshots;
   $('#tk-diff').onclick=()=>$('#fileDiff').click();
 }
 
@@ -1567,6 +1641,177 @@ function initExtras2(){ histInit();
   const bu=$('#btnUndo'); if(bu)bu.onclick=undo;
   const br=$('#btnRedo'); if(br)br.onclick=redo;
 }
+
+/* =========================================================================
+   PANEL TRACER — EXTRAS3 (features 26-37). fn decls hoist; state via var.
+   ========================================================================= */
+var _playing=false, _raf=null, _lastT=0, showAmps=false, gridSnap=false, GRID=10, clipboard=null, PROJECT=null;
+
+/* ---------- 2: current / load ---------- */
+function motorAmps(c){ if(c.fla)return +c.fla; if(c.hp){ const ph=c.phases||3; const v=_numVolt(c.volts)||(ph===3?480:120); return Math.round(c.hp*746/((ph===3?1.732:1)*v*0.9)); } return 0; }
+function computeLoads(){ solve(); const issues=[]; const key=(c,t)=>c.id+'|'+t; const uf=solve._uf;
+  const prot=PANEL.components.filter(c=>['breaker','fuse','disc'].includes(c.type)&&c.amps);
+  prot.forEach(p=>{ let fla=0; const proots=new Set(termList(p).map(t=>uf.find(key(p,t.id))));
+    PANEL.components.filter(c=>c.type==='motor'&&c._on).forEach(m=>{ if(termList(m).some(t=>proots.has(uf.find(key(m,t.id))))) fla+=motorAmps(m); });
+    if(fla>0){ const over=fla>+p.amps; issues.push({lvl:over?'warn':'ok',msg:(p.label||p.type)+' rated '+p.amps+'A carries ~'+fla+'A'+(over?' \u2014 OVERLOADED, upsize the device/conductor':' (OK)'),ref:p.id}); } });
+  if(!issues.length) issues.push({lvl:'info',msg:'No rated protective devices with running motors. Set an Amp rating on breakers/fuses and FLA or HP on motors, then simulate.'});
+  return {issues}; }
+
+/* ---------- 1: timers + sequence playback ---------- */
+function tick(dt){ let any=false; PANEL.components.forEach(c=>{ const d=compDef(c); if(!d.timer)return; any=true; const preset=+(c.preset||2000);
+  if(c.type==='timerON'){ if(c._coilOn){ c._el=(c._el||0)+dt; if(c._el>=preset)c._out=true; } else { c._el=0; c._out=false; } }
+  else if(c.type==='timerOFF'){ if(c._coilOn){ c._out=true; c._el=0; } else if(c._out){ c._el=(c._el||0)+dt; if(c._el>=preset)c._out=false; } }
+}); return any; }
+function _now(){ return (typeof performance!=='undefined'&&performance.now)?performance.now():Date.now(); }
+function play(){ if(_playing)return; if(mode!=='sim')setMode('sim'); _playing=true; _lastT=_now();
+  const bp=$('#btnPlay'); if(bp){bp.textContent='\u23f8 Pause';bp.classList.add('on');}
+  const loop=t=>{ if(!_playing)return; const dt=t-_lastT; _lastT=t; tick(dt); solve(); render(); _raf=requestAnimationFrame(loop); };
+  _raf=requestAnimationFrame(loop); }
+function stopPlay(){ _playing=false; if(_raf&&typeof cancelAnimationFrame!=='undefined')cancelAnimationFrame(_raf); _raf=null;
+  const bp=$('#btnPlay'); if(bp){bp.textContent='\u25b6 Play';bp.classList.remove('on');} }
+function togglePlay(){ _playing?stopPlay():play(); }
+
+/* ---------- 4: wire schedule ---------- */
+function exportWireCsv(){ const rows=[['Wire #','From device','From term','To device','To term','Net']];
+  PANEL.wires.forEach(w=>{ const [fa,fta]=w.a.split('|'),[fb,ftb]=w.b.split('|'); const ca=findComp(fa),cb=findComp(fb);
+    rows.push([w.label||'',ca?(ca.label||ca.id):fa,fta,cb?(cb.label||cb.id):fb,ftb,w.net||'']); });
+  const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  dl(new Blob([csv],{type:'text/csv'}),(PANEL.name||'panel')+'_wire-schedule.csv'); toast('Wire schedule exported'); }
+
+/* ---------- 5: troubleshooting worksheet ---------- */
+function printWorksheet(){ const w=window.open('','_blank'); if(!w){toast('Popup blocked \u2014 allow popups');return;}
+  if(mode==='sim')solve();
+  let diag=''; const dead=PANEL.components.filter(c=>{const d=compDef(c);return (d.load||d.coil)&&!c._on;});
+  if(dead.length){ diag='<h3>Diagnosis</h3>'+dead.map(c=>{const r=diagnose(c);const t=r.suspects&&r.suspects[0];
+    return '<div><b>'+esc(c.label||compDef(c).name)+':</b> '+(r.ok?(t?esc(t.label+' \u2014 '+t.why):'path intact \u2014 check source/load'):esc(r.msg))+'</div>';}).join(''); }
+  let meas=''; if(measurements.length){ meas='<h3>As-found readings</h3><table><tr><th>Point</th><th>Expected</th><th>Actual</th><th>Status</th></tr>'
+    +measurements.map(m=>'<tr><td>'+esc(m.key)+'</td><td>'+m.expected+'V</td><td>'+m.actual+'V</td><td>'+(m.ok?'OK':'MISMATCH')+'</td></tr>').join('')+'</table>'; }
+  w.document.write('<!doctype html><meta charset=utf-8><title>Worksheet \u2014 '+esc(PANEL.name||'')+'</title>'
+    +'<style>body{font:13px Segoe UI,Arial,sans-serif;margin:24px;color:#111}h1{font-size:18px}h3{margin-top:18px;border-bottom:1px solid #999;padding-bottom:2px}svg{max-width:100%;height:auto;border:1px solid #ccc}table{border-collapse:collapse;font-size:12px}td,th{border:1px solid #999;padding:4px 8px;text-align:left}</style>'
+    +'<h1>ACY1 RME \u2014 Troubleshooting Worksheet</h1>'
+    +'<div><b>Panel:</b> '+esc(PANEL.name||'')+' &nbsp; <b>Date:</b> '+new Date().toISOString().slice(0,10)+' &nbsp; <b>Tech:</b> '+esc(PANEL.tracedBy||'____________')+'</div>'
+    +(diag||'<h3>Diagnosis</h3><div>All modeled loads energized.</div>')+meas
+    +'<h3>Schematic</h3>'+serializeSvg()
+    +'<h3>Corrective action / notes</h3><div style="border:1px solid #999;height:130px"></div>');
+  w.document.close(); w.focus(); setTimeout(()=>{try{w.print();}catch(e){}},400); }
+
+/* ---------- 6: part number + Parts Search ---------- */
+function partsLink(c){ const url=(function(){try{return (localStorage.getItem('pt_parts_url')||'').trim();}catch(e){return '';}})();
+  if(!c.apn){ toast('Set an APN / part number on this device first'); return; }
+  if(url){ window.open(url+(url.includes('?')?'&':'?')+'q='+encodeURIComponent(c.apn),'_blank'); }
+  else { try{ navigator.clipboard&&navigator.clipboard.writeText(c.apn); }catch(e){} toast('APN '+c.apn+' copied \u2014 paste into Parts Search'); } }
+
+/* ---------- 8: in-panel snapshots ---------- */
+function snapSave(){ const n=prompt('Snapshot name (e.g. as-found, after repair):',''); if(n===null)return;
+  PANEL._snaps=PANEL._snaps||[];
+  PANEL._snaps.push({name:n||('snap '+(PANEL._snaps.length+1)),ts:Date.now(),data:JSON.parse(JSON.stringify({name:PANEL.name,components:PANEL.components,wires:PANEL.wires}))});
+  persist(); toast('Snapshot saved'); openSnapshots(); }
+function openSnapshots(){ const snaps=PANEL._snaps||[];
+  openModal('Snapshots', '<button class="tbtn" id="snap-new" style="width:100%;margin-bottom:8px">\ud83d\udcf7 Save current as snapshot</button>'
+    +(snaps.length?snaps.map((s,i)=>'<div class="suspect" style="cursor:default"><b>'+esc(s.name)+'</b> \u00b7 '+new Date(s.ts).toLocaleString()
+      +'<br><button class="tbtn" data-r="'+i+'" style="margin-top:4px">Restore</button> <button class="tbtn" data-d="'+i+'">Diff vs current</button></div>').join(''):'<div class="hint">No snapshots yet \u2014 save one before you start changing states.</div>'));
+  $('#snap-new').onclick=snapSave;
+  document.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.r];
+    if(confirm('Restore snapshot \u201c'+s.name+'\u201d? Current layout is replaced.')){ const keep=PANEL._snaps;
+      PANEL=validatePanel(JSON.parse(JSON.stringify(s.data))); PANEL._snaps=keep; restoreUid(); persist(); applyEnc(); render(); renderInspector(); closeModal(); toast('Restored '+s.name); } });
+  document.querySelectorAll('[data-d]').forEach(el=>el.onclick=()=>{ const s=snaps[+el.dataset.d]; const d=diffPanels(s.data);
+    const out=d.length?d.map(x=>'<div class="suspect" style="border-color:'+(x.t==='add'?'var(--ok)':x.t==='del'?'var(--bad)':'var(--warn)')+'">'+esc(x.msg)+'</div>').join(''):'<div class="hint" style="color:var(--ok)">Identical.</div>';
+    openModal('Diff: '+s.name+' \u2192 current', out); }); }
+
+/* ---------- 9: ladder auto-layout ---------- */
+function ladderize(){ const ctrlTypes=new Set(['estop','pbNO','pbNC','selector','sensor','relay','timerON','timerOFF','light','plcIn','plcOut','contactor']);
+  const nodes=PANEL.components.filter(c=>ctrlTypes.has(c.type)||(c.type==='source'&&(c.phases||1)===1));
+  if(!nodes.length){ toast('No control-circuit devices to arrange'); closeModal(); return; }
+  const idset=new Set(nodes.map(c=>c.id)); const adj={}; nodes.forEach(c=>adj[c.id]=new Set());
+  PANEL.wires.forEach(w=>{ const a=w.a.split('|')[0],b=w.b.split('|')[0]; if(idset.has(a)&&idset.has(b)){adj[a].add(b);adj[b].add(a);} });
+  const seen=new Set(); let rung=0; const ox=Math.round(-view.x/view.k)+60, oy=Math.round(-view.y/view.k)+60;
+  nodes.forEach(start=>{ if(seen.has(start.id))return; const comp=[]; const q=[start.id]; seen.add(start.id);
+    while(q.length){ const n=q.shift(); comp.push(n); adj[n].forEach(m=>{if(!seen.has(m)){seen.add(m);q.push(m);}}); }
+    const src=comp.find(id=>findComp(id).type==='source')||comp[0]; const dist={[src]:0}; const q2=[src];
+    while(q2.length){ const n=q2.shift(); adj[n].forEach(m=>{ if(dist[m]===undefined&&comp.indexOf(m)>=0){dist[m]=dist[n]+1;q2.push(m);} }); }
+    comp.sort((a,b)=>(dist[a]||0)-(dist[b]||0));
+    let x=ox; const y=oy+rung*80; comp.forEach(id=>{ const c=findComp(id); c.x=x; c.y=y; x+=compDef(c).w+40; }); rung++; });
+  persist(); render(); closeModal(); toast('Control circuit arranged into '+rung+' rung(s)'); }
+
+/* ---------- 10: terminal-strip view ---------- */
+function terminalReport(){ const terms=PANEL.components.filter(c=>c.type==='term');
+  let html;
+  if(terms.length){ html=terms.map(tb=>{ const lands=[];
+    termList(tb).forEach(t=>{ const k=tb.id+'|'+t.id; PANEL.wires.forEach(w=>{ const o=w.a===k?w.b:(w.b===k?w.a:null);
+      if(o){ const oc=findComp(o.split('|')[0]); lands.push((oc?(oc.label||oc.id):o.split('|')[0])+' \u00b7 '+o.split('|')[1]+(w.label?'  #'+w.label:'')); } }); });
+    return '<div class="suspect" style="cursor:default"><b>'+esc(tb.label||tb.id)+'</b><br>'+(lands.length?lands.map(esc).join('<br>'):'<span class="hint">(nothing landed)</span>')+'</div>'; }).join('');
+  } else { html='<div class="hint">No terminal-block components in this panel. Place \u201cTerminal\u201d parts to model a terminal strip, then wire to them.</div>'; }
+  openModal('Terminal strip', html); }
+
+/* ---------- 7: project / tabs ---------- */
+function projPersist(){ if(PROJECT){ try{ localStorage.setItem('acy1_project',JSON.stringify(PROJECT)); }catch(e){} } }
+function projRestore(){ try{ const s=localStorage.getItem('acy1_project'); if(s){ PROJECT=JSON.parse(s); return true; } }catch(e){} return false; }
+function projEnsure(){ if(!PROJECT){ PROJECT={name:'Project', panels:[JSON.parse(JSON.stringify(PANEL))], active:0}; } }
+function projSaveActive(){ if(PROJECT){ PROJECT.panels[PROJECT.active]=JSON.parse(JSON.stringify(PANEL)); projPersist(); } }
+function projSwitch(i){ if(!PROJECT||i<0||i>=PROJECT.panels.length)return; projSaveActive(); PROJECT.active=i;
+  PANEL=validatePanel(JSON.parse(JSON.stringify(PROJECT.panels[i]))); restoreUid(); sel=null;selWire=null;selSet=[];netHi=null;
+  persist(); applyEnc(); if(typeof applyView==='function')applyView(); render(); renderInspector(); renderTabs(); }
+function projAdd(){ projEnsure(); projSaveActive(); PROJECT.panels.push({name:'Panel '+(PROJECT.panels.length+1),backdrop:null,components:[],wires:[]}); projSwitch(PROJECT.panels.length-1); }
+function projRename(){ projEnsure(); const n=prompt('Panel name:',PANEL.name||''); if(n===null)return; PANEL.name=n; PROJECT.panels[PROJECT.active].name=n; persist(); projPersist(); render(); renderTabs(); }
+function projClose(i){ if(!PROJECT||PROJECT.panels.length<=1){ toast('A project needs at least one panel'); return; }
+  if(!confirm('Remove this panel from the project?'))return; PROJECT.panels.splice(i,1); if(PROJECT.active>=PROJECT.panels.length)PROJECT.active=PROJECT.panels.length-1; projSwitch(PROJECT.active); }
+function renderTabs(){ const bar=$('#tabbar'); if(!bar)return;
+  if(!PROJECT){ bar.style.display='none'; return; } bar.style.display='flex';
+  bar.innerHTML=PROJECT.panels.map((p,i)=>'<div class="tab'+(i===PROJECT.active?' on':'')+'" data-i="'+i+'">'+esc(p.name||('Panel '+(i+1)))+'<span class="tabx" data-x="'+i+'">\u00d7</span></div>').join('')
+    +'<button class="tab tabadd" id="tab-add">+ Panel</button>';
+  bar.querySelectorAll('.tab[data-i]').forEach(el=>el.onclick=ev=>{ if(ev.target.classList.contains('tabx'))return; projSwitch(+el.dataset.i); });
+  bar.querySelectorAll('.tabx').forEach(el=>el.onclick=ev=>{ ev.stopPropagation(); projClose(+el.dataset.x); });
+  const ta=$('#tab-add'); if(ta)ta.onclick=projAdd; }
+function toggleProject(){ if(PROJECT){ projSaveActive(); PROJECT=null; try{localStorage.removeItem('acy1_project');}catch(e){} renderTabs(); toast('Project mode off (single panel)'); }
+  else { projEnsure(); projPersist(); renderTabs(); toast('Project mode on \u2014 add panels as tabs'); } }
+function followLink(name){ if(PROJECT){ const i=PROJECT.panels.findIndex(p=>(p.name||'')===name); if(i>=0){ projSwitch(i); return; } } loadLibPanel(name); }
+
+/* ---------- 11: copy / paste ---------- */
+function copySel(){ const set=selSet.length?selSet:(sel?[sel]:[]); if(!set.length){toast('Select something to copy');return;}
+  const ids=new Set(set.map(c=>c.id));
+  clipboard={ comps:set.map(c=>JSON.parse(JSON.stringify(c))), wires:PANEL.wires.filter(w=>ids.has(w.a.split('|')[0])&&ids.has(w.b.split('|')[0])).map(w=>JSON.parse(JSON.stringify(w))) };
+  toast(set.length+' copied'); }
+function pasteSel(){ if(!clipboard){toast('Nothing copied');return;} const map={}; const news=[];
+  clipboard.comps.forEach(c=>{ const nc=JSON.parse(JSON.stringify(c)); const oid=nc.id; nc.id=nid(nc.type); map[oid]=nc.id; nc.x=(nc.x||0)+30; nc.y=(nc.y||0)+30; PANEL.components.push(nc); news.push(nc); });
+  clipboard.wires.forEach(w=>{ const [a,ta]=w.a.split('|'),[b,tb]=w.b.split('|'); if(map[a]&&map[b]) PANEL.wires.push({id:nid('w'),a:map[a]+'|'+ta,b:map[b]+'|'+tb,net:w.net,label:w.label}); });
+  selSet=news; sel=null; selWire=null; persist(); render(); renderInspector(); toast(news.length+' pasted'); }
+
+/* ---------- 12: command palette ---------- */
+function commandList(){ const cmds=[
+    {t:'Mode: Build',f:()=>setMode('build')},{t:'Mode: Simulate',f:()=>setMode('sim')},
+    {t:'Draw wire',f:()=>setTool('wire')} ];
+  PAL.forEach(tp=>cmds.push({t:'Place: '+T[tp].name,f:()=>setTool(tp)}));
+  cmds.push({t:'Tools\u2026',f:openTools},{t:'Templates\u2026',f:openTemplates},{t:'Snapshots\u2026',f:openSnapshots},
+    {t:'Terminal strip\u2026',f:terminalReport},{t:'Ladderize control circuit',f:ladderize},
+    {t:'Export wire schedule (CSV)',f:exportWireCsv},{t:'Print troubleshooting worksheet',f:printWorksheet},
+    {t:'Play / pause sequence',f:togglePlay},{t:'Undo',f:undo},{t:'Redo',f:redo},{t:'Copy',f:copySel},{t:'Paste',f:pasteSel},
+    {t:'Toggle live voltages',f:()=>{showVolts=!showVolts;render();}},{t:'Toggle amps',f:()=>{showAmps=!showAmps;render();}},
+    {t:'Toggle ortho wires',f:()=>{orthoWire=!orthoWire;render();}},{t:'Toggle grid snap',f:()=>{gridSnap=!gridSnap;toast(gridSnap?'Grid snap on':'Grid snap off');}},
+    {t:'Project / panel tabs',f:toggleProject},{t:'New / clear panel',f:()=>$('#btnClear').click()});
+  return cmds; }
+function openPalette(){ openModal('Command palette',
+    '<input id="cmd-in" placeholder="Type a command\u2026" autocomplete="off" style="width:100%;padding:9px;font-size:14px;background:var(--panel2);border:1px solid var(--accent);border-radius:7px;color:var(--txt)">'
+    +'<div id="cmd-list" style="margin-top:8px;max-height:52vh;overflow:auto"></div>');
+  const all=commandList(); const inp=$('#cmd-in'), list=$('#cmd-list');
+  function draw(f){ const q=(f||'').toLowerCase(); const items=all.filter(c=>c.t.toLowerCase().includes(q));
+    list.innerHTML=items.map((c,i)=>'<div class="cmd-item'+(i===0?' sel':'')+'" data-t="'+esc(c.t)+'">'+esc(c.t)+'</div>').join('');
+    list.querySelectorAll('.cmd-item').forEach(el=>el.onclick=()=>{ const c=all.find(x=>x.t===el.dataset.t); closeModal(); if(c)c.f(); }); }
+  draw(''); inp.oninput=()=>draw(inp.value);
+  inp.onkeydown=e=>{ if(e.key==='Enter'){ const q=inp.value.toLowerCase(); const c=all.find(x=>x.t.toLowerCase().includes(q)); if(c){closeModal();c.f();} } if(e.key==='Escape')closeModal(); };
+  if(typeof setTimeout!=='undefined')setTimeout(()=>{try{inp.focus();}catch(e){}},30); }
+
+/* ---------- init ---------- */
+function initExtras3(){ projRestore(); renderTabs();
+  const bp=$('#btnPlay'); if(bp)bp.onclick=togglePlay;
+  const ba=$('#btnAmps'); if(ba)ba.onclick=()=>{showAmps=!showAmps;ba.classList.toggle('on',showAmps);render();};
+  const bg=$('#btnGrid'); if(bg)bg.onclick=()=>{gridSnap=!gridSnap;bg.classList.toggle('on',gridSnap);toast(gridSnap?'Grid snap on':'Grid snap off');};
+  const bpr=$('#btnProj'); if(bpr)bpr.onclick=toggleProject;
+  document.addEventListener('keydown',ev=>{ const tag=(ev.target&&ev.target.tagName)||''; if(/INPUT|TEXTAREA|SELECT/.test(tag)){ if((ev.ctrlKey||ev.metaKey)&&(ev.key==='k'||ev.key==='K')){ ev.preventDefault(); openPalette(); } return; }
+    if((ev.ctrlKey||ev.metaKey)&&(ev.key==='k'||ev.key==='K')){ ev.preventDefault(); openPalette(); }
+    else if((ev.ctrlKey||ev.metaKey)&&(ev.key==='c'||ev.key==='C')){ copySel(); }
+    else if((ev.ctrlKey||ev.metaKey)&&(ev.key==='v'||ev.key==='V')){ pasteSel(); }
+    else if(ev.key===' '&&mode==='sim'&&!_playing){ ev.preventDefault(); play(); }
+    else if(ev.key===' '&&_playing){ ev.preventDefault(); stopPlay(); } }); }
 
 </script>
 </body>

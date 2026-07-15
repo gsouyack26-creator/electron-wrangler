@@ -1369,6 +1369,7 @@ function openTools(){ openModal('Tools',
   +'<button class="tbtn" id="tk-health">\U0001FA7A Health report</button>'
   +'<button class="tbtn" id="tk-pm">\u2705 PM checklist</button>'
   +'<button class="tbtn" id="tk-scen">\U0001F393 Training scenarios</button>'
+  +'<button class="tbtn" id="tk-sev">\U0001F6A8 Sev Event trainer</button>'
   +'<button class="tbtn" id="tk-lib">\U0001F4DA Panel library</button>'
   +'<button class="tbtn" id="tk-qr2">\U0001F4F7 Scan QR to open</button>'
   +'<button class="tbtn" id="tk-diff">\u21c4 Diff vs saved file</button>'
@@ -1414,7 +1415,7 @@ function openTools(){ openModal('Tools',
     $('#toolout').innerHTML=r.issues.map(i=>'<div class="suspect" style="border-color:'+(i.lvl==='warn'?'var(--warn)':i.lvl==='ok'?'var(--ok)':'var(--edge)')+';cursor:'+(i.ref?'pointer':'default')+'" '+(i.ref?'data-ref="'+esc(i.ref)+'"':'')+'>'+esc(i.msg)+'</div>').join('');
     $('#toolout').querySelectorAll('[data-ref]').forEach(el=>el.onclick=()=>{ sel=findComp(el.dataset.ref); closeModal(); render(); flash(el.dataset.ref); renderInspector(); }); };
   $('#tk-pm').onclick=openPM;
-  $('#tk-scen').onclick=openScenarios;
+  $('#tk-scen').onclick=openScenarios; $('#tk-sev').onclick=openSevEvents;
   $('#tk-lib').onclick=openLibraryManager;
   $('#tk-qr2').onclick=scanQR;
   $('#tk-diff').onclick=()=>$('#fileDiff').click();
@@ -1899,15 +1900,103 @@ function startScenario(kind){ const def=SCEN.find(s=>s.id===kind); const sp=scen
   sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
   toast('\u25b6 Scenario: '+def.name); }
 function scenarioGuess(){ if(!scenario||!sel){ toast('Click the device you suspect first'); return; }
+  if(scenario.done){ toast(scenario.done==='timeout'?'\u23f1 Time expired \u2014 Exit to retry':'Already solved \u2014 Exit for another'); return; }
+  if(scenario.isSev){ const t=Math.round((Date.now()-scenario.t0)/1000); const ok=sel.id===scenario.answer;
+    if(ok){ scenario.done=true; scenario._solveT=t; _sevStop();
+      let b=null; try{b=+localStorage.getItem('pt_sev_'+scenario.id)||null;}catch(e){}
+      if(!b||t<b){ try{localStorage.setItem('pt_sev_'+scenario.id,t);}catch(e){} }
+      try{localStorage.setItem('pt_sev_'+scenario.id+'_pass',(+localStorage.getItem('pt_sev_'+scenario.id+'_pass')||0)+1);}catch(e){}
+      toast('\u2705 SEV cleared in '+t+'s / '+scenario.limit+'s'+(b&&t<b?' \u2014 new best!':b?(' (best '+b+'s)'):'')); _sevHud(); }
+    else { toast('\u274c Not the fault \u2014 '+_sevRemain()+'s left, keep tracing'); }
+    renderSimInspector(); return; }
   const secs=Math.round((Date.now()-scenario.t0)/1000); const ok=sel.id===scenario.answer; if(ok)scenario.done=true;
   let best=null; try{ best=+localStorage.getItem('pt_scen_'+scenario.id)||null; }catch(e){}
   if(ok&&(!best||secs<best)){ try{localStorage.setItem('pt_scen_'+scenario.id,secs);}catch(e){} }
   toast(ok?('\u2705 Correct in '+secs+'s'+(best&&secs<best?' \u2014 new best!':best?(' (best '+best+'s)'):'')):'\u274c Not it \u2014 keep tracing');
   renderSimInspector(); }
-function exitScenario(){ if(!scenario)return; const prev=scenario.prev; scenario=null; sel=null;selWire=null;selSet=[]; if(prev){ try{ PANEL=validatePanel(JSON.parse(prev)); restoreUid(); }catch(e){} } persist(); render(); renderSimInspector(); toast('← Exited scenario — your panel is back'); }
+function exitScenario(){ if(!scenario)return; if(typeof _sevStop==='function')_sevStop(); const prev=scenario.prev; scenario=null; sel=null;selWire=null;selSet=[]; if(typeof _sevHud==='function')_sevHud(); if(prev){ try{ PANEL=validatePanel(JSON.parse(prev)); restoreUid(); }catch(e){} } persist(); render(); renderSimInspector(); toast('← Exited scenario — your panel is back'); }
 function openScenarios(){ let best={}; SCEN.forEach(s=>{try{best[s.id]=localStorage.getItem('pt_scen_'+s.id);}catch(e){}});
   openModal('Training scenarios', SCEN.map(s=>'<div class="suspect" style="cursor:pointer" data-s="'+s.id+'"><b>'+esc(s.name)+'</b>'+(best[s.id]?' <span style="color:var(--ok)">\u00b7 best '+esc(String(best[s.id]))+'s</span>':'')+'<br><span class="hint">'+esc(s.prompt)+'</span></div>').join(''));
   (document.querySelector('#modal')||document).querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>startScenario(el.dataset.s)); }
+
+/* ---------- 6b: Sev Event trainer (timed) ---------- */
+var SEV=[
+  {id:'sev-estop', sev:2, limit:240, panel:'ACY1 13XP33 CC566 \u2014 E-STOP Safety Chain (Hytrol 2000/2303/5000)',
+   name:'Line down after E-stop', symptom:'Sorter line will not restart after an E-stop event. Reset was pressed, no joy. Find the open device in the safety chain.',
+   find:function(P){return _sevSet(P,{type:'estop',state:'open'});}},
+  {id:'sev-ol', sev:2, limit:210, panel:'LS4000 Induction \u2014 6-Belt Power Panel (rep.)',
+   name:'Belt motor keeps dropping', symptom:'Induction belt motor tries to start then the whole belt drops out. Find the tripped motor protection.',
+   find:function(P){return _sevSet(P,{type:'overload',state:'tripped'});}},
+  {id:'sev-main', sev:1, limit:180, panel:'ACY1 13XP33-2100 \u2014 CC566 460V MPCB Feeders to Remote Panels',
+   name:'Remote panel dead \u2014 no 460V', symptom:'A remote conveyor panel is completely dead \u2014 no 460V downstream. Find the tripped feeder breaker.',
+   find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',pick:'last'});}},
+  {id:'sev-pull', sev:2, limit:200, panel:'Standard Induction I/O \u2014 E-Stop Safety Loop (M-16-00264 INDIO sh063/130)',
+   name:'Induction safety loop open', symptom:'Induction station safety loop is broken \u2014 the safety relay will not pull in. Find the latched pull-cord.',
+   find:function(P){return _sevSet(P,{type:'pullcord',state:'open'});}},
+  {id:'sev-gate', sev:2, limit:240, panel:'LS4000 Safety Gate Junction Box \u2014 6-gate safety loop (M-16-00264 SAFEGATE sh01121-27)',
+   name:'Guard gate fault', symptom:'A guard gate is reading open on the safety controller and the zone will not enable. Find the open gate switch.',
+   find:function(P){return _sevSet(P,{type:'sensor',state:'open'});}},
+  {id:'sev-fuse', sev:1, limit:180, panel:'Standard 12-Belt Induction Power \u2014 60A (M-16-00264 IND12 sh061-063)',
+   name:'One induction belt dead', symptom:'A single induction belt on the 60A panel is dead while the rest run. Find the blown branch fuse.',
+   find:function(P){return _sevSet(P,{type:'fuse',state:'blown'});}},
+  {id:'sev-disc', sev:2, limit:220, panel:'LS4000 LSM 480VAC VFD Drive Panel (M-16-00264 LSM480 sh061/067)',
+   name:'LSM drive lost power', symptom:'The LSM 480V VFD drive is completely dark \u2014 no incoming power at the drive. Find the open disconnect.',
+   find:function(P){return _sevSet(P,{type:'disc',state:'open'});}},
+  {id:'sev-cp83', sev:1, limit:300, panel:'CP83 Beckhoff I/O Rack + Interposing Relays (M-16-00264 CP83 sh83169-83192)',
+   name:'CP83 sorter fault \u2014 input dropped', symptom:'CP83 sorter faulted and will not clear. A field device on a Beckhoff input card has gone open-circuit. Trace the input chain and find the open field switch.',
+   find:function(P){return _sevSet(P,{type:'sensor',state:'open'});}}
+];
+function _sevSet(P,spec){ var cands=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(spec.label.toLowerCase())>=0)&&c.state!==spec.state;});
+  if(!cands.length){ cands=P.components.filter(function(c){return c.type===spec.type;}); }
+  if(!cands.length)return null;
+  var c=spec.pick==='last'?cands[cands.length-1]:(typeof spec.pick==='number'?cands[spec.pick]:cands[0]);
+  if(!c)return null; c.state=spec.state; return c.id; }
+function _fmtClock(s){ s=Math.max(0,s|0); return (s/60|0)+':'+String(s%60).padStart(2,'0'); }
+function _sevRemain(){ if(!scenario||!scenario.limit)return null; return Math.max(0, scenario.limit-Math.floor((Date.now()-scenario.t0)/1000)); }
+function _sevStop(){ if(_scenTimer){ clearInterval(_scenTimer); _scenTimer=0; } }
+function _sevHud(){ var el=document.getElementById('sev-hud');
+  if(!scenario||!scenario.isSev){ if(el)el.parentNode.removeChild(el); return; }
+  if(!el){ el=document.createElement('div'); el.id='sev-hud';
+    el.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#141414;border:2px solid #ef4444;border-radius:10px;padding:8px 16px;color:#eee;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.55);text-align:center;pointer-events:none';
+    document.body.appendChild(el); }
+  var r=_sevRemain(), done=scenario.done, clock;
+  if(done==='timeout') clock='<span style="color:#ef4444">\u23f1 TIME EXPIRED</span>';
+  else if(done) clock='<span style="color:#22c55e">\u2705 SOLVED '+(scenario._solveT|0)+'s</span>';
+  else clock='<span style="color:'+(r<=15?'#ef4444':r<=45?'#f59e0b':'#22c55e')+'">'+_fmtClock(r)+'</span>';
+  el.innerHTML='<div style="color:#ef4444;font-weight:800;letter-spacing:.5px">\ud83d\udea8 SEV'+scenario.sev+' EVENT</div>'
+    +'<div style="margin:2px 0 3px;font-weight:600">'+esc(scenario.name)+'</div>'
+    +'<div style="font-size:24px;font-weight:800;line-height:1">'+clock+'</div>'
+    +'<div style="font-size:11px;color:#aaa;max-width:440px;margin-top:5px">'+esc(scenario.symptom)+'</div>'; }
+function _sevTick(){ if(!scenario||!scenario.isSev||scenario.done){ _sevStop(); return; }
+  var r=_sevRemain(); _sevHud();
+  if(r<=0){ scenario.done='timeout'; _sevStop();
+    try{localStorage.setItem('pt_sev_'+scenario.id+'_fail',(+localStorage.getItem('pt_sev_'+scenario.id+'_fail')||0)+1);}catch(e){}
+    toast('\u23f1 TIME! Sev event expired \u2014 review the fault, then Exit to retry'); _sevHud(); renderSimInspector(); } }
+function startSev(id){ var def=SEV.find(function(s){return s.id===id;}); if(!def)return;
+  var lib=window.PANEL_LIBRARY||{}, base=lib[def.panel];
+  if(!base){ toast('Panel not found: '+def.panel); return; }
+  var _prev=(scenario&&scenario.prev)?scenario.prev:JSON.stringify(PANEL);
+  _sevStop();
+  var P; try{ P=validatePanel(JSON.parse(JSON.stringify(base))); }catch(e){ toast('Could not load panel'); return; }
+  var answer=def.find(P);
+  if(!answer){ toast('Could not stage this Sev event on '+def.panel); return; }
+  PANEL=P; restoreUid();
+  scenario={id:id, answer:answer, t0:Date.now(), done:false, prev:_prev, sev:def.sev, limit:def.limit, symptom:def.symptom, name:def.name, isSev:true};
+  sel=null;selWire=null;selSet=[]; setMode('sim'); persist(); render(); renderSimInspector(); closeModal();
+  _sevHud(); _scenTimer=setInterval(_sevTick,1000);
+  toast('\ud83d\udea8 SEV'+def.sev+': '+def.name+' \u2014 clock running!'); }
+function openSevEvents(){ var meta={};
+  SEV.forEach(function(s){ try{ meta[s.id]={best:localStorage.getItem('pt_sev_'+s.id),pass:+localStorage.getItem('pt_sev_'+s.id+'_pass')||0,fail:+localStorage.getItem('pt_sev_'+s.id+'_fail')||0}; }catch(e){ meta[s.id]={}; } });
+  function card(s){ var m=meta[s.id]||{};
+    var badge='<span style="display:inline-block;font-weight:800;font-size:11px;padding:1px 7px;border-radius:4px;color:#fff;background:'+(s.sev===1?'#ef4444':'#f59e0b')+'">SEV'+s.sev+'</span>';
+    var stat=''; if(m.best)stat+=' <span style="color:var(--ok)">\u00b7 best '+esc(String(m.best))+'s</span>';
+    if(m.pass||m.fail)stat+=' <span class="hint">('+(m.pass||0)+'\u2705 / '+(m.fail||0)+'\u274c)</span>';
+    return '<div class="suspect" style="cursor:pointer" data-sev="'+s.id+'">'+badge+' <b>'+esc(s.name)+'</b> <span class="hint">\u00b7 '+_fmtClock(s.limit)+' limit</span>'+stat+'<br><span class="hint">'+esc(s.symptom)+'</span></div>'; }
+  var body='<div class="hint" style="margin-bottom:8px">Pick an event. A real site panel loads with a hidden fault injected and a countdown starts. Trace it, click your suspect device, then <b>Check</b> before time runs out.</div>'
+    +'<div style="font-weight:700;margin:6px 0 2px">\ud83d\udd34 Sev 1 \u2014 critical / tight clock</div>'+SEV.filter(function(s){return s.sev===1;}).map(card).join('')
+    +'<div style="font-weight:700;margin:10px 0 2px">\ud83d\udfe0 Sev 2 \u2014 major</div>'+SEV.filter(function(s){return s.sev===2;}).map(card).join('');
+  openModal('\ud83d\udea8 Sev Event trainer', body);
+  (document.querySelector('#modal')||document).querySelectorAll('[data-sev]').forEach(function(el){ el.onclick=function(){ startSev(el.dataset.sev); }; }); }
 
 /* ---------- 7: colorblind-safe ---------- */
 function applyCb(){ const st=document.getElementById('stage'); if(st)st.classList.toggle('cbsafe',cbSafe);

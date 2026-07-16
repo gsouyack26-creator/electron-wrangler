@@ -1,0 +1,429 @@
+{
+  "name": "CP49 OSL Pick Station MCP (48VDC MDR Rollers + Pick-to-Light)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 140,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 130,
+      "poles": 3,
+      "state": "closed",
+      "label": "DISC49 20A Fusible"
+    },
+    {
+      "id": "cb3",
+      "type": "breaker",
+      "x": 300,
+      "y": 130,
+      "poles": 3,
+      "state": "closed",
+      "label": "CB49 6A"
+    },
+    {
+      "id": "ps48",
+      "type": "psu",
+      "x": 440,
+      "y": 110,
+      "dcv": 48,
+      "label": "PS48 48VDC MDR Power"
+    },
+    {
+      "id": "ps24",
+      "type": "psu",
+      "x": 440,
+      "y": 230,
+      "dcv": 24,
+      "label": "PS24 24VDC Logic"
+    },
+    {
+      "id": "kroll",
+      "type": "contactor",
+      "x": 600,
+      "y": 110,
+      "poles": 1,
+      "label": "KROLL 48V Roller Contactor"
+    },
+    {
+      "id": "mdr1",
+      "type": "motor",
+      "x": 740,
+      "y": 60,
+      "phases": 1,
+      "volts": 48,
+      "label": "MDR1 Zone Roller"
+    },
+    {
+      "id": "mdr2",
+      "type": "motor",
+      "x": 740,
+      "y": 130,
+      "phases": 1,
+      "volts": 48,
+      "label": "MDR2 Zone Roller"
+    },
+    {
+      "id": "mdr3",
+      "type": "motor",
+      "x": 740,
+      "y": 200,
+      "phases": 1,
+      "volts": 48,
+      "label": "MDR3 Zone Roller"
+    },
+    {
+      "id": "estp",
+      "type": "estop",
+      "x": 560,
+      "y": 300,
+      "state": "closed",
+      "label": "ES49 E-Stop"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 680,
+      "y": 300,
+      "label": "CR49 Safety Relay",
+      "safetyGate": true
+    },
+    {
+      "id": "plc",
+      "type": "plc",
+      "x": 300,
+      "y": 420,
+      "load": true,
+      "label": "ML49 MicroLogix"
+    },
+    {
+      "id": "oc",
+      "type": "plcOutCard",
+      "x": 440,
+      "y": 420,
+      "state": "on",
+      "label": "OC49 Pick Lights"
+    },
+    {
+      "id": "ic",
+      "type": "plcInCard",
+      "x": 440,
+      "y": 540,
+      "label": "IC49 Photoeyes"
+    },
+    {
+      "id": "esw",
+      "type": "netdev",
+      "x": 300,
+      "y": 540,
+      "load": true,
+      "label": "ESW49 EtherNet Switch"
+    },
+    {
+      "id": "pe1",
+      "type": "sensor",
+      "x": 620,
+      "y": 470,
+      "state": "closed",
+      "label": "PE1 Pick Confirm"
+    },
+    {
+      "id": "pe2",
+      "type": "sensor",
+      "x": 620,
+      "y": 540,
+      "state": "closed",
+      "label": "PE2 Tote Present"
+    },
+    {
+      "id": "ltg1",
+      "type": "light",
+      "x": 740,
+      "y": 420,
+      "label": "PTL1 Pick Light (GRN)"
+    },
+    {
+      "id": "ltg2",
+      "type": "light",
+      "x": 740,
+      "y": 480,
+      "label": "PTL2 Pick Light (GRN)"
+    },
+    {
+      "id": "stk",
+      "type": "stacklight",
+      "x": 740,
+      "y": 300,
+      "label": "STK49 Status"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 180,
+      "y": 560,
+      "label": "0VDC / GND"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "cb3|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "cb3|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "cb3|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "cb3|out0",
+      "b": "ps48|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "src|N",
+      "b": "ps48|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w9",
+      "a": "cb3|out1",
+      "b": "ps24|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "src|N",
+      "b": "ps24|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w11",
+      "a": "ps48|Vp",
+      "b": "kroll|L1",
+      "net": "dc"
+    },
+    {
+      "id": "w12",
+      "a": "kroll|T1",
+      "b": "mdr1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "mdr1|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w14",
+      "a": "kroll|T1",
+      "b": "mdr2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w15",
+      "a": "mdr2|b",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w16",
+      "a": "kroll|T1",
+      "b": "mdr3|a",
+      "net": "dc"
+    },
+    {
+      "id": "w17",
+      "a": "mdr3|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w18",
+      "a": "ps24|Vp",
+      "b": "sr|13",
+      "net": "dc"
+    },
+    {
+      "id": "w19",
+      "a": "sr|14",
+      "b": "kroll|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w20",
+      "a": "kroll|A2",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w21",
+      "a": "ps24|Vp",
+      "b": "estp|a",
+      "net": "dc"
+    },
+    {
+      "id": "w22",
+      "a": "estp|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w23",
+      "a": "ps24|Vp",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w24",
+      "a": "sr|A2",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "ps24|Vp",
+      "b": "plc|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w26",
+      "a": "plc|M",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w27",
+      "a": "ps24|Vp",
+      "b": "esw|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w28",
+      "a": "esw|M",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w29",
+      "a": "ps24|Vp",
+      "b": "pe1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w30",
+      "a": "pe1|b",
+      "b": "ic|in0",
+      "net": "ctrl"
+    },
+    {
+      "id": "w31",
+      "a": "ps24|Vp",
+      "b": "pe2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w32",
+      "a": "pe2|b",
+      "b": "ic|in1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w33",
+      "a": "ic|C",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w34",
+      "a": "ps24|Vp",
+      "b": "oc|C",
+      "net": "dc"
+    },
+    {
+      "id": "w35",
+      "a": "oc|out0",
+      "b": "ltg1|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w36",
+      "a": "ltg1|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w37",
+      "a": "oc|out1",
+      "b": "ltg2|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w38",
+      "a": "ltg2|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w39",
+      "a": "ps24|Vp",
+      "b": "stk|R",
+      "net": "dc"
+    },
+    {
+      "id": "w40",
+      "a": "ps24|Vp",
+      "b": "sr|23",
+      "net": "dc"
+    },
+    {
+      "id": "w41",
+      "a": "sr|24",
+      "b": "stk|G",
+      "net": "ctrl"
+    },
+    {
+      "id": "w42",
+      "a": "stk|C",
+      "b": "gnd|g4",
+      "net": "ret"
+    }
+  ]
+}

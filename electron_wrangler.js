@@ -2275,7 +2275,27 @@ var SEV=[
    panel:'CP83 PLC Panel \u2014 24VDC Distribution + E-Stop Slave (M-16-00264 CP83 sh83080/83130)',
    name:'Sorter enable never comes on \u2014 on-delay timer output dead',
    symptom:'After the E-stop loop is reset the CR8313001 slave relay seals in and the AH horn sounds, so the safety string is good. The TD8313106 on-delay timer even shows energized \u2014 its status LED is lit. But the Sorter Enable output to CP41 never goes active, so the sorter will not start. The timer looks like it is running yet nothing passes through it. Figure out why the enable stays dead.',
-   find:function(P){return _sevFault(P,{type:'timerON'});}}
+   find:function(P){return _sevFault(P,{type:'timerON'});}},
+
+  /* ===== New-equipment panels: USS Destacker, CP49 Pick Station, Max Reach MR3 ===== */
+  {id:'a-uss-estop', cat:'safety', diff:2, kind:'E-stop pressed', limit:220, panel:'OSL/ARSAW USS Tote Destacker MCP (480V Servo + 24VDC Safety)',
+   name:'Destacker servo will not enable', symptom:'The USS tote destacker is dead \u2014 the Kinetix servo never enables and the green status light is out, though 480V is present at the drive. Walk the E-stop safety string feeding the safety relay and find the open device.',
+   find:function(P){return _sevSet(P,{type:'estop',state:'open'});}},
+  {id:'a-uss-cb-trip', cat:'power', diff:1, kind:'tripped breaker', limit:210, panel:'OSL/ARSAW USS Tote Destacker MCP (480V Servo + 24VDC Safety)',
+   name:'Whole destacker MCP dead', symptom:'The entire destacker control panel is dark \u2014 no servo, no 24V control, no PLC. Something tripped upstream of both the drive and the power supply. Find the tripped breaker.',
+   find:function(P){return _sevSet(P,{type:'breaker',state:'tripped'});}},
+  {id:'b-cp49-estop', cat:'safety', diff:2, kind:'E-stop pressed', limit:220, panel:'CP49 OSL Pick Station MCP (48VDC MDR Rollers + Pick-to-Light)',
+   name:'All pick-station rollers stopped', symptom:'Every MDR zone roller on the CP49 pick station has stopped at once while control power is still up. The 48V roller contactor dropped out. Trace the safety string that drives the contactor coil and find the open E-stop.',
+   find:function(P){return _sevSet(P,{type:'estop',state:'open'});}},
+  {id:'b-cp49-lights-off', cat:'controls', diff:2, kind:'output card offline', limit:250, panel:'CP49 OSL Pick Station MCP (48VDC MDR Rollers + Pick-to-Light)',
+   name:'Pick-to-light lamps all dark', symptom:'None of the pick-to-light lamps illuminate even though the rollers run and the PLC is online. The output card feeding the pick lights has dropped offline. Confirm the card state and common supply.',
+   find:function(P){return _sevSet(P,{type:'plcOutCard',state:'off'});}},
+  {id:'c-mr3-estop', cat:'safety', diff:3, kind:'E-stop pressed', limit:240, panel:'Max Reach MR3 Telescopic Truck Loader (Dual VFD + 120V MCR Control)',
+   name:'Truck loader completely dead', symptom:'The Max Reach extendable loader will not run \u2014 belt and telescope drives are both dead, the amber beacon is out and the 24V logic supply is down. The master control relay (MCR) dropped out. Walk the 120V control string (E-stop and stop button) that holds in the MCR and find the open device.',
+   find:function(P){return _sevSet(P,{type:'estop',state:'open'});}},
+  {id:'c-mr3-belt-trip', cat:'motor', diff:2, kind:'tripped breaker', limit:220, panel:'Max Reach MR3 Telescopic Truck Loader (Dual VFD + 120V MCR Control)',
+   name:'Belt drive dead, telescope still works', symptom:'The Max Reach conveyor belt will not run, but the telescope extend/retract still functions and control power is healthy. Only the belt drive lost incoming power. Find the tripped branch breaker feeding the belt VFD.',
+   find:function(P){return _sevSet(P,{type:'breaker',state:'tripped',label:'Belt'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }

@@ -1,0 +1,333 @@
+{
+  "name": "OSL/ARSAW USS Tote Destacker MCP (480V Servo + 24VDC Safety)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 120,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 110,
+      "poles": 3,
+      "state": "closed",
+      "label": "DISC100 30A Fusible"
+    },
+    {
+      "id": "cb109",
+      "type": "breaker",
+      "x": 300,
+      "y": 110,
+      "poles": 3,
+      "state": "closed",
+      "label": "CB109 6A"
+    },
+    {
+      "id": "drv",
+      "type": "vfd",
+      "x": 440,
+      "y": 100,
+      "label": "DR300 Kinetix 5500 Servo"
+    },
+    {
+      "id": "srv",
+      "type": "motor",
+      "x": 600,
+      "y": 100,
+      "phases": 3,
+      "hp": 3,
+      "volts": 480,
+      "label": "SRV100 Destacker Servo"
+    },
+    {
+      "id": "ps125",
+      "type": "psu",
+      "x": 300,
+      "y": 300,
+      "dcv": 24,
+      "label": "PS125 24VDC PSU"
+    },
+    {
+      "id": "estp",
+      "type": "estop",
+      "x": 430,
+      "y": 280,
+      "state": "closed",
+      "label": "ESPB01 E-Stop"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 560,
+      "y": 280,
+      "label": "CR215 Safety Relay",
+      "safetyGate": true
+    },
+    {
+      "id": "plc",
+      "type": "plc",
+      "x": 440,
+      "y": 420,
+      "load": true,
+      "label": "A400 CompactLogix"
+    },
+    {
+      "id": "esw",
+      "type": "netdev",
+      "x": 560,
+      "y": 420,
+      "load": true,
+      "label": "ESW400 EtherNet Switch"
+    },
+    {
+      "id": "fan",
+      "type": "motor",
+      "x": 300,
+      "y": 470,
+      "phases": 1,
+      "volts": 24,
+      "label": "FAN125 Panel Fan"
+    },
+    {
+      "id": "ltpwr",
+      "type": "light",
+      "x": 180,
+      "y": 420,
+      "label": "LT637 Control Power (WHT)"
+    },
+    {
+      "id": "sol",
+      "type": "solenoid",
+      "x": 700,
+      "y": 300,
+      "label": "SOL100 Door Lock"
+    },
+    {
+      "id": "stk",
+      "type": "stacklight",
+      "x": 700,
+      "y": 420,
+      "label": "STK100 Status"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 180,
+      "y": 520,
+      "label": "0VDC / GND"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "cb109|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "cb109|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "cb109|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "cb109|out0",
+      "b": "drv|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "cb109|out1",
+      "b": "drv|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "cb109|out2",
+      "b": "drv|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "drv|U",
+      "b": "srv|U",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "drv|V",
+      "b": "srv|V",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "drv|W",
+      "b": "srv|W",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "cb109|out0",
+      "b": "ps125|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "src|N",
+      "b": "ps125|Nin",
+      "net": "ret"
+    },
+    {
+      "id": "w15",
+      "a": "ps125|Vp",
+      "b": "estp|a",
+      "net": "dc"
+    },
+    {
+      "id": "w16",
+      "a": "estp|b",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w17",
+      "a": "ps125|Vp",
+      "b": "sr|IN",
+      "net": "dc"
+    },
+    {
+      "id": "w18",
+      "a": "sr|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w19",
+      "a": "ps125|Vp",
+      "b": "sr|13",
+      "net": "dc"
+    },
+    {
+      "id": "w20",
+      "a": "sr|14",
+      "b": "drv|EN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w21",
+      "a": "ps125|Vp",
+      "b": "sr|23",
+      "net": "dc"
+    },
+    {
+      "id": "w22",
+      "a": "sr|24",
+      "b": "stk|G",
+      "net": "ctrl"
+    },
+    {
+      "id": "w23",
+      "a": "ps125|Vp",
+      "b": "plc|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w24",
+      "a": "plc|M",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w25",
+      "a": "ps125|Vp",
+      "b": "esw|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w26",
+      "a": "esw|M",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w27",
+      "a": "ps125|Vp",
+      "b": "fan|a",
+      "net": "dc"
+    },
+    {
+      "id": "w28",
+      "a": "fan|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w29",
+      "a": "ps125|Vp",
+      "b": "ltpwr|a",
+      "net": "dc"
+    },
+    {
+      "id": "w30",
+      "a": "ltpwr|b",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w31",
+      "a": "ps125|Vp",
+      "b": "sol|A1",
+      "net": "dc"
+    },
+    {
+      "id": "w32",
+      "a": "sol|A2",
+      "b": "gnd|g5",
+      "net": "ret"
+    },
+    {
+      "id": "w33",
+      "a": "ps125|Vp",
+      "b": "stk|R",
+      "net": "dc"
+    },
+    {
+      "id": "w34",
+      "a": "stk|C",
+      "b": "gnd|g0",
+      "net": "ret"
+    }
+  ]
+}

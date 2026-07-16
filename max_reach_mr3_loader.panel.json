@@ -1,0 +1,510 @@
+{
+  "name": "Max Reach MR3 Telescopic Truck Loader (Dual VFD + 120V MCR Control)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 160,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 150,
+      "poles": 3,
+      "state": "closed",
+      "label": "MDS 30A Fusible"
+    },
+    {
+      "id": "cbb",
+      "type": "breaker",
+      "x": 300,
+      "y": 90,
+      "poles": 3,
+      "state": "closed",
+      "label": "CB1 Belt 6A"
+    },
+    {
+      "id": "cbe",
+      "type": "breaker",
+      "x": 300,
+      "y": 180,
+      "poles": 3,
+      "state": "closed",
+      "label": "CB2 Extend 4A"
+    },
+    {
+      "id": "drvb",
+      "type": "vfd",
+      "x": 440,
+      "y": 80,
+      "label": "VFD1 PowerFlex 4M 3HP"
+    },
+    {
+      "id": "drve",
+      "type": "vfd",
+      "x": 440,
+      "y": 180,
+      "label": "VFD2 PowerFlex 4M 1HP"
+    },
+    {
+      "id": "mbelt",
+      "type": "motor",
+      "x": 600,
+      "y": 80,
+      "phases": 3,
+      "hp": 3,
+      "volts": 480,
+      "label": "M1 Belt Drive"
+    },
+    {
+      "id": "mext",
+      "type": "motor",
+      "x": 600,
+      "y": 180,
+      "phases": 3,
+      "hp": 1,
+      "volts": 480,
+      "label": "M2 Telescope Ext/Ret"
+    },
+    {
+      "id": "xf",
+      "type": "transformer",
+      "x": 170,
+      "y": 320,
+      "xfmr": true,
+      "sv": 120,
+      "label": "CPT 480:120 0.5kVA"
+    },
+    {
+      "id": "cbctl",
+      "type": "breaker",
+      "x": 300,
+      "y": 330,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB3 Control 2A"
+    },
+    {
+      "id": "mcr",
+      "type": "contactor",
+      "x": 560,
+      "y": 330,
+      "poles": 2,
+      "label": "MCR Master Control 9A"
+    },
+    {
+      "id": "estp",
+      "type": "estop",
+      "x": 380,
+      "y": 310,
+      "state": "closed",
+      "label": "ES E-Stop"
+    },
+    {
+      "id": "stop",
+      "type": "pbNC",
+      "x": 470,
+      "y": 310,
+      "state": "closed",
+      "label": "STOP PB"
+    },
+    {
+      "id": "ps24",
+      "type": "psu",
+      "x": 440,
+      "y": 430,
+      "dcv": 24,
+      "label": "PS 24VDC Logic"
+    },
+    {
+      "id": "plc",
+      "type": "plc",
+      "x": 300,
+      "y": 520,
+      "load": true,
+      "label": "ML1400 MicroLogix"
+    },
+    {
+      "id": "sel",
+      "type": "selector",
+      "x": 560,
+      "y": 430,
+      "state": "closed",
+      "label": "AUTO/MAN"
+    },
+    {
+      "id": "ic",
+      "type": "plcInCard",
+      "x": 440,
+      "y": 540,
+      "label": "IC Inputs"
+    },
+    {
+      "id": "pe1",
+      "type": "sensor",
+      "x": 620,
+      "y": 500,
+      "state": "closed",
+      "label": "PE1 Truck Present"
+    },
+    {
+      "id": "pe2",
+      "type": "sensor",
+      "x": 620,
+      "y": 560,
+      "state": "closed",
+      "label": "PE2 End Of Travel"
+    },
+    {
+      "id": "px1",
+      "type": "sensor",
+      "x": 700,
+      "y": 500,
+      "state": "closed",
+      "label": "PRX1 Extend Limit"
+    },
+    {
+      "id": "pbstart",
+      "type": "pbNO",
+      "x": 700,
+      "y": 560,
+      "state": "closed",
+      "label": "START PB"
+    },
+    {
+      "id": "beacon",
+      "type": "light",
+      "x": 740,
+      "y": 320,
+      "label": "AMBER Beacon"
+    },
+    {
+      "id": "horn",
+      "type": "horn",
+      "x": 740,
+      "y": 390,
+      "label": "Motion Horn"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 180,
+      "y": 560,
+      "label": "0VDC / GND"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "cbb|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "cbb|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "cbb|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "ds|out0",
+      "b": "cbe|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "ds|out1",
+      "b": "cbe|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "ds|out2",
+      "b": "cbe|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "cbb|out0",
+      "b": "drvb|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w11",
+      "a": "cbb|out1",
+      "b": "drvb|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w12",
+      "a": "cbb|out2",
+      "b": "drvb|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w13",
+      "a": "cbe|out0",
+      "b": "drve|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w14",
+      "a": "cbe|out1",
+      "b": "drve|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w15",
+      "a": "cbe|out2",
+      "b": "drve|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w16",
+      "a": "drvb|U",
+      "b": "mbelt|U",
+      "net": "hot"
+    },
+    {
+      "id": "w17",
+      "a": "drvb|V",
+      "b": "mbelt|V",
+      "net": "hot"
+    },
+    {
+      "id": "w18",
+      "a": "drvb|W",
+      "b": "mbelt|W",
+      "net": "hot"
+    },
+    {
+      "id": "w19",
+      "a": "drve|U",
+      "b": "mext|U",
+      "net": "hot"
+    },
+    {
+      "id": "w20",
+      "a": "drve|V",
+      "b": "mext|V",
+      "net": "hot"
+    },
+    {
+      "id": "w21",
+      "a": "drve|W",
+      "b": "mext|W",
+      "net": "hot"
+    },
+    {
+      "id": "w22",
+      "a": "ds|out0",
+      "b": "xf|H1",
+      "net": "hot"
+    },
+    {
+      "id": "w23",
+      "a": "ds|out1",
+      "b": "xf|H2",
+      "net": "hot"
+    },
+    {
+      "id": "w24",
+      "a": "xf|X1",
+      "b": "cbctl|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w25",
+      "a": "xf|X2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w26",
+      "a": "cbctl|out0",
+      "b": "estp|a",
+      "net": "hot"
+    },
+    {
+      "id": "w27",
+      "a": "estp|b",
+      "b": "stop|a",
+      "net": "hot"
+    },
+    {
+      "id": "w28",
+      "a": "stop|b",
+      "b": "mcr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w29",
+      "a": "mcr|A2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w30",
+      "a": "cbctl|out0",
+      "b": "mcr|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w31",
+      "a": "cbctl|out0",
+      "b": "mcr|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w32",
+      "a": "mcr|T1",
+      "b": "ps24|Lin",
+      "net": "hot"
+    },
+    {
+      "id": "w33",
+      "a": "mcr|T1",
+      "b": "beacon|a",
+      "net": "hot"
+    },
+    {
+      "id": "w34",
+      "a": "beacon|b",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w35",
+      "a": "mcr|T2",
+      "b": "horn|a",
+      "net": "hot"
+    },
+    {
+      "id": "w36",
+      "a": "horn|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    },
+    {
+      "id": "w37",
+      "a": "ps24|Nin",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w38",
+      "a": "ps24|Vp",
+      "b": "plc|L+",
+      "net": "dc"
+    },
+    {
+      "id": "w39",
+      "a": "plc|M",
+      "b": "gnd|g4",
+      "net": "ret"
+    },
+    {
+      "id": "w40",
+      "a": "ps24|Vp",
+      "b": "sel|a",
+      "net": "dc"
+    },
+    {
+      "id": "w41",
+      "a": "sel|b",
+      "b": "drvb|EN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w42",
+      "a": "sel|b",
+      "b": "drve|EN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w43",
+      "a": "ps24|Vp",
+      "b": "pe1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w44",
+      "a": "pe1|b",
+      "b": "ic|in0",
+      "net": "ctrl"
+    },
+    {
+      "id": "w45",
+      "a": "ps24|Vp",
+      "b": "pe2|a",
+      "net": "dc"
+    },
+    {
+      "id": "w46",
+      "a": "pe2|b",
+      "b": "ic|in1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w47",
+      "a": "ps24|Vp",
+      "b": "px1|a",
+      "net": "dc"
+    },
+    {
+      "id": "w48",
+      "a": "px1|b",
+      "b": "ic|in2",
+      "net": "ctrl"
+    },
+    {
+      "id": "w49",
+      "a": "ps24|Vp",
+      "b": "pbstart|a",
+      "net": "dc"
+    },
+    {
+      "id": "w50",
+      "a": "pbstart|b",
+      "b": "ic|in3",
+      "net": "ctrl"
+    },
+    {
+      "id": "w51",
+      "a": "ic|C",
+      "b": "gnd|g5",
+      "net": "ret"
+    }
+  ]
+}

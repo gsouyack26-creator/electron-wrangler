@@ -1,5 +1,5 @@
 {
-  "name": "LS4000 DCP \u2014 24VDC Control Power (rep.)",
+  "name": "LS4000 DCP — 24VDC Control Power (rep.)",
   "backdrop": null,
   "components": [
     {
@@ -70,6 +70,14 @@
       "x": 820,
       "y": 120,
       "label": "DIV SOL"
+    },
+    {
+      "id": "pwr",
+      "type": "light",
+      "x": 560,
+      "y": 360,
+      "label": "24VDC ON PL1",
+      "color": "#22c55e"
     }
   ],
   "wires": [
@@ -136,6 +144,18 @@
     {
       "id": "w11",
       "a": "sol|b",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w12",
+      "a": "tb|R1",
+      "b": "pwr|a",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "pwr|b",
       "b": "gnd|g0",
       "net": "ret"
     }

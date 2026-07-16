@@ -617,7 +617,7 @@ function render(){
     if(mode==='sim'){
       if(c.type==='motor'&&c._on) body=body.replace('motorbody','motorbody spin').replace('class="comp-label motorM"','class="comp-label motorM lit"');
       else if(c.type==='motor'&&c._singlePhase) body=body.replace('motorbody','motorbody hum');
-      if(c.type==='light'&&c._on) body=body.replace('lampbody','lampbody lit');
+      if(c.type==='light'&&c._on) body=body.replace('lampbody','lampbody '+(c._mwbcV!=null?(c._mwbcV>140?'lit-over':(c._mwbcV<80?'lit-under':'lit')):'lit'));
       if((c.type==='contactor'||c.type==='relay')&&c._coilOn) body=body.replace('coilind','coilind lit');
       if(compDef(c).timer&&c._out) body=body.replace('coilind','coilind lit');
     }

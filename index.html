@@ -81,7 +81,7 @@ footer{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--edge);pa
 .term{fill:#0d1117;stroke:#7d8590;stroke-width:1.4;cursor:crosshair}
 .term.hit{fill:var(--accent)}
 .comp-label{fill:#eef2f7;font-size:9.5px;font-weight:800;font-family:'Segoe UI',sans-serif;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#0a0d12;stroke-width:1px;stroke-linejoin:round}
-.comp-toplbl{fill:#f4f7fa;font-size:9.5px;font-weight:800;font-family:'Segoe UI',sans-serif;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#05070a;stroke-width:1px;stroke-linejoin:round}
+.comp-toplbl{fill:#ffffff;font-size:10.5px;font-weight:800;font-family:'Segoe UI',sans-serif;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#05070a;stroke-width:2px;stroke-linejoin:round} .toplbl-bg{fill:rgba(6,9,14,.85);stroke:rgba(255,255,255,.14);stroke-width:.5px;pointer-events:none}
 .comp-sub{fill:#cdd6e0;font-size:8px;font-weight:700;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#0a0d12;stroke-width:.9px;stroke-linejoin:round}
 .compbox{cursor:pointer}
 .compbox.sel .selrect{stroke:var(--sel);stroke-width:2;stroke-dasharray:4 3;fill:none}
@@ -906,7 +906,7 @@ function render(){
     s+=`<g class="${cls.join(' ')}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">
       <rect class="selrect" x="-6" y="-6" width="${d.w+12}" height="${d.h+12}" rx="6"/>
       ${body}
-      <text x="${d.w/2}" y="-9" class="comp-toplbl">${c.label&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut','plcInCard','plcOutCard','gndbar','psu','safetyRelay'].includes(c.type)?esc(c.label):''}</text>`;
+      ${(function(){var _lb=c.label,_ok=_lb&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut','plcInCard','plcOutCard','gndbar','psu','safetyRelay'].includes(c.type);if(!_ok)return '';var _w=String(_lb).length*5.9+12,_x=(d.w/2)-(_w/2);return '<rect x="'+_x+'" y="-20" width="'+_w+'" height="15" rx="4" class="toplbl-bg"/>'+'<text x="'+(d.w/2)+'" y="-9" class="comp-toplbl">'+esc(_lb)+'</text>';})()}`;
     termList(c).forEach(t=>{ s+=`<circle class="term" data-comp="${c.id}" data-term="${t.id}" cx="${t.x}" cy="${t.y}" r="4"/>`; });
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;

@@ -624,7 +624,7 @@ function render(){
     s+=`<g class="${cls.join(' ')}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">
       <rect class="selrect" x="-6" y="-6" width="${d.w+12}" height="${d.h+12}" rx="6"/>
       ${body}
-      <text x="${d.w/2}" y="-9" class="comp-toplbl">${c.label&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut','plcInCard','plcOutCard','gndbar','psu','safetyRelay'].includes(c.type)?esc(c.label):''}</text>`;
+      ${(function(){var _lb=c.label,_ok=_lb&&!['contactor','relay','vfd','term','tstrip','plcIn','plcOut','plcInCard','plcOutCard','gndbar','psu','safetyRelay'].includes(c.type);if(!_ok)return '';var _w=String(_lb).length*5.9+12,_x=(d.w/2)-(_w/2);return '<rect x="'+_x+'" y="-20" width="'+_w+'" height="15" rx="4" class="toplbl-bg"/>'+'<text x="'+(d.w/2)+'" y="-9" class="comp-toplbl">'+esc(_lb)+'</text>';})()}`;
     termList(c).forEach(t=>{ s+=`<circle class="term" data-comp="${c.id}" data-term="${t.id}" cx="${t.x}" cy="${t.y}" r="4"/>`; });
     if(c.note) s+=`<text class="notepin" data-note="${c.id}" x="${d.w-2}" y="4">\ud83d\udccc</text>`;
     if(c.link) s+=`<text class="xlink" data-link="${esc(c.link)}" x="${d.w/2}" y="${d.h+18}">\u2192 ${esc(c.link)}</text>`;

@@ -1,5 +1,5 @@
 {
-  "name": "LS4000 E-Stop Junction Box \u2014 dual-channel loop (M-16-00264 ESTOPJB sh121)",
+  "name": "LS4000 E-Stop Junction Box — dual-channel loop (M-16-00264 ESTOPJB sh121)",
   "backdrop": null,
   "components": [
     {
@@ -131,6 +131,12 @@
       "a": "lt2|b",
       "b": "gnd|g3",
       "net": "ret"
+    },
+    {
+      "id": "w12",
+      "a": "src|L",
+      "b": "sr|14",
+      "net": "dc"
     }
   ]
 }

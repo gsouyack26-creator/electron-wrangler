@@ -2175,6 +2175,9 @@ var SEV=[
   ,{id:'i-rail-vdrop', cat:'vdrop', diff:2, kind:'high-resistance', limit:280, panel:'DCP 75VDC Conductor Rail Power (M-16-00264 DCP_CR sh061/131)',
    name:'Robots brown out at the far end of the rail', symptom:'Drive units lose charge and reset at the far end of the 75 VDC conductor rail while the near end is fine. The supplies read a solid 75 V at the panel, but the rail voltage sags badly under load out on the floor. Find where the volts are being lost.',
    find:function(P){return _sevHiZ(P,{type:'breaker'});}}
+  ,{id:'i-ctlpwr-open', cat:'controls', diff:2, kind:'tripped breaker', limit:240, panel:'CP82 Main Power Distribution (M-16-00264 p.82060-61)',
+   name:'Whole line dead on controls \u2014 drives still show voltage', symptom:'Every contactor, PLC and control device on the line is dead, yet the drive sections still read incoming voltage at CP82. It is as if only the control power went away. Find what feeds the 120 V control bus and why it is open.',
+   find:function(P){return _sevSet(P,{type:'breaker',label:'CONTROL',state:'tripped'});}}
 ];
 function _sevPick(P,spec){ var cs=P.components.filter(function(c){return c.type===spec.type&&(!spec.label||String(c.label||'').toLowerCase().indexOf(String(spec.label).toLowerCase())>=0);});
   if(!cs.length)return null; return spec.pick==='last'?cs[cs.length-1]:(typeof spec.pick==='number'?cs[spec.pick]:cs[0]); }

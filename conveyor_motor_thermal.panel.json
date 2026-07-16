@@ -1,0 +1,161 @@
+{
+  "name": "Conveyor Motor Thermal Protection — 480VAC (Klixon/PTC)",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 110,
+      "label": "480VAC 3PH",
+      "phases": 3,
+      "volts": 480
+    },
+    {
+      "id": "ds",
+      "type": "disc",
+      "x": 170,
+      "y": 90,
+      "poles": 3,
+      "state": "closed",
+      "label": "DS1 30A"
+    },
+    {
+      "id": "km1",
+      "type": "contactor",
+      "x": 300,
+      "y": 90,
+      "poles": 3,
+      "label": "KM1 Motor"
+    },
+    {
+      "id": "mtr",
+      "type": "motor",
+      "x": 450,
+      "y": 100,
+      "phases": 3,
+      "volts": 480,
+      "hp": 5,
+      "label": "CONV MOTOR"
+    },
+    {
+      "id": "s24",
+      "type": "source",
+      "x": 40,
+      "y": 310,
+      "label": "24VDC CTRL",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 170,
+      "y": 300,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB1 4A"
+    },
+    {
+      "id": "ptc",
+      "type": "overtemp",
+      "x": 300,
+      "y": 200,
+      "state": "closed",
+      "label": "TH1 Klixon"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 450,
+      "y": 430,
+      "label": "0VDC"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L1",
+      "b": "ds|in0",
+      "net": "hot"
+    },
+    {
+      "id": "w2",
+      "a": "src|L2",
+      "b": "ds|in1",
+      "net": "hot"
+    },
+    {
+      "id": "w3",
+      "a": "src|L3",
+      "b": "ds|in2",
+      "net": "hot"
+    },
+    {
+      "id": "w4",
+      "a": "ds|out0",
+      "b": "km1|L1",
+      "net": "hot"
+    },
+    {
+      "id": "w5",
+      "a": "ds|out1",
+      "b": "km1|L2",
+      "net": "hot"
+    },
+    {
+      "id": "w6",
+      "a": "ds|out2",
+      "b": "km1|L3",
+      "net": "hot"
+    },
+    {
+      "id": "w7",
+      "a": "km1|T1",
+      "b": "mtr|U",
+      "net": "hot"
+    },
+    {
+      "id": "w8",
+      "a": "km1|T2",
+      "b": "mtr|V",
+      "net": "hot"
+    },
+    {
+      "id": "w9",
+      "a": "km1|T3",
+      "b": "mtr|W",
+      "net": "hot"
+    },
+    {
+      "id": "w10",
+      "a": "s24|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w11",
+      "a": "cb|out0",
+      "b": "ptc|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w12",
+      "a": "ptc|b",
+      "b": "km1|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w13",
+      "a": "km1|A2",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w14",
+      "a": "s24|N",
+      "b": "gnd|g1",
+      "net": "ret"
+    }
+  ]
+}

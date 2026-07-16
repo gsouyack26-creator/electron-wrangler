@@ -1,0 +1,156 @@
+{
+  "name": "Guard-Locked Gate Safety Panel — 24VDC Conveyor Enable",
+  "backdrop": null,
+  "components": [
+    {
+      "id": "src",
+      "type": "source",
+      "x": 40,
+      "y": 220,
+      "label": "24VDC CTRL",
+      "phases": 1,
+      "volts": 24
+    },
+    {
+      "id": "cb",
+      "type": "breaker",
+      "x": 160,
+      "y": 210,
+      "poles": 1,
+      "state": "closed",
+      "label": "CB1 4A"
+    },
+    {
+      "id": "stop",
+      "type": "pbNC",
+      "x": 280,
+      "y": 80,
+      "state": "closed",
+      "label": "PB1 Stop"
+    },
+    {
+      "id": "gl",
+      "type": "guardlock",
+      "x": 390,
+      "y": 70,
+      "state": "closed",
+      "label": "GL1 Gate"
+    },
+    {
+      "id": "sr",
+      "type": "safetyRelay",
+      "x": 520,
+      "y": 80,
+      "label": "SR1 Pilz"
+    },
+    {
+      "id": "cr",
+      "type": "relay",
+      "x": 680,
+      "y": 80,
+      "label": "CR1 Enable"
+    },
+    {
+      "id": "mtr",
+      "type": "motor",
+      "x": 810,
+      "y": 90,
+      "phases": 1,
+      "volts": 24,
+      "label": "CONV MOTOR"
+    },
+    {
+      "id": "gnd",
+      "type": "gndbar",
+      "x": 580,
+      "y": 380,
+      "label": "0VDC"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "a": "src|L",
+      "b": "cb|in0",
+      "net": "dc"
+    },
+    {
+      "id": "w2",
+      "a": "src|N",
+      "b": "gnd|g0",
+      "net": "ret"
+    },
+    {
+      "id": "w3",
+      "a": "cb|out0",
+      "b": "stop|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w4",
+      "a": "stop|b",
+      "b": "gl|11",
+      "net": "ctrl"
+    },
+    {
+      "id": "w5",
+      "a": "gl|12",
+      "b": "sr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w6",
+      "a": "cb|out0",
+      "b": "gl|21",
+      "net": "ctrl"
+    },
+    {
+      "id": "w7",
+      "a": "gl|22",
+      "b": "sr|IN",
+      "net": "ctrl"
+    },
+    {
+      "id": "w8",
+      "a": "sr|A2",
+      "b": "gnd|g1",
+      "net": "ret"
+    },
+    {
+      "id": "w9",
+      "a": "cb|out0",
+      "b": "sr|13",
+      "net": "dc"
+    },
+    {
+      "id": "w10",
+      "a": "sr|14",
+      "b": "cr|A1",
+      "net": "ctrl"
+    },
+    {
+      "id": "w11",
+      "a": "cr|A2",
+      "b": "gnd|g2",
+      "net": "ret"
+    },
+    {
+      "id": "w12",
+      "a": "cb|out0",
+      "b": "cr|11",
+      "net": "dc"
+    },
+    {
+      "id": "w13",
+      "a": "cr|14",
+      "b": "mtr|a",
+      "net": "ctrl"
+    },
+    {
+      "id": "w14",
+      "a": "mtr|b",
+      "b": "gnd|g3",
+      "net": "ret"
+    }
+  ]
+}

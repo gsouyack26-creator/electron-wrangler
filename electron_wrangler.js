@@ -1078,6 +1078,7 @@ function initLibrary(){ const sel=$('#libsel'); if(!sel)return; const lib=window
 /* ---------- init ---------- */
 function init(){ $('#ver').textContent='v'+VERSION;
   const _h=applyHash();
+  if(window._aetBack){ try{ const _bk=document.createElement('a'); _bk.href='AET_Academy.html#module/'+window._aetBack; _bk.textContent='\u2190 Back to AET Academy'; _bk.style.cssText='position:fixed;left:12px;bottom:12px;z-index:99999;background:#38bdf8;color:#04121c;padding:7px 13px;border-radius:7px;text-decoration:none;font:600 .8rem system-ui;box-shadow:0 2px 10px rgba(0,0,0,.4)'; document.body.appendChild(_bk);}catch(e){} }
   if(_h){ $('#stat').textContent=_h==='lib'?'shared (library)':'shared link'; }
   else if(!restore()){ PANEL=demoPanel(); $('#stat').textContent='demo panel'; } else { $('#stat').textContent='restored'; }
   try{encOn=localStorage.getItem('pt_enc')!=='0';}catch(e){}
@@ -1298,11 +1299,14 @@ function shortLibLink(){ const lib=window.PANEL_LIBRARY; if(!lib||!lib[PANEL.nam
 function applyHash(){ const h=location.hash;
   let m=h.match(/#p=(.+)$/);
   if(m){ try{ const json=decodeURIComponent(escape(atob(m[1]))); PANEL=validatePanel(JSON.parse(json)); restoreUid(); return 'full'; }catch(e){return false;} }
-  m=h.match(/#lib=([^&]+)(?:&s=(.+))?$/);
-  if(m){ const lib=window.PANEL_LIBRARY; const name=decodeURIComponent(m[1]);
+  m=h.match(/#lib=(.+)$/);
+  if(m){ const lib=window.PANEL_LIBRARY; const parts=m[1].split('&');
+    const name=decodeURIComponent(parts[0]); let sTok=null, aet=null;
+    parts.slice(1).forEach(p=>{ if(p.indexOf('s=')===0)sTok=p.slice(2); else if(p.indexOf('aet=')===0)aet=p.slice(4); });
     if(lib&&lib[name]){ PANEL=JSON.parse(JSON.stringify(lib[name])); restoreUid();
-      if(m[2]){ decodeURIComponent(m[2]).split(';').forEach(tok=>{ const mm=tok.match(/^(.+)~([^!]*)(!)?$/);
+      if(sTok){ decodeURIComponent(sTok).split(';').forEach(tok=>{ const mm=tok.match(/^(.+)~([^!]*)(!)?$/);
         if(mm){ const c=findComp(mm[1]); if(c){ if(mm[2])c.state=mm[2]; c.fault=!!mm[3]; } } }); }
+      if(aet!=null){ try{ window._aetBack=decodeURIComponent(aet); }catch(e){ window._aetBack=aet; } }
       bootSim=true; return 'lib'; } }
   return false;
 }

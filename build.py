@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Bundle Electron Wrangler into a single portable HTML file with the panel library embedded."""
+import base64 as _b64
 import glob
 import json
 import os
@@ -38,7 +39,6 @@ out = html.replace('<script src="electron_wrangler.js"></script>', inject, 1)
 if out == html:
     raise SystemExit("ERROR: <script src=\"electron_wrangler.js\"> anchor not found in template")
 # inline the PWA manifest as a data URI so the single-file dist stays portable
-import base64 as _b64
 _mpath = os.path.join(HERE, "manifest.json")
 if os.path.exists(_mpath) and '<link rel="manifest" href="manifest.json">' in out:
     with open(_mpath, encoding="utf-8") as _f:
@@ -48,6 +48,9 @@ if os.path.exists(_mpath) and '<link rel="manifest" href="manifest.json">' in ou
 
 dist = os.path.join(HERE, "ElectronWrangler_dist.html")
 with open(dist, "w", encoding="utf-8") as _f:
+    _f.write(out)
+# also emit index.html (identical) so GitHub Pages serves the app at the repo root URL
+with open(os.path.join(HERE, "index.html"), "w", encoding="utf-8") as _f:
     _f.write(out)
 kb = os.path.getsize(dist) // 1024
 print(f"built {os.path.basename(dist)} ({kb} KB) with {len(lib)} panels:")

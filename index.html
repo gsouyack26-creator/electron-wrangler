@@ -220,6 +220,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
         <button class="tbtn" id="btnAmps" title="Show running motor amps">⚡ Motor amps</button>
         <button class="tbtn" id="btnCb" aria-pressed="false" title="Colorblind-safe mode (shape/pattern cues)">👁 Colorblind mode</button>
         <button class="tbtn" id="btnBackdrop">🖼 Drawing backdrop</button>
+        <button class="tbtn" id="btnPhoto" title="Load a photo of the real enclosure for the Physical view">📷 Panel photo</button>
         <button class="tbtn" id="btnEnc" title="Toggle the panel enclosure look">&#128452; Enclosure look</button>
         <button class="tbtn" id="btnAI">🤖 AI Extract</button>
       </div>
@@ -231,6 +232,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     <button class="tbtn" id="btnRedo" title="Redo (Ctrl+Y)">↷</button>
     <button class="tbtn warn" id="btnClear">🗑 New</button>
     <input type="file" id="fileImg" accept="image/*">
+    <input type="file" id="filePhoto" accept="image/*">
     <input type="file" id="fileJson" accept=".json,application/json">
     <input type="file" id="fileDiff" accept=".json,application/json">
   </header>
@@ -880,7 +882,7 @@ function render(){
   const W=svg.clientWidth,H=svg.clientHeight;
   if(W<=0||H<=0) return;
   svg.setAttribute('viewBox',`${-view.x/view.k} ${-view.y/view.k} ${W/view.k} ${H/view.k}`);
-  if(viewMode==='phys'){ svg.innerHTML=physBody(); return; }
+  if(viewMode==='phys'){ var _pho=''; if(PANEL.photo){ var _po=($('#opacity').value)/100, _pw=1160, _ph=(PANEL.pw&&PANEL.ph)?Math.round(_pw*PANEL.ph/PANEL.pw):760; _pho='<image href="'+esc(PANEL.photo)+'" x="20" y="20" width="'+_pw+'" height="'+_ph+'" opacity="'+_po+'" preserveAspectRatio="xMidYMid meet"/>'; } svg.innerHTML=_pho+physBody(); return; }
   let s='';
   if(encOn) s+=backplate();
   // backdrop
@@ -1184,6 +1186,7 @@ function validatePanel(p){
   (p.pins||[]).forEach(pn=>{ if(!isFinite(pn.x))pn.x=0; if(!isFinite(pn.y))pn.y=0; });
   if(p.pm&&!Array.isArray(p.pm)) p.pm=[];
   if(p.backdrop!=null&&(typeof p.backdrop!=='string'||!/^data:image\//i.test(p.backdrop))) p.backdrop=null;
+  if(p.photo!=null&&(typeof p.photo!=='string'||!/^data:image\//i.test(p.photo))) p.photo=null;
   p.components.forEach(c=>{ if(!c||!c.id||!T[c.type]) throw new Error('bad component'); 
     if(!isFinite(c.x)) c.x=0; if(!isFinite(c.y)) c.y=0; 
     if(c.color) c.color=sanColor(c.color,'#22c55e');
@@ -1210,14 +1213,21 @@ $('#btnClear').onclick=()=>{ if(!confirm('Start a new blank panel? (Save first i
 $('#btnBackdrop').onclick=()=>$('#fileImg').click();
 $('#fileImg').onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
   r.onload=()=>{ const img=new Image(); img.onload=()=>{ PANEL.backdrop=r.result; PANEL.bw=img.width; PANEL.bh=img.height; persist(); render(); toast('Drawing loaded — trace over it'); }; img.src=r.result; }; r.readAsDataURL(f); e.target.value=''; };
+$('#btnPhoto').onclick=()=>$('#filePhoto').click();
+$('#filePhoto').onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
+  r.onload=()=>{ const img=new Image(); img.onload=()=>{ PANEL.photo=r.result; PANEL.pw=img.width; PANEL.ph=img.height; persist(); if(viewMode!=='phys'){ viewMode='phys'; var _bv=$('#btnView'); if(_bv){ _bv.classList.add('on'); _bv.innerHTML='&#128268; Schematic'; } if(typeof applyView==='function')applyView(); } render(); toast('Panel photo loaded \u2014 drag parts onto the real devices'); }; img.src=r.result; }; r.readAsDataURL(f); e.target.value=''; };
 $('#opacity').oninput=()=>render();
-$('#btnAI').onclick=()=>{ const msg=`AI EXTRACT (hybrid workflow)\n\n`+
-  `1. Load your panel drawing with 🖼 Drawing (photo, PDF page, or sketch).\n`+
-  `2. Send that same image to Aki in chat and say: "extract this panel to Electron Wrangler JSON".\n`+
-  `3. Aki returns a .panel.json (components + wires with x/y positions).\n`+
-  `4. Click 📂 Load to import it — it drops on top of your traced backdrop; nudge parts to line up.\n\n`+
-  `Aki reads the drawing (schematic symbols or physical layout), identifies breakers, contactors, `+
-  `fuses, relays, motors, wiring nets, and builds the graph automatically. You then correct/wire the rest by hand.`;
+$('#btnAI').onclick=()=>{ const msg=`AI PANEL BUILDER — drawings + photo → live trainable panel\n\n`+
+  `— ELECTRICAL MODEL (from the schematic) —\n`+
+  `1. Load the schematic (CP83 sheet, PDF page, sketch) with 🖼 Drawing backdrop.\n`+
+  `2. Send that same drawing to Aki in chat: "extract this to Electron Wrangler JSON".\n`+
+  `3. Aki reads the symbols (breakers, contactors, fuses, relays, PLC I/O, motors) and the wiring nets and returns a .panel.json.\n`+
+  `4. 📂 Load it — it drops onto your traced backdrop; nudge parts to match, then Simulate / meter with the DMM.\n\n`+
+  `— PHYSICAL LAYOUT (from a panel photo) —\n`+
+  `5. Load an actual photo of the enclosure with 📷 Panel photo.\n`+
+  `6. It opens the Physical view with the photo behind the modules.\n`+
+  `7. Drag each module onto the real device in the photo (or ask Aki: "position these parts to match the photo").\n\n`+
+  `Result: techs train on the exact panel — trace power, meter with the multimeter, and run trouble calls on real ACY1 equipment.`;
   alert(msg); };
 
 /* ---------- toast ---------- */
@@ -1347,7 +1357,7 @@ function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label|
     +'Live: <b style="color:'+(anyEnerg(c)?'var(--live)':'var(--dim)')+'">'+(anyEnerg(c)?'ENERGIZED':'\u2014')+'</b>'
     +(bad?' \u00b7 <span style="color:var(--warn)">'+esc(bad)+'</span>':'')+'<br>'
     +'<span style="color:var(--dim)">Wired to:</span> '+(nb.map(esc).join(', ')||'(nothing)')+'</div>'; }
-function applyView(){ const dim=(viewMode==='phys'||mode==='sim'); const l=document.getElementById('left');
+function applyView(){ const dim=(mode==='sim'); const l=document.getElementById('left');
   if(l){ l.style.opacity=dim?'.4':'1'; l.style.pointerEvents=dim?'none':'auto'; } }
 
 function initLibrary(){ const sel=$('#libsel'); if(!sel)return; const lib=window.PANEL_LIBRARY;

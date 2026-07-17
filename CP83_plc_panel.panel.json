@@ -9,14 +9,26 @@
       "y": 300,
       "label": "24VDC from CP82",
       "phases": 1,
-      "volts": 24
+      "volts": 24,
+      "phys": {
+        "x": 40,
+        "y": 152,
+        "w": 76,
+        "h": 58
+      }
     },
     {
       "id": "gnd",
       "type": "gndbar",
       "x": 150,
       "y": 560,
-      "label": "0VDC bus"
+      "label": "0VDC bus",
+      "phys": {
+        "x": 40,
+        "y": 606,
+        "w": 660,
+        "h": 26
+      }
     },
     {
       "id": "cb0",
@@ -25,7 +37,13 @@
       "y": 290,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308002 4A PLC PWR"
+      "label": "CB8308002 4A PLC PWR",
+      "phys": {
+        "x": 150,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "cb2",
@@ -34,14 +52,26 @@
       "y": 40,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308003 4A"
+      "label": "CB8308003 4A",
+      "phys": {
+        "x": 222,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "plc1",
       "type": "plc",
       "x": 470,
       "y": 36,
-      "label": "AB ControlLogix PLC"
+      "label": "AB ControlLogix PLC",
+      "phys": {
+        "x": 50,
+        "y": 300,
+        "w": 96,
+        "h": 76
+      }
     },
     {
       "id": "cb3",
@@ -50,14 +80,26 @@
       "y": 112,
       "poles": 1,
       "state": "closed",
-      "label": "CB8598006 4A"
+      "label": "CB8598006 4A",
+      "phys": {
+        "x": 294,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "bk1",
       "type": "netdev",
       "x": 470,
       "y": 108,
-      "label": "Beckhoff I/O -> 8313000"
+      "label": "Beckhoff I/O -> 8313000",
+      "phys": {
+        "x": 190,
+        "y": 308,
+        "w": 76,
+        "h": 60
+      }
     },
     {
       "id": "cb4",
@@ -66,14 +108,26 @@
       "y": 184,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308006 4A"
+      "label": "CB8308006 4A",
+      "phys": {
+        "x": 366,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "ps1",
       "type": "netdev",
       "x": 470,
       "y": 180,
-      "label": "Port Server B308023"
+      "label": "Port Server B308023",
+      "phys": {
+        "x": 450,
+        "y": 308,
+        "w": 76,
+        "h": 60
+      }
     },
     {
       "id": "cb5",
@@ -82,7 +136,13 @@
       "y": 256,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308011 4A"
+      "label": "CB8308011 4A",
+      "phys": {
+        "x": 438,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "lmp",
@@ -90,7 +150,13 @@
       "x": 470,
       "y": 252,
       "label": "24VDC LAMPS + AB I/O",
-      "color": "#fbbf24"
+      "color": "#fbbf24",
+      "phys": {
+        "x": 466,
+        "y": 32,
+        "w": 40,
+        "h": 40
+      }
     },
     {
       "id": "cb6",
@@ -99,14 +165,26 @@
       "y": 328,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308023 4A"
+      "label": "CB8308023 4A",
+      "phys": {
+        "x": 510,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "sst",
       "type": "netdev",
       "x": 470,
       "y": 324,
-      "label": "SST Profibus Scanner"
+      "label": "SST Profibus Scanner",
+      "phys": {
+        "x": 580,
+        "y": 308,
+        "w": 76,
+        "h": 60
+      }
     },
     {
       "id": "cb7",
@@ -115,7 +193,13 @@
       "y": 400,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308030 4A"
+      "label": "CB8308030 4A",
+      "phys": {
+        "x": 582,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "fan",
@@ -124,7 +208,13 @@
       "y": 396,
       "label": "MOT8308030 Panel Fan",
       "phases": 1,
-      "volts": 24
+      "volts": 24,
+      "phys": {
+        "x": 470,
+        "y": 458,
+        "w": 64,
+        "h": 60
+      }
     },
     {
       "id": "cb8",
@@ -133,14 +223,26 @@
       "y": 472,
       "poles": 1,
       "state": "closed",
-      "label": "CB8308007 4A"
+      "label": "CB8308007 4A",
+      "phys": {
+        "x": 654,
+        "y": 150,
+        "w": 38,
+        "h": 76
+      }
     },
     {
       "id": "bk2",
       "type": "netdev",
       "x": 470,
       "y": 468,
-      "label": "Beckhoff Coupler B319128"
+      "label": "Beckhoff Coupler B319128",
+      "phys": {
+        "x": 320,
+        "y": 308,
+        "w": 76,
+        "h": 60
+      }
     },
     {
       "id": "e_pblt",
@@ -148,7 +250,13 @@
       "x": 640,
       "y": 60,
       "state": "closed",
-      "label": "PBLT8312102 E-Stop"
+      "label": "PBLT8312102 E-Stop",
+      "phys": {
+        "x": 60,
+        "y": 30,
+        "w": 46,
+        "h": 44
+      }
     },
     {
       "id": "e_jb",
@@ -156,14 +264,26 @@
       "x": 760,
       "y": 60,
       "state": "closed",
-      "label": "JB.E-STOP loop"
+      "label": "JB.E-STOP loop",
+      "phys": {
+        "x": 178,
+        "y": 30,
+        "w": 46,
+        "h": 44
+      }
     },
     {
       "id": "sr",
       "type": "safetyRelay",
       "x": 700,
       "y": 150,
-      "label": "CR8313001 E-STOP RELAY SLAVE"
+      "label": "CR8313001 E-STOP RELAY SLAVE",
+      "phys": {
+        "x": 50,
+        "y": 448,
+        "w": 60,
+        "h": 80
+      }
     },
     {
       "id": "tmr",
@@ -171,14 +291,26 @@
       "x": 700,
       "y": 270,
       "preset": 2000,
-      "label": "TD8313106 delay"
+      "label": "TD8313106 delay",
+      "phys": {
+        "x": 150,
+        "y": 452,
+        "w": 48,
+        "h": 70
+      }
     },
     {
       "id": "enable",
       "type": "plc",
       "x": 860,
       "y": 250,
-      "label": "Sorter Enable (to CP41)"
+      "label": "Sorter Enable (to CP41)",
+      "phys": {
+        "x": 320,
+        "y": 452,
+        "w": 96,
+        "h": 70
+      }
     },
     {
       "id": "estop_lamp",
@@ -186,14 +318,26 @@
       "x": 640,
       "y": 150,
       "color": "#ef4444",
-      "label": "PBLT8312102 lamp"
+      "label": "PBLT8312102 lamp",
+      "phys": {
+        "x": 398,
+        "y": 32,
+        "w": 40,
+        "h": 40
+      }
     },
     {
       "id": "ah",
       "type": "horn",
       "x": 860,
       "y": 150,
-      "label": "AH E-Stop Horn"
+      "label": "AH E-Stop Horn",
+      "phys": {
+        "x": 536,
+        "y": 30,
+        "w": 46,
+        "h": 44
+      }
     },
     {
       "id": "rpb",
@@ -201,14 +345,26 @@
       "x": 640,
       "y": 270,
       "state": "open",
-      "label": "PB8313114 Reset"
+      "label": "PB8313114 Reset",
+      "phys": {
+        "x": 296,
+        "y": 30,
+        "w": 44,
+        "h": 44
+      }
     },
     {
       "id": "rcr",
       "type": "relay",
       "x": 640,
       "y": 360,
-      "label": "CR8313101 Reset Relay"
+      "label": "CR8313101 Reset Relay",
+      "phys": {
+        "x": 232,
+        "y": 446,
+        "w": 46,
+        "h": 84
+      }
     }
   ],
   "wires": [

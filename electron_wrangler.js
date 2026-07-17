@@ -1015,7 +1015,8 @@ function wiredNeighbors(c){ const seen=new Set();
 function physModule(c){ const w=c.phys.w,h=c.phys.h, coil=c._coilOn, on=c._on;
   const led=col=>'<circle cx="'+(w-9)+'" cy="10" r="4" fill="'+col+'" stroke="#111"/>';
   const frame='<rect class="sym fillbody" x="0" y="0" width="'+w+'" height="'+h+'" rx="5"/>';
-  const tag='<text x="'+(w/2)+'" y="'+(h+12)+'" class="comp-sub" style="fill:#c9d1d9">'+esc(c.label||c.type)+'</text>';
+  var _lab=String(c.label||c.type); if(_lab.length>14)_lab=_lab.slice(0,13)+'\u2026';
+  const tag='<text x="'+(w/2)+'" y="'+(h+12)+'" class="comp-sub" style="fill:#c9d1d9">'+esc(_lab)+'</text>';
   let f='';
   switch(c.type){
     case 'breaker': case 'disc': { const st=c.state||'closed';

@@ -646,7 +646,7 @@ let mode='build', tool=null, wireStart=null, sel=null, selWire=null;
 let view={x:0,y:0,k:1}, uid=1;
 let encOn=true;
 let viewMode='sch';
-let showWireNo=false, meterMode=false, probes=[], hoverComp=null, hoverData=null, quiz=null, bootSim=false;
+let showWireNo=false, meterMode=false, probes=[], meterFn='volts', hoverComp=null, hoverData=null, quiz=null, bootSim=false;
 let showVolts=false, orthoWire=false, logMode=false, measurements=[], pinMode=false, selSet=[], marquee=null, netHi=null;
 let phaseMap=null;
 const svg=$('#svg');
@@ -707,6 +707,10 @@ function solve(){
   comps.forEach(c=>{ if(c.type==='source'){ const ph=c.phases||1; termList(c).forEach(t=>{ if(t.rail==='hot'){ const r=_puf.find(_key(c,t.id)); (_phaseOf[r]=_phaseOf[r]||new Set()).add(ph===3?t.id:(ph===2?t.id:'L')); } }); } });
   solve._phaseOf=_phaseOf; const _phasesAt=k=>_phaseOf[_puf.find(k)]||new Set();
   phaseMap=_phaseOf;
+  // per-node AC/DC classification for the DMM (psu=DC, xfmr sec=AC, source by phases/volts)
+  solve._nodeKind={};
+  comps.forEach(function(c){ if(c.type==='source'){ var _dc=(c.dc===true)||((c.phases||1)===1 && _numVolt(c.volts)<=90); termList(c).forEach(function(t){ if(t.rail==='hot'){ solve._nodeKind[_puf.find(_key(c,t.id))]=_dc?'dc':'ac'; } }); } });
+  comps.forEach(function(c){ var d=compDef(c); if(d.psu&&c._acOn){ solve._nodeKind[_puf.find(_key(c,'Vp'))]='dc'; } if(d.xfmr&&c._priOn){ solve._nodeKind[_puf.find(_key(c,'X1'))]='ac'; } });
   // energized terminals + load on-states
   comps.forEach(c=>{ const d=compDef(c);
     termList(c).forEach(t=>{ const k=_key(c,t.id); c._energT[t.id]= _isHot(k); });
@@ -970,7 +974,7 @@ svg.addEventListener('pointerdown',ev=>{
   if(mode==='build'&&pinMode){ const p=toWorld(ev); const lbl=prompt('Pin label / linked component tag (blank = none):','');
     if(lbl!==null){ PANEL.pins=PANEL.pins||[]; const lc=PANEL.components.find(c=>(c.label||'').toLowerCase()===lbl.trim().toLowerCase()); PANEL.pins.push({x:Math.round(p.x),y:Math.round(p.y),comp:lc?lc.id:null,label:lbl}); persist(); render(); } return; }
   if(mode==='sim'&&logMode&&term){ logMeasure(term.dataset.comp+'|'+term.dataset.term); return; }
-  if(mode==='sim'&&(meterMode||contMode)&&term){ addProbe(term.dataset.comp+'|'+term.dataset.term); return; }
+  if(mode==='sim'&&meterMode&&term){ addProbe(term.dataset.comp+'|'+term.dataset.term); return; }
   if(tool==='wire'||wireStart){ if(term){ handleWireClick(term.dataset.comp,term.dataset.term); return; } }
   if(mode==='build'&&tool&&T[tool]){ const p=toWorld(ev); addComponent(tool,p.x,p.y); return; }
   if(term && mode==='build'){ handleWireClick(term.dataset.comp,term.dataset.term); return; }
@@ -1100,24 +1104,22 @@ function fixWires(c){ const valid=new Set(termList(c).map(t=>c.id+'|'+t.id));
 function renderSimInspector(){ const box=$('#inspector'); const c=sel;
   if(!c){ box.innerHTML=`<h3>Simulate</h3>
     <button class="tbtn" id="sim-dead" style="width:100%;margin-bottom:6px">🔎 What's dead? (whole panel)</button>
-    <button class="tbtn ${meterMode?'on':''}" id="sim-meter" style="width:100%;margin-bottom:6px">🔌 Meter probe ${meterMode?'(ON — click 2 terminals)':''}</button>
+    <button class="tbtn ${meterMode?'on':''}" id="sim-meter" style="width:100%;margin-bottom:6px">🔧 Multimeter (DMM) ${meterMode?'(ON — V / Ω / ・・・ / A)':''}</button>
     <button class="tbtn" id="sim-quiz" style="width:100%;margin-bottom:6px">🎓 ${quiz?'End quiz':'Quiz me (inject hidden fault)'}</button>
     <button class="tbtn ${showVolts?'on':''}" id="sim-volts" style="width:100%;margin-bottom:6px">⚡ ${showVolts?'Hide':'Show'} live voltages</button>
     <button class="tbtn ${logMode?'on':''}" id="sim-log" style="width:100%;margin-bottom:6px">📝 ${logMode?'Logging as-found (ON)':'As-found meter log'}</button>
-    <button class="tbtn ${contMode?'on':''}" id="sim-cont" style="width:100%;margin-bottom:6px">🔌 ${contMode?'Continuity (ON — dead test)':'Continuity / ohmmeter (dead)'}</button>
     <button class="tbtn ${showPhase?'on':''}" id="sim-phase" style="width:100%;margin-bottom:6px">Φ ${showPhase?'Hide phases':'Show L1/L2/L3 phases'}</button>
     <button class="tbtn ${showTherm?'on':''}" id="sim-therm" style="width:100%;margin-bottom:6px">🌡 ${showTherm?'Hide thermal':'Thermal overlay'}</button>
     <div id="simextra"></div>
     <div class="hint">Click any device to operate it.<br>• Breakers/E-stops/buttons cycle open⇄closed<br>• Blow fuses & trip breakers to inject faults<br>• Click a <b>dead load</b> to diagnose<br>• Hover a device to highlight its live path</div>`;
     $('#sim-dead').onclick=showPanelReport;
-    $('#sim-meter').onclick=()=>{meterMode=!meterMode;contMode=false;probes=[];render();renderSimInspector();};
+    $('#sim-meter').onclick=()=>{meterMode=!meterMode;probes=[];meterFn='volts';render();renderSimInspector();};
     $('#sim-quiz').onclick=()=>{ if(quiz){quizEnd();} else {startQuiz();} };
     $('#sim-volts').onclick=()=>{showVolts=!showVolts;render();renderSimInspector();};
     $('#sim-log').onclick=()=>{logMode=!logMode;render();renderSimInspector();};
-    $('#sim-cont').onclick=()=>{contMode=!contMode;meterMode=false;probes=[];render();renderSimInspector();};
     $('#sim-phase').onclick=()=>{showPhase=!showPhase;render();renderSimInspector();};
     $('#sim-therm').onclick=()=>{showTherm=!showTherm;render();renderSimInspector();};
-    if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog(); if(contMode) renderCont();
+    if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog();
     if(scenario){ const _d=$('#simextra'); if(_d){ _d.innerHTML+=(!scenario.done?'<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>':'')+((scenario.isSev&&!scenario.done)?'<button class="tbtn warn" id="sim-scen-reveal" style="width:100%;margin-top:8px">🏳 Give up — reveal fault & fix</button>':'')+'<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:8px">← Exit call (restore my panel)</button>'; const _e=$('#sim-scen-exit'); if(_e)_e.onclick=exitScenario; const _rv=$('#sim-scen-reveal'); if(_rv)_rv.onclick=function(){_sevReveal(true);}; } }
     return; }
   const d=compDef(c); let h=`<h3>${c.label?esc(c.label)+' — ':''}${d.name}</h3>`;
@@ -1166,7 +1168,7 @@ function setTool(t){ tool=(t==='wire')?'wire':t; wireStart=null;
   $('#btnWire').classList.toggle('on',t==='wire');
   svg.className.baseVal=(t==='wire')?'wire':(t&&T[t])?'place':''; }
 $('#btnWire').onclick=()=>setTool(tool==='wire'?null:'wire');
-function setMode(m){ if(typeof _playing!=='undefined'&&_playing&&typeof stopPlay==='function')stopPlay(); mode=m; wireStart=null;tool=null;setTool(null); meterMode=false; probes=[]; hoverComp=null; hoverData=null; logMode=false; showVolts=false; pinMode=false; selSet=[]; marquee=null; netHi=null; if(quiz) quizEnd();
+function setMode(m){ if(typeof _playing!=='undefined'&&_playing&&typeof stopPlay==='function')stopPlay(); mode=m; wireStart=null;tool=null;setTool(null); meterMode=false; probes=[]; meterFn='volts'; hoverComp=null; hoverData=null; logMode=false; showVolts=false; pinMode=false; selSet=[]; marquee=null; netHi=null; if(quiz) quizEnd();
   $('#mBuild').classList.toggle('on',m==='build'); $('#mSim').classList.toggle('on',m==='sim');
   $('#left').style.opacity=m==='sim'?.4:1; $('#left').style.pointerEvents=m==='sim'?'none':'auto';
   sel=null;selWire=null; if(typeof applyView==='function')applyView(); renderInspector(); render(); }
@@ -1422,13 +1424,66 @@ function probeVoltage(){ if(probes.length<2)return null; solve();
   if(liveB&&!liveA){ const nv=legAt(b); return {v:nv,txt:nv+' V (open circuit — A is dead)'}; }
   return {v:0,txt:'0 V (both de-energized)'};
 }
-function renderMeter(){ const box=$('#simextra'); if(!box)return; const r=probeVoltage();
-  let h='<div class="hint" style="margin:8px 0 4px">Meter: click terminal <b style="color:#ff5b4a">A</b> then <b style="color:#38bdf8">B</b>.</div>';
-  if(probes.length){ h+='<div class="hint">A: '+esc(probes[0])+'</div>'; }
-  if(probes.length>1){ h+='<div class="hint">B: '+esc(probes[1])+'</div>'; }
-  if(r){ h+='<div class="statebtn" style="margin-top:6px;color:var(--live);border-color:var(--live)">\u2301 '+esc(r.txt)+'</div>'; }
-  if(probes.length){ h+='<button class="tbtn" id="mt-clr" style="width:100%">Clear probes</button>'; }
-  box.innerHTML=h; const c=$('#mt-clr'); if(c)c.onclick=()=>{probes=[];render();renderSimInspector();};
+/* ---------- multimeter (DMM): V(auto AC/DC) / ohms / continuity / amps ---------- */
+function _fmtOhm(R){ if(!isFinite(R))return 'OL'; return R>=1000?(R/1000).toFixed(R>=100000?0:1)+' k\u03a9':R.toFixed(R<10?1:0)+' \u03a9'; }
+function _windingR(c){ var V=_numVolt(c.volts)||(compDef(c).psu?24:120), W=+c.watts||0;
+  if(c.type==='motor'){ var hp=+c.hp||1; return Math.max(0.4, 6/hp); }
+  if(W>0) return (V*V)/W;
+  if(c.type==='light') return (V*V)/60;
+  if(c.type==='horn') return (V*V)/15;
+  if(c.type==='solenoid'||c.type==='relay'||c.type==='contactor'||c.type==='safetyRelay') return 180;
+  return (V*V)/40; }
+function _ratedAmps(c){ var V=_numVolt(c.volts)||120;
+  if(c.type==='motor'){ var hp=+c.hp||1, w=hp*746, ph=c.phases||3; return ph===3? w/(1.732*V*0.85) : w/(V*0.8); }
+  var W=+c.watts||(c.type==='light'?60:c.type==='horn'?15:c.type==='solenoid'?12:20); return W/V; }
+function _ohmResolve(){ if(probes.length<2)return null; var uf=new UF(), key=function(c,t){return c.id+'|'+t;};
+  PANEL.wires.forEach(function(w){ if(!w.cut)uf.union(w.a,w.b); });
+  PANEL.components.forEach(function(c){ compDef(c).links(c).forEach(function(pr){ uf.union(key(c,pr[0]),key(c,pr[1])); }); });
+  var a=probes[0], b=probes[1], ra=uf.find(a), rb=uf.find(b);
+  if(ra===rb){ var hiz=PANEL.components.some(function(c){ return c.hiZ&&compDef(c).links(c).length&&termList(c).some(function(t){ return uf.find(key(c,t.id))===ra; }); });
+    return {kind:hiz?'hiz':'short', R:hiz?9999:0.2}; }
+  var span=null;
+  PANEL.components.forEach(function(c){ var d=compDef(c); if(!(d.load||d.coil))return; var ts=termList(c); if(ts.length<2)return;
+    var k0=uf.find(key(c,ts[0].id)), k1=uf.find(key(c,ts[1].id));
+    if((k0===ra&&k1===rb)||(k0===rb&&k1===ra)) span=c; });
+  if(span) return {kind:'winding', R:_windingR(span), comp:span};
+  return {kind:'open', R:Infinity}; }
+function _dmmKindAt(k){ solve(); var uf=solve._uf, nk=solve._nodeKind||{}; if(!uf)return ''; return nk[uf.find(k)]||''; }
+function _dmmRead(){ if(probes.length<2) return {big:'- - - -', sub:'place both leads (A then B)'};
+  solve(); var fn=meterFn;
+  if(fn==='ohms'||fn==='cont'){ var o=_ohmResolve(); if(!o)return {big:'- - - -',sub:'place both leads'};
+    if(fn==='cont'){ if(o.kind==='short') return {big:'\u266a BEEP', sub:'continuity \u2014 good path (~0 \u03a9)'};
+      if(o.kind==='hiz') return {big:'( no beep )', sub:'continuity but HIGH-R \u2014 loose/corroded joint'};
+      if(o.kind==='winding') return {big:(o.R<50?'\u266a beep':'( no beep )'), sub:'reads '+_fmtOhm(o.R)+' through '+(o.comp.label||compDef(o.comp).name)+' winding (not a short)'};
+      return {big:'OL', sub:'OPEN \u2014 no continuity (broken path / open device)'}; }
+    if(o.kind==='short') return {big:'0.2 \u03a9', sub:'good path \u2014 closed contact / wire'};
+    if(o.kind==='hiz') return {big:'~ hi \u03a9', sub:'elevated resistance \u2014 loose/corroded joint'};
+    if(o.kind==='winding') return {big:_fmtOhm(o.R), sub:'reading through '+(o.comp.label||compDef(o.comp).name)+' winding'};
+    return {big:'OL', sub:'OPEN \u2014 infinite \u03a9 (broken path / open device)'}; }
+  if(fn==='amps'){ var pc=null; [probes[1],probes[0]].forEach(function(pk){ if(pc)return; var c=findComp(pk.split('|')[0]); if(c&&compDef(c).load) pc=c; });
+    if(!pc) return {big:'0.00 A', sub:'clamp a single load conductor'};
+    if(!pc._on) return {big:'0.00 A', sub:(pc.label||compDef(pc).name)+' is de-energized'};
+    var I=_ratedAmps(pc); return {big:I.toFixed(I<10?2:1)+' A', sub:'running current \u2014 '+(pc.label||compDef(pc).name)}; }
+  var r=probeVoltage(); if(!r) return {big:'- - - -', sub:'place both leads'};
+  var K=_dmmKindAt(probes[0])||_dmmKindAt(probes[1])||'';
+  var lab=K==='dc'?'VDC':K==='ac'?'VAC':'V', v=r.v||0;
+  return {big:(v>0&&v<10?v.toFixed(1):Math.round(v))+' '+lab, sub:r.txt}; }
+function renderMeter(){ var box=$('#simextra'); if(!box)return;
+  var FN=[['volts','V','auto AC/DC volts (live)'],['ohms','\u03a9','resistance (de-energize first)'],['cont','\u30fb\u30fb\u30fb','continuity beep (dead test)'],['amps','A','clamp current (live)']];
+  var rd=_dmmRead();
+  var h='<div style="display:flex;gap:4px;margin:6px 0">'+FN.map(function(f){ return '<button class="tbtn'+(meterFn===f[0]?' on':'')+'" data-fn="'+f[0]+'" title="'+f[2]+'" style="flex:1;padding:6px 0;font-weight:800">'+f[1]+'</button>'; }).join('')+'</div>';
+  h+='<div style="background:#0a1a0a;border:2px solid #1f3a1f;border-radius:8px;padding:10px 12px;margin-bottom:6px;font-family:ui-monospace,Consolas,monospace">'
+    +'<div style="color:#39ff14;font-size:24px;font-weight:800;letter-spacing:1px;text-shadow:0 0 6px rgba(57,255,20,.45)">'+esc(rd.big)+'</div>'
+    +'<div style="color:#8fbf8f;font-size:11px;margin-top:3px;line-height:1.3">'+esc(rd.sub||'')+'</div></div>';
+  h+='<div class="hint" style="margin:2px 0">Leads: click terminal <b style="color:#ff5b4a">A</b> then <b style="color:#38bdf8">B</b>'+(meterFn==='amps'?' (clamp = click the load conductor)':'')+'.</div>';
+  if(probes.length) h+='<div class="hint">\ud83d\udd34 A: '+esc(probes[0])+(probes[1]?'<br>\ud83d\udd35 B: '+esc(probes[1]):'')+'</div>';
+  if(meterFn==='ohms'||meterFn==='cont') h+='<div class="hint" style="color:var(--warn)">\u26a0 De-energize / LOTO before ohms or continuity testing.</div>';
+  h+='<button class="tbtn" id="mt-log" style="width:100%;margin-top:4px">\ud83d\udcdd Log this reading</button>';
+  if(probes.length) h+='<button class="tbtn" id="mt-clr" style="width:100%;margin-top:4px">Clear leads</button>';
+  box.innerHTML=h;
+  box.querySelectorAll('[data-fn]').forEach(function(b){ b.onclick=function(){ meterFn=b.dataset.fn; renderSimInspector(); }; });
+  var cl=$('#mt-clr'); if(cl)cl.onclick=function(){ probes=[]; render(); renderSimInspector(); };
+  var lg=$('#mt-log'); if(lg)lg.onclick=function(){ if(probes.length){ logMeasure(probes[probes.length-1]); } else toast('Place a lead first'); };
 }
 
 /* ---------- feature 3: hover live-path highlight ---------- */
@@ -2201,25 +2256,9 @@ function initExtras3(){ projRestore(); renderTabs();
 /* =========================================================================
    ELECTRON WRANGLER — EXTRAS4 (features 38-49). fn decls hoist; state via var.
    ========================================================================= */
-var showPhase=false, contMode=false, showTherm=false, cbSafe=false, _pointers={}, _pinch=null, scenario=null, _scenTimer=0;
+var showPhase=false, showTherm=false, cbSafe=false, _pointers={}, _pinch=null, scenario=null, _scenTimer=0;
 var PHASE_COLOR={L1:'#b45309',L2:'#ea580c',L3:'#eab308',L:'#38bdf8'};
 
-/* ---------- 2: continuity / ohmmeter (dead test) ---------- */
-function continuityCheck(){ if(probes.length<2)return null; const uf=new UF(); const key=(c,t)=>c.id+'|'+t;
-  PANEL.wires.forEach(w=>{ if(!w.cut)uf.union(w.a,w.b); });
-  PANEL.components.forEach(c=>{ compDef(c).links(c).forEach(([x,y])=>uf.union(key(c,x),key(c,y))); });
-  const [a,b]=probes; if(uf.find(a)!==uf.find(b)) return {txt:'OPEN \u2014 no continuity (OL / \u221e \u03a9)', ok:false};
-  const root=uf.find(a);
-  const hiz=PANEL.components.some(c=>c.hiZ&&compDef(c).links(c).length&&termList(c).some(t=>uf.find(key(c,t.id))===root));
-  return hiz?{txt:'CONTINUITY but HIGH RESISTANCE \u2014 suspect a loose/corroded connection', ok:false}
-           :{txt:'CONTINUITY \u2014 good path (~0 \u03a9) \u2014 beep', ok:true}; }
-function renderCont(){ const box=$('#simextra'); if(!box)return; const r=continuityCheck();
-  let h='<div class="hint" style="margin:8px 0 4px">\ud83d\udd0c Dead test \u2014 assume power is <b>OFF/LOTO</b>. Click point <b style="color:#ff5b4a">A</b> then <b style="color:#38bdf8">B</b> to ring it out.</div>';
-  if(probes.length) h+='<div class="hint">A: '+esc(probes[0])+'</div>';
-  if(probes.length>1) h+='<div class="hint">B: '+esc(probes[1])+'</div>';
-  if(r) h+='<div class="statebtn '+(r.ok?'closed':'open')+'" style="margin-top:6px">'+esc(r.txt)+'</div>';
-  if(probes.length) h+='<button class="tbtn" id="ct-clr" style="width:100%">Clear</button>';
-  box.innerHTML=h; const c=$('#ct-clr'); if(c)c.onclick=()=>{probes=[];render();renderSimInspector();}; }
 
 /* ---------- 3: short-circuit / coordination ---------- */
 function nearestProtector(comp){ const key=(c,t)=>c.id+'|'+t; const adj={};

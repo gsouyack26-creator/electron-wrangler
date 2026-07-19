@@ -864,7 +864,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
 }
 function runDiag(c){ const r=diagnose(c); const box=$('#diag');
   if(c._singlePhase){ box.innerHTML=`<div class="hint" style="color:var(--warn)">SINGLE-PHASING: only 2 of 3 phases present at the motor — it will hum/overheat but not turn. Check for a blown fuse, open pole, or loose lead on the missing phase.</div>`; return; }
-  if(!r.ok){ box.innerHTML=`<div class="hint" style="color:var(--warn)">${r.msg}</div>`; return; }
+  if(!r.ok){ box.innerHTML=`<div class="hint" style="color:var(--warn)">${esc(r.msg)}</div>`; return; }
   if(!r.suspects.length){ box.innerHTML=`<div class="hint">Path is intact & every device is closed — check upstream source voltage or the load itself.</div>`; return; }
   box.innerHTML=`<div class="hint" style="margin:6px 0">${r.suspects.length} break(s) in the path to source — closest first:</div>`+
     r.suspects.map((s,i)=>`<div class="suspect" data-i="${i}"><b>${i+1}. ${esc(s.label)}</b><br>${esc(s.why)}</div>`).join('')+

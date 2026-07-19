@@ -1,7 +1,7 @@
 /* Electron Wrangler service worker — network-first for freshness, cache fallback offline */
 const CACHE = 'electron-wrangler-v2';
 const ASSETS = ['./', 'ElectronWrangler.html', 'ElectronWrangler_dist.html', 'electron_wrangler.js', 'manifest.json', 'favicon.ico'];
-self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(()=>{})); self.skipWaiting(); });
+self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => Promise.all(ASSETS.map(url => c.add(url).catch(()=>{}))))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;

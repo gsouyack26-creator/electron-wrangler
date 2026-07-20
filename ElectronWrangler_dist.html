@@ -59,6 +59,8 @@ main{flex:1;display:flex;min-height:0}
 #svg.place{cursor:copy}
 #physpick{position:absolute;top:10px;left:10px;z-index:15;max-width:min(62%,340px);background:rgba(11,14,19,.93);color:#e6edf3;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;font:600 13px system-ui,-apple-system,sans-serif;box-shadow:0 3px 14px rgba(0,0,0,.55);cursor:pointer;outline:none}
 #physpick[hidden]{display:none}
+.physhandle{fill:#f5a524;stroke:#0b0e13;stroke-width:1.5;cursor:nwse-resize}
+.physhandle:hover{fill:#ffd166}
 #right{width:250px;flex:0 0 auto;background:var(--panel);border-left:1px solid var(--edge);
   overflow-y:auto;padding:10px;font-size:12px}
 #right h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:4px 0 8px}
@@ -301,7 +303,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 <script>
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.4';
+const VERSION='1.5';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -984,7 +986,7 @@ function toWorld(ev){ const r=svg.getBoundingClientRect();
   return {x:(ev.clientX-r.left-view.x)/view.k, y:(ev.clientY-r.top-view.y)/view.k}; }
 
 /* ---------- INTERACTION ---------- */
-let drag=null, panning=null;
+let drag=null, panning=null, resize=null;
 svg.addEventListener('pointerdown',ev=>{
   const term=ev.target.closest('.term'), comp=ev.target.closest('.compbox'), wire=ev.target.closest('[data-wire]');
   const linkEl=ev.target.closest('[data-link]');
@@ -998,6 +1000,8 @@ svg.addEventListener('pointerdown',ev=>{
   if(tool==='wire'||wireStart){ if(term){ handleWireClick(term.dataset.comp,term.dataset.term); return; } }
   if(mode==='build'&&tool&&T[tool]){ const p=toWorld(ev); addComponent(tool,p.x,p.y); return; }
   if(term && mode==='build'){ handleWireClick(term.dataset.comp,term.dataset.term); return; }
+  var _hEl=ev.target.closest(".physhandle");
+  if(_hEl && viewMode==="phys"){ var _cg=ev.target.closest(".compbox"); var _c=_cg&&findComp(_cg.dataset.comp); if(_c&&_c.phys){ var _p=toWorld(ev); resize={c:_c, corner:_hEl.dataset.h, x0:_c.phys.x,y0:_c.phys.y,w0:_c.phys.w,h0:_c.phys.h, px:_p.x,py:_p.y}; svg.setPointerCapture(ev.pointerId); return; } }
   if(comp){ const c=findComp(comp.dataset.comp);
     if(mode==='sim'){ operate(c); return; }
     if(ev.shiftKey){ const i=selSet.indexOf(c); if(i>=0)selSet.splice(i,1); else selSet.push(c); sel=null; selWire=null; netHi=null; renderInspector(); render(); return; }
@@ -1013,17 +1017,22 @@ svg.addEventListener('pointerdown',ev=>{
   panning={x:ev.clientX,y:ev.clientY,vx:view.x,vy:view.y}; svg.style.cursor='grabbing'; svg.setPointerCapture(ev.pointerId);
 });
 svg.addEventListener('pointermove',ev=>{
+  if(resize){ const p=toWorld(ev); let dx=p.x-resize.px, dy=p.y-resize.py; let x=resize.x0,y=resize.y0,w=resize.w0,h=resize.h0; const cr=resize.corner;
+    if(cr==="se"){ w=resize.w0+dx; h=resize.h0+dy; } else if(cr==="sw"){ x=resize.x0+dx; w=resize.w0-dx; h=resize.h0+dy; } else if(cr==="ne"){ y=resize.y0+dy; w=resize.w0+dx; h=resize.h0-dy; } else { x=resize.x0+dx; y=resize.y0+dy; w=resize.w0-dx; h=resize.h0-dy; }
+    w=Math.max(12,w); h=Math.max(12,h);
+    if(gridSnap){ x=Math.round(x/GRID)*GRID; y=Math.round(y/GRID)*GRID; w=Math.round(w/GRID)*GRID; h=Math.round(h/GRID)*GRID; }
+    resize.c.phys.x=Math.round(x); resize.c.phys.y=Math.round(y); resize.c.phys.w=Math.round(w); resize.c.phys.h=Math.round(h); render(); return; }
   if(marquee){ const p=toWorld(ev); marquee.x1=p.x; marquee.y1=p.y; render(); return; }
   if(drag){ const p=toWorld(ev); let nx=Math.round(p.x-drag.dx), ny=Math.round(p.y-drag.dy);
     if(gridSnap){ nx=Math.round(nx/GRID)*GRID; ny=Math.round(ny/GRID)*GRID; }
     if(drag.phys){ drag.c.phys=drag.c.phys||{w:56,h:60}; drag.c.phys.x=nx; drag.c.phys.y=ny; } else { drag.c.x=nx; drag.c.y=ny; } render(); }
   else if(panning){ view.x=panning.vx+(ev.clientX-panning.x); view.y=panning.vy+(ev.clientY-panning.y); render(); }
 });
-function clearDrag(){ if(drag)persist();
+function clearDrag(){ if(drag||resize)persist();
   if(marquee){ const x0=Math.min(marquee.x0,marquee.x1),y0=Math.min(marquee.y0,marquee.y1),x1=Math.max(marquee.x0,marquee.x1),y1=Math.max(marquee.y0,marquee.y1);
     selSet=PANEL.components.filter(c=>{const d=compDef(c);const cx=c.x+d.w/2,cy=c.y+d.h/2;return cx>=x0&&cx<=x1&&cy>=y0&&cy<=y1;});
     marquee=null; sel=null; selWire=null; renderInspector(); }
-  drag=null; panning=null; svg.style.cursor=''; render(); }
+  drag=null; panning=null; resize=null; svg.style.cursor=''; render(); }
 svg.addEventListener('pointerup',clearDrag);
 svg.addEventListener('pointercancel',clearDrag);
 svg.addEventListener('wheel',ev=>{ ev.preventDefault(); const r=svg.getBoundingClientRect();
@@ -1362,6 +1371,7 @@ function photoMarker(c,onPath){ var w=c.phys.w,h=c.phys.h; var isSel=(sel===c);
   var out=`<rect x="0" y="0" width="`+w+`" height="`+h+`" rx="5" fill="`+col+`" fill-opacity="`+fillOp+`" stroke="`+col+`" stroke-opacity="`+sOp+`" stroke-width="`+sw+`"/>`;
   if(isSel){ var lab=String(c.label||c.type); var cw=Math.max(w, lab.length*6.2+12);
     out+=`<rect x="0" y="`+(h+2)+`" width="`+cw+`" height="16" rx="3" fill="#0b0e13" opacity="0.92" stroke="`+col+`" stroke-width="1"/>`+`<text x="5" y="`+(h+13.5)+`" style="fill:#e6edf3;font:700 10.5px system-ui,-apple-system,sans-serif;text-anchor:start">`+esc(lab)+`</text>`; }
+    if(isSel&&mode==="build"){ var hd=[["nw",0,0],["ne",w,0],["sw",0,h],["se",w,h]]; out+=hd.map(function(H){ return `<rect class="physhandle" data-h="`+H[0]+`" x="`+(H[1]-6)+`" y="`+(H[2]-6)+`" width="12" height="12" rx="2"/>`; }).join(""); }
   return out;
 }
 function _physPathIds(){ var ids=new Set(); if(!sel)return ids; var d=compDef(sel); if(!d||!(d.load||d.coil))return ids; try{ var r=diagnose(sel,true); (r.path||[]).forEach(function(p){ ids.add(p.comp.id); }); }catch(e){} return ids; }

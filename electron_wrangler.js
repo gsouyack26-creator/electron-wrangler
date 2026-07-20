@@ -598,7 +598,7 @@ function render(){
   const W=svg.clientWidth,H=svg.clientHeight;
   if(W<=0||H<=0) return;
   svg.setAttribute('viewBox',`${-view.x/view.k} ${-view.y/view.k} ${W/view.k} ${H/view.k}`);
-  if(viewMode==='phys'){ var _pho=''; if(PANEL.photo){ var _po=($('#opacity').value)/100, _pw=1160, _ph=(PANEL.pw&&PANEL.ph)?Math.round(_pw*PANEL.ph/PANEL.pw):760; _pho='<image href="'+esc(PANEL.photo)+'" x="20" y="20" width="'+_pw+'" height="'+_ph+'" opacity="'+_po+'" preserveAspectRatio="xMidYMid meet"/>'; } svg.innerHTML=_pho+physBody(); return; }
+  if(viewMode==='phys'){ svg.innerHTML=physBody(); return; }
   let s='';
   if(encOn) s+=backplate();
   // backdrop
@@ -1051,20 +1051,32 @@ function physModule(c){ const w=c.phys.w,h=c.phys.h, coil=c._coilOn, on=c._on;
   }
   return frame+f+tag;
 }
+function photoMarker(c){ var w=c.phys.w,h=c.phys.h;
+  var col=c.fault?'#ef4444':(mode==='sim'&&anyEnerg(c))?'#22c55e':'#38bdf8';
+  var lab=String(c.label||c.type); if(lab.length>18)lab=lab.slice(0,17)+'\u2026';
+  var cw=Math.max(w, lab.length*6.0+8);
+  return '<rect x="0" y="0" width="'+w+'" height="'+h+'" rx="5" fill="'+col+'" fill-opacity="0.16" stroke="'+col+'" stroke-width="2"/>'
+    +'<rect x="0" y="'+h+'" width="'+cw+'" height="15" rx="3" fill="#0b0e13" opacity="0.85"/>'
+    +'<text x="4" y="'+(h+11)+'" style="fill:#e6edf3;font:600 10px system-ui,-apple-system,sans-serif;text-anchor:start">'+esc(lab)+'</text>'; }
 function physBody(){ autoPhys();
   let s='<defs>'
     +'<linearGradient id="pan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d4650"/><stop offset=".5" stop-color="#2c333c"/><stop offset="1" stop-color="#222831"/></linearGradient>'
     +'<pattern id="perf" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="1.7" fill="#05070a" opacity=".5"/><circle cx="6" cy="5.2" r="1.3" fill="#4a535f" opacity=".55"/></pattern>'
     +'<linearGradient id="rail" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8d959f"/><stop offset=".28" stop-color="#c8d0d8"/><stop offset=".55" stop-color="#828a94"/><stop offset="1" stop-color="#565d67"/></linearGradient></defs>';
-  s+='<rect x="-3000" y="-2200" width="9000" height="6400" fill="url(#pan)"/><rect x="-3000" y="-2200" width="9000" height="6400" fill="url(#perf)"/>';
-  s+='<rect x="30" y="8" width="1080" height="82" rx="6" fill="#20252c" stroke="#3a424d"/><text x="46" y="24" class="comp-sub" style="fill:#8b949e;text-anchor:start">ENCLOSURE DOOR \u2014 OPERATORS</text>';
-  RAILS.forEach(y=>{ s+='<rect x="20" y="'+(y-9)+'" width="1100" height="11" rx="2" fill="url(#rail)" opacity=".85"/>'
-    +'<line x1="20" y1="'+(y-8)+'" x2="1120" y2="'+(y-8)+'" stroke="#eef2f5" stroke-width=".5" opacity=".35"/>'; });
+  if(PANEL.photo){ var _po=Math.max(.15,($('#opacity')?(+$('#opacity').value)/100:.9)), _pw=1000, _ph=(PANEL.pw&&PANEL.ph)?Math.round(_pw*PANEL.ph/PANEL.pw):1300;
+    s+='<rect x="-3000" y="-2200" width="9000" height="6400" fill="#0b0e13"/>';
+    s+='<image href="'+esc(PANEL.photo)+'" x="16" y="8" width="'+_pw+'" height="'+_ph+'" opacity="'+_po+'" preserveAspectRatio="xMidYMid meet"/>';
+  } else {
+    s+='<rect x="-3000" y="-2200" width="9000" height="6400" fill="url(#pan)"/><rect x="-3000" y="-2200" width="9000" height="6400" fill="url(#perf)"/>';
+    s+='<rect x="30" y="8" width="1080" height="82" rx="6" fill="#20252c" stroke="#3a424d"/><text x="46" y="24" class="comp-sub" style="fill:#8b949e;text-anchor:start">ENCLOSURE DOOR \u2014 OPERATORS</text>';
+    RAILS.forEach(y=>{ s+='<rect x="20" y="'+(y-9)+'" width="1100" height="11" rx="2" fill="url(#rail)" opacity=".85"/>'
+      +'<line x1="20" y1="'+(y-8)+'" x2="1120" y2="'+(y-8)+'" stroke="#eef2f5" stroke-width=".5" opacity=".35"/>'; });
+  }
   if(sel&&sel.phys){ const cx=sel.phys.x+sel.phys.w/2, cy=sel.phys.y+sel.phys.h/2;
     wiredNeighbors(sel).forEach(n=>{ if(n.phys)s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(n.phys.x+n.phys.w/2)+'" y2="'+(n.phys.y+n.phys.h/2)+'" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 3" opacity=".75"/>'; }); }
   PANEL.components.forEach(c=>{ const p=c.phys; const cls=['compbox','physmod'];
     if(sel===c)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted');
-    s+='<g class="'+cls.join(' ')+'" data-comp="'+c.id+'" transform="translate('+p.x+','+p.y+')"><rect class="selrect" x="-5" y="-5" width="'+(p.w+10)+'" height="'+(p.h+10)+'" rx="6"/>'+physModule(c)+'</g>'; });
+    s+='<g class="'+cls.join(' ')+'" data-comp="'+c.id+'" transform="translate('+p.x+','+p.y+')"><rect class="selrect" x="-5" y="-5" width="'+(p.w+10)+'" height="'+(p.h+10)+'" rx="6"/>'+(PANEL.photo?photoMarker(c):physModule(c))+'</g>'; });
   return s;
 }
 function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label||n.id);

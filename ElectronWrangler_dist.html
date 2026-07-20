@@ -298,7 +298,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 <script>
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.0';
+const VERSION='1.1';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -820,7 +820,7 @@ function __setget(s){ return Array.from(s); }
 class UF{ constructor(){this.p={};} find(x){if(this.p[x]===undefined)this.p[x]=x; while(this.p[x]!==x){this.p[x]=this.p[this.p[x]];x=this.p[x];} return x;} union(a,b){this.p[this.find(a)]=this.find(b);} }
 
 /* ---------- ideal-path diagnostic ---------- */
-function diagnose(loadComp){
+function diagnose(loadComp, wantPath){
   // build ideal graph: every wire (even cut) + every link the component COULD make when closed/ok
   const adj={}, add=(a,b,el)=>{ (adj[a]=adj[a]||[]).push({n:b,el}); (adj[b]=adj[b]||[]).push({n:a,el}); };
   const key=(c,t)=>c.id+'|'+t;
@@ -852,7 +852,7 @@ function diagnose(loadComp){
   const starts = _dd.coil ? [_dd.coil.a1]
     : (loadComp.type==='motor'&&(loadComp.phases||3)===3) ? ['U','V','W']
     : [termList(loadComp)[0].id];
-  const suspects=[], seenC=new Set(); let anyPath=false, totLen=0;
+  const suspects=[], seenC=new Set(); let anyPath=false, totLen=0; const _dev=[], _seenDev=new Set();
   for(const tid of starts){
     const start=key(loadComp, tid);
     const q=[[start,[]]], seen=new Set([start]); let path=null;
@@ -862,11 +862,12 @@ function diagnose(loadComp){
     }
     if(!path){ continue; }
     anyPath=true; totLen+=path.length;
+    if(wantPath){ path.forEach(function(el){ if(el.kind==="comp"){ var dk="d:"+el.c.id+(el.contact||""); if(!_seenDev.has(dk)){ _seenDev.add(dk); _dev.push({comp:el.c, contact:el.contact}); } } }); }
     path.forEach(el=>{ if(el.kind==='wire'){ if(el.w.cut && !seenC.has('w:'+el.w.id)){ seenC.add('w:'+el.w.id); suspects.push({label:'Cut wire',why:'broken',ref:{wire:el.w.id}}); } }
       else { const c=el.c, kk='c:'+c.id; if(seenC.has(kk))return; const st=broken(c, el.contact); if(st){ seenC.add(kk); suspects.push({label:(c.label?c.label+' — ':'')+compDef(c).name, why:st, ref:{comp:c.id}}); } } });
   }
   if(!anyPath) return {ok:false, msg:'No wired path from this load back to a power source. Check wiring.', suspects:[]};
-  return {ok:true, dead:!loadComp._on, suspects, pathLen:totLen};
+  return {ok:true, dead:!loadComp._on, suspects, pathLen:totLen, path:_dev};
 }
 function broken(c,contact){ if(c.fault)return 'faulted/open';
   if(c.type==='breaker'&&c.state==='tripped')return 'TRIPPED';
@@ -1118,6 +1119,7 @@ function fixWires(c){ const valid=new Set(termList(c).map(t=>c.id+'|'+t.id));
     return (!ka||valid.has(w.a))&&(!kb||valid.has(w.b));}); }
 
 function renderSimInspector(){ const box=$('#inspector'); const c=sel;
+  if(liveMode){ box.innerHTML=`<h3>\ud83d\udd27 Live Troubleshoot</h3><div id="simextra"></div>`; renderLive(); return; }
   if(!c){ box.innerHTML=`<h3>Simulate</h3>
     <button class="tbtn" id="sim-dead" style="width:100%;margin-bottom:6px">🔎 What's dead? (whole panel)</button>
     <button class="tbtn ${meterMode?'on':''}" id="sim-meter" style="width:100%;margin-bottom:6px">🔧 Multimeter (DMM) ${meterMode?'(ON — V / Ω / ・・・ / A)':''}</button>
@@ -1126,7 +1128,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     <button class="tbtn ${logMode?'on':''}" id="sim-log" style="width:100%;margin-bottom:6px">📝 ${logMode?'Logging as-found (ON)':'As-found meter log'}</button>
     <button class="tbtn ${showPhase?'on':''}" id="sim-phase" style="width:100%;margin-bottom:6px">Φ ${showPhase?'Hide phases':'Show L1/L2/L3 phases'}</button>
     <button class="tbtn ${showTherm?'on':''}" id="sim-therm" style="width:100%;margin-bottom:6px">🌡 ${showTherm?'Hide thermal':'Thermal overlay'}</button>
-    <div id="simextra"></div>
+    <button class="tbtn" id="sim-live" style="width:100%;margin-bottom:6px">\ud83d\udd27 Live Troubleshoot (real event)</button><div id="simextra"></div>
     <div class="hint">Click any device to operate it.<br>• Breakers/E-stops/buttons cycle open⇄closed<br>• Blow fuses & trip breakers to inject faults<br>• Click a <b>dead load</b> to diagnose<br>• Hover a device to highlight its live path</div>`;
     $('#sim-dead').onclick=showPanelReport;
     $('#sim-meter').onclick=()=>{meterMode=!meterMode;probes=[];meterFn='volts';render();renderSimInspector();};
@@ -1135,6 +1137,7 @@ function renderSimInspector(){ const box=$('#inspector'); const c=sel;
     $('#sim-log').onclick=()=>{logMode=!logMode;render();renderSimInspector();};
     $('#sim-phase').onclick=()=>{showPhase=!showPhase;render();renderSimInspector();};
     $('#sim-therm').onclick=()=>{showTherm=!showTherm;render();renderSimInspector();};
+    var _sl=$("#sim-live"); if(_sl)_sl.onclick=startLive;
     if(meterMode) renderMeter(); if(quiz) renderQuiz(); if(logMode) renderLog();
     if(scenario){ const _d=$('#simextra'); if(_d){ _d.innerHTML+=(!scenario.done?'<div class="hint" style="margin-top:8px;color:var(--accent)">'+esc((SCEN.find(x=>x.id===scenario.id)||{}).prompt||'')+' — click your suspect, then a device panel → Check.</div>':'')+((scenario.isSev&&!scenario.done)?'<button class="tbtn warn" id="sim-scen-reveal" style="width:100%;margin-top:8px">🏳 Give up — reveal fault & fix</button>':'')+'<button class="tbtn" id="sim-scen-exit" style="width:100%;margin-top:8px">← Exit call (restore my panel)</button>'; const _e=$('#sim-scen-exit'); if(_e)_e.onclick=exitScenario; const _rv=$('#sim-scen-reveal'); if(_rv)_rv.onclick=function(){_sevReveal(true);}; } }
     return; }
@@ -1967,6 +1970,69 @@ function guidedWalk(loadComp){ const r=diagnose(loadComp);
   r.suspects.forEach((s,i)=>{ steps.push((i+1)+'. Check '+s.label+' ('+s.why+'). Meter across it: ~0 V across a closed/OK device is normal — full line voltage across it means THIS is the open break.'); });
   steps.push('Correct the closest break, then re-run the diagnosis. If still dead, the next item is the culprit.');
   return steps;
+}
+
+
+/* ---------- Live Troubleshoot (on-floor companion) ---------- */
+let liveMode=false, liveLoad=null;
+function liveLoads(){ return PANEL.components.filter(function(c){ var d=compDef(c); return d&&(d.load||d.coil); }); }
+function _liveSrcVolts(){ var v=null; PANEL.components.forEach(function(c){ termList(c).forEach(function(t){ if(t.rail==="hot"&&c.volts&&!v)v=c.volts; }); }); return v; }
+function _liveHistKey(){ return "ew_live_"+(PANEL.name||"panel"); }
+function liveHist(){ try{ return JSON.parse(localStorage.getItem(_liveHistKey())||"{}"); }catch(e){ return {}; } }
+function liveHistSave(id,note){ try{ var h=liveHist(); (h[id]=h[id]||[]).unshift({t:Date.now(),note:note}); h[id]=h[id].slice(0,5); localStorage.setItem(_liveHistKey(),JSON.stringify(h)); }catch(e){} }
+function _liveWhy(c,contact){ var t=c.type;
+  if(t==="breaker") return "breaker \u2014 0V across when closed; full voltage across = TRIPPED / switched OFF";
+  if(t==="disc") return "disconnect \u2014 must be closed / ON";
+  if(t==="fuse") return "fuse \u2014 0V across when good; full voltage across = BLOWN";
+  if(t==="overload") return "overload relay \u2014 check not tripped (press reset)";
+  if(t==="contactor") return "contactor \u2014 should pull in; if not, chase its coil circuit next";
+  if(t==="relay") return "relay "+(contact==="NC"?"NC":"NO")+" contact \u2014 verify coil state";
+  if(t==="estop") return "E-STOP \u2014 must be pulled out / reset";
+  if(t==="pullcord") return "pull-cord \u2014 must be reset";
+  if(t==="guardlock") return "gate \u2014 must be closed and locked";
+  if(t==="pbNC") return "stop button \u2014 should be closed (not stuck in)";
+  if(t==="pbNO") return "start button \u2014 momentary contact";
+  if(t==="selector"||t==="sensor") return "contact \u2014 verify closed";
+  if(t==="phaseMon") return "phase monitor \u2014 all 3 phases present, no fault LED";
+  if(t==="vfd") return "drive \u2014 read fault code and verify enable input";
+  if(t==="plcOut") return "PLC output \u2014 verify commanded ON (check indicator)";
+  if(t==="term"||t==="tstrip"||t==="ftb") return "terminal \u2014 check for loose or backed-out wire";
+  return "verify continuity across it (0V closed / line voltage across = open)";
+}
+function startLive(){ if(mode!=="sim")setMode("sim"); liveMode=true; liveLoad=null; sel=null; renderInspector(); }
+function exitLive(){ liveMode=false; liveLoad=null; sel=null; render(); renderInspector(); }
+function livePick(id){ liveLoad=findComp(id); renderInspector(); }
+function liveBack(){ liveLoad=null; sel=null; render(); renderInspector(); }
+function renderLive(){ var box=$("#simextra"); if(!box)return; var v=_liveSrcVolts();
+  if(!liveLoad){
+    var loads=liveLoads();
+    var h=`<div class="hint" style="margin:8px 0;color:var(--accent)"><b>Live Troubleshoot</b> \u2014 tap the device that is dead on the floor right now. I will trace its circuit back to source and show what to meter, in order, and where each part sits.</div>`;
+    if(!loads.length) h+=`<div class="hint">No loads or coils found in this panel.</div>`;
+    else h+=loads.map(function(c){ var n=liveHist()[c.id]||[]; return `<button class="tbtn" style="width:100%;margin-bottom:5px;text-align:left" data-live="`+esc(c.id)+`">\u26a1 `+esc(c.label||compDef(c).name)+(n.length?` <span style="color:var(--dim)">(`+n.length+` past fix`+(n.length>1?"es":"")+`)</span>`:``)+`</button>`; }).join("");
+    h+=`<button class="tbtn warn" id="live-exit" style="width:100%;margin-top:8px">\u2715 Exit Live Troubleshoot</button>`;
+    box.innerHTML=h;
+    box.querySelectorAll("[data-live]").forEach(function(b){ b.onclick=function(){ livePick(b.dataset.live); }; });
+    var ex=$("#live-exit"); if(ex)ex.onclick=exitLive; return;
+  }
+  var r=diagnose(liveLoad,true); var name=esc(liveLoad.label||compDef(liveLoad).name);
+  var h=`<div class="hint" style="margin:8px 0;color:var(--accent)"><b>`+name+`</b> is your dead load.`+(v?` Supply \u2248 <b>`+esc(v)+`</b>.`:``)+`</div>`;
+  if(!r.ok) h+=`<div class="hint" style="color:var(--warn)">`+esc(r.msg)+`</div>`;
+  else if(!r.path||!r.path.length) h+=`<div class="hint">No series devices between this load and source \u2014 meter the source output, then the load terminals directly.</div>`;
+  else { h+=`<div class="hint">Meter from the load back toward source. Across a good (closed) device \u2248 0V; <b>full supply voltage across a device = that is your open break.</b></div>`;
+    h+=`<ol style="padding-left:18px;margin:6px 0">`+r.path.map(function(p){ var c=p.comp; var loc=c.phys?` \u2014 <span style="color:var(--live)">on the panel photo</span>`:``; return `<li style="margin-bottom:6px;cursor:pointer" data-lc="`+esc(c.id)+`"><b>`+esc(c.label||compDef(c).name)+`</b>`+loc+`<br><span style="color:var(--dim);font-size:.85em">`+esc(_liveWhy(c,p.contact))+`</span></li>`; }).join("")+`</ol>`;
+  }
+  var hist=liveHist()[liveLoad.id]||[];
+  if(hist.length) h+=`<div class="hint" style="margin-top:6px"><b>Past fixes here:</b><br>`+hist.map(function(x){ return `\u2022 `+esc(x.note)+` <span style="color:var(--dim)">(`+new Date(x.t).toLocaleDateString()+`)</span>`; }).join("<br>")+`</div>`;
+  h+=`<button class="tbtn" id="live-log" style="width:100%;margin-top:8px">`+(logMode?`\ud83d\udcdd Recording readings (ON)`:`\ud83d\udcdd Record my meter readings`)+`</button>`;
+  h+=`<button class="tbtn" id="live-found" style="width:100%;margin-top:6px">\u2713 Found it \u2014 log the fix</button>`;
+  h+=`<button class="tbtn" id="live-back" style="width:100%;margin-top:6px">\u2190 Back to loads</button>`;
+  h+=`<button class="tbtn warn" id="live-exit" style="width:100%;margin-top:6px">\u2715 Exit Live Troubleshoot</button>`;
+  box.innerHTML=h;
+  box.querySelectorAll("[data-lc]").forEach(function(li){ li.onclick=function(){ var c=findComp(li.dataset.lc); if(!c)return; sel=c; selWire=null; render(); flash(c.id); if(typeof centerOn==="function")centerOn(c); }; });
+  var lg=$("#live-log"); if(lg)lg.onclick=function(){ logMode=!logMode; render(); renderInspector(); };
+  var fd=$("#live-found"); if(fd)fd.onclick=function(){ var note=prompt("What fixed it? (e.g. CB4 tripped, loose lead on X2, replaced servo cable)"); if(note){ liveHistSave(liveLoad.id,note); toast("Logged fix for "+name); renderInspector(); } };
+  var bk=$("#live-back"); if(bk)bk.onclick=liveBack;
+  var ex=$("#live-exit"); if(ex)ex.onclick=exitLive;
 }
 
 /* ---------- 3: as-found measurement log ---------- */

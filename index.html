@@ -298,7 +298,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 <script>
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.1';
+const VERSION='1.2';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -2003,6 +2003,14 @@ function startLive(){ if(mode!=="sim")setMode("sim"); liveMode=true; liveLoad=nu
 function exitLive(){ liveMode=false; liveLoad=null; sel=null; render(); renderInspector(); }
 function livePick(id){ liveLoad=findComp(id); renderInspector(); }
 function liveBack(){ liveLoad=null; sel=null; render(); renderInspector(); }
+function _eamCode(c){ if(c.eam) return c.eam; var m=String(c.label||"").match(/[A-Za-z]{0,5}\d{6,8}/); return m?m[0]:null; }
+function eamUrl(c){ var b="https://us1.eam.hxgnsmartcloud.com/web/base/logindisp?tenant=AMAZONRMENA_PRD&FROMEMAIL=YES&SYSTEM_FUNCTION_NAME=WSJOBS"; return c.eamWo?(b+"&workordernum="+encodeURIComponent(c.eamWo)):b; }
+function _liveExtra(c){ var out="";
+  if(c.spare){ var sp=c.spare; var pn=sp.pn||sp; var d=sp.desc?(" "+sp.desc):""; var bin=sp.bin?(" \u00b7 bin "+sp.bin):""; out+=`<br><span style="color:var(--ok);font-size:.85em">\ud83d\udd29 Spare `+esc(pn)+esc(d)+esc(bin)+`</span>`; }
+  var code=_eamCode(c);
+  if(code||c.eamWo){ var lbl=c.eamWo?("EAM WO "+c.eamWo):("EAM work orders \u2014 search "+code); out+=`<br><a class="live-eam" href="`+esc(eamUrl(c))+`" target="_blank" rel="noopener" style="color:var(--accent);font-size:.85em">\ud83d\udd17 `+esc(lbl)+`</a>`; }
+  return out;
+}
 function renderLive(){ var box=$("#simextra"); if(!box)return; var v=_liveSrcVolts();
   if(!liveLoad){
     var loads=liveLoads();
@@ -2019,7 +2027,7 @@ function renderLive(){ var box=$("#simextra"); if(!box)return; var v=_liveSrcVol
   if(!r.ok) h+=`<div class="hint" style="color:var(--warn)">`+esc(r.msg)+`</div>`;
   else if(!r.path||!r.path.length) h+=`<div class="hint">No series devices between this load and source \u2014 meter the source output, then the load terminals directly.</div>`;
   else { h+=`<div class="hint">Meter from the load back toward source. Across a good (closed) device \u2248 0V; <b>full supply voltage across a device = that is your open break.</b></div>`;
-    h+=`<ol style="padding-left:18px;margin:6px 0">`+r.path.map(function(p){ var c=p.comp; var loc=c.phys?` \u2014 <span style="color:var(--live)">on the panel photo</span>`:``; return `<li style="margin-bottom:6px;cursor:pointer" data-lc="`+esc(c.id)+`"><b>`+esc(c.label||compDef(c).name)+`</b>`+loc+`<br><span style="color:var(--dim);font-size:.85em">`+esc(_liveWhy(c,p.contact))+`</span></li>`; }).join("")+`</ol>`;
+    h+=`<ol style="padding-left:18px;margin:6px 0">`+r.path.map(function(p){ var c=p.comp; var loc=c.phys?` \u2014 <span style="color:var(--live)">on the panel photo</span>`:``; return `<li style="margin-bottom:6px;cursor:pointer" data-lc="`+esc(c.id)+`"><b>`+esc(c.label||compDef(c).name)+`</b>`+loc+`<br><span style="color:var(--dim);font-size:.85em">`+esc(_liveWhy(c,p.contact))+`</span>`+_liveExtra(c)+`</li>`; }).join("")+`</ol>`;
   }
   var hist=liveHist()[liveLoad.id]||[];
   if(hist.length) h+=`<div class="hint" style="margin-top:6px"><b>Past fixes here:</b><br>`+hist.map(function(x){ return `\u2022 `+esc(x.note)+` <span style="color:var(--dim)">(`+new Date(x.t).toLocaleDateString()+`)</span>`; }).join("<br>")+`</div>`;
@@ -2029,6 +2037,7 @@ function renderLive(){ var box=$("#simextra"); if(!box)return; var v=_liveSrcVol
   h+=`<button class="tbtn warn" id="live-exit" style="width:100%;margin-top:6px">\u2715 Exit Live Troubleshoot</button>`;
   box.innerHTML=h;
   box.querySelectorAll("[data-lc]").forEach(function(li){ li.onclick=function(){ var c=findComp(li.dataset.lc); if(!c)return; sel=c; selWire=null; render(); flash(c.id); if(typeof centerOn==="function")centerOn(c); }; });
+  box.querySelectorAll(".live-eam").forEach(function(a){ a.addEventListener("click",function(e){ e.stopPropagation(); }); });
   var lg=$("#live-log"); if(lg)lg.onclick=function(){ logMode=!logMode; render(); renderInspector(); };
   var fd=$("#live-found"); if(fd)fd.onclick=function(){ var note=prompt("What fixed it? (e.g. CB4 tripped, loose lead on X2, replaced servo cable)"); if(note){ liveHistSave(liveLoad.id,note); toast("Logged fix for "+name); renderInspector(); } };
   var bk=$("#live-back"); if(bk)bk.onclick=liveBack;

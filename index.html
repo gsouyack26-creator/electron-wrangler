@@ -57,6 +57,8 @@ main{flex:1;display:flex;min-height:0}
 #svg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #svg.wire{cursor:crosshair}
 #svg.place{cursor:copy}
+#physpick{position:absolute;top:10px;left:10px;z-index:15;max-width:min(62%,340px);background:rgba(11,14,19,.93);color:#e6edf3;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;font:600 13px system-ui,-apple-system,sans-serif;box-shadow:0 3px 14px rgba(0,0,0,.55);cursor:pointer;outline:none}
+#physpick[hidden]{display:none}
 #right{width:250px;flex:0 0 auto;background:var(--panel);border-left:1px solid var(--edge);
   overflow-y:auto;padding:10px;font-size:12px}
 #right h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:4px 0 8px}
@@ -273,6 +275,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
     </div>
     <div id="stage">
       <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <select id="physpick" hidden aria-label="Select a part on the panel"></select>
       <div id="toast"></div>
       <div id="encFrame" aria-hidden="true">
         <div class="frame"></div>
@@ -298,7 +301,7 @@ table.bom th{background:var(--panel2);color:var(--dim);text-transform:uppercase;
 <script>
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.3';
+const VERSION='1.4';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -897,7 +900,7 @@ function render(){
   const W=svg.clientWidth,H=svg.clientHeight;
   if(W<=0||H<=0) return;
   svg.setAttribute('viewBox',`${-view.x/view.k} ${-view.y/view.k} ${W/view.k} ${H/view.k}`);
-  if(viewMode==='phys'){ svg.innerHTML=physBody(); return; }
+  if(viewMode==='phys'){ svg.innerHTML=physBody(); fillPhysPick(); return; }
   let s='';
   if(encOn) s+=backplate();
   // backdrop
@@ -1352,13 +1355,19 @@ function physModule(c){ const w=c.phys.w,h=c.phys.h, coil=c._coilOn, on=c._on;
   }
   return frame+f+tag;
 }
-function photoMarker(c){ var w=c.phys.w,h=c.phys.h;
-  var col=c.fault?'#ef4444':(mode==='sim'&&anyEnerg(c))?'#22c55e':'#38bdf8';
-  var lab=String(c.label||c.type); if(lab.length>18)lab=lab.slice(0,17)+'\u2026';
-  var cw=Math.max(w, lab.length*6.0+8);
-  return '<rect x="0" y="0" width="'+w+'" height="'+h+'" rx="5" fill="'+col+'" fill-opacity="0.16" stroke="'+col+'" stroke-width="2"/>'
-    +'<rect x="0" y="'+h+'" width="'+cw+'" height="15" rx="3" fill="#0b0e13" opacity="0.85"/>'
-    +'<text x="4" y="'+(h+11)+'" style="fill:#e6edf3;font:600 10px system-ui,-apple-system,sans-serif;text-anchor:start">'+esc(lab)+'</text>'; }
+function photoMarker(c,onPath){ var w=c.phys.w,h=c.phys.h; var isSel=(sel===c);
+  var col=c.fault?"#ef4444":(mode==="sim"&&anyEnerg(c))?"#22c55e":"#38bdf8";
+  if(onPath&&!isSel) col="#f5a524";
+  var fillOp=isSel?0.22:(onPath?0.15:0.08), sw=isSel?2.6:(onPath?2:1), sOp=isSel?1:(onPath?0.92:0.4);
+  var out=`<rect x="0" y="0" width="`+w+`" height="`+h+`" rx="5" fill="`+col+`" fill-opacity="`+fillOp+`" stroke="`+col+`" stroke-opacity="`+sOp+`" stroke-width="`+sw+`"/>`;
+  if(isSel){ var lab=String(c.label||c.type); var cw=Math.max(w, lab.length*6.2+12);
+    out+=`<rect x="0" y="`+(h+2)+`" width="`+cw+`" height="16" rx="3" fill="#0b0e13" opacity="0.92" stroke="`+col+`" stroke-width="1"/>`+`<text x="5" y="`+(h+13.5)+`" style="fill:#e6edf3;font:700 10.5px system-ui,-apple-system,sans-serif;text-anchor:start">`+esc(lab)+`</text>`; }
+  return out;
+}
+function _physPathIds(){ var ids=new Set(); if(!sel)return ids; var d=compDef(sel); if(!d||!(d.load||d.coil))return ids; try{ var r=diagnose(sel,true); (r.path||[]).forEach(function(p){ ids.add(p.comp.id); }); }catch(e){} return ids; }
+function fillPhysPick(){ var pp=$("#physpick"); if(!pp)return; pp.hidden=(viewMode!=="phys"); if(viewMode!=="phys")return;
+  pp.innerHTML=`<option value="">\u25be Select a part\u2026</option>`+PANEL.components.map(function(c){ return `<option value="`+esc(c.id)+`"`+(sel===c?" selected":"")+`>`+esc(c.label||compDef(c).name)+`</option>`; }).join("");
+}
 function physBody(){ autoPhys();
   let s='<defs>'
     +'<linearGradient id="pan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d4650"/><stop offset=".5" stop-color="#2c333c"/><stop offset="1" stop-color="#222831"/></linearGradient>'
@@ -1375,9 +1384,10 @@ function physBody(){ autoPhys();
   }
   if(sel&&sel.phys){ const cx=sel.phys.x+sel.phys.w/2, cy=sel.phys.y+sel.phys.h/2;
     wiredNeighbors(sel).forEach(n=>{ if(n.phys)s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(n.phys.x+n.phys.w/2)+'" y2="'+(n.phys.y+n.phys.h/2)+'" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 3" opacity=".75"/>'; }); }
+  var _ppIds=(PANEL.photo?_physPathIds():new Set());
   PANEL.components.forEach(c=>{ const p=c.phys; const cls=['compbox','physmod'];
     if(sel===c)cls.push('sel'); if(mode==='sim'&&anyEnerg(c))cls.push('energized'); if(c.fault)cls.push('faulted');
-    s+='<g class="'+cls.join(' ')+'" data-comp="'+c.id+'" transform="translate('+p.x+','+p.y+')"><rect class="selrect" x="-5" y="-5" width="'+(p.w+10)+'" height="'+(p.h+10)+'" rx="6"/>'+(PANEL.photo?photoMarker(c):physModule(c))+'</g>'; });
+    s+='<g class="'+cls.join(' ')+'" data-comp="'+c.id+'" transform="translate('+p.x+','+p.y+')"><rect class="selrect" x="-5" y="-5" width="'+(p.w+10)+'" height="'+(p.h+10)+'" rx="6"/>'+(PANEL.photo?photoMarker(c,_ppIds.has(c.id)):physModule(c))+'</g>'; });
   return s;
 }
 function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label||n.id);
@@ -1387,10 +1397,10 @@ function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label|
     +'Live: <b style="color:'+(anyEnerg(c)?'var(--live)':'var(--dim)')+'">'+(anyEnerg(c)?'ENERGIZED':'\u2014')+'</b>'
     +(bad?' \u00b7 <span style="color:var(--warn)">'+esc(bad)+'</span>':'')+'<br>'
     +'<span style="color:var(--dim)">Wired to:</span> '+(nb.map(esc).join(', ')||'(nothing)')+'</div>'; }
-function applyView(){ const dim=(mode==='sim'); const l=document.getElementById('left');
+function applyView(){ if(typeof fillPhysPick==="function")fillPhysPick(); const dim=(mode==='sim'); const l=document.getElementById('left');
   if(l){ l.style.opacity=dim?'.4':'1'; l.style.pointerEvents=dim?'none':'auto'; } }
 
-function _applyPhotoView(){ var bv=$("#btnView"); if(PANEL&&PANEL.photo){ viewMode="phys"; if(bv){ bv.classList.add("on"); bv.innerHTML="&#128268; Schematic"; } } else { viewMode="sch"; if(bv){ bv.classList.remove("on"); bv.innerHTML="&#128452; Physical"; } } }
+function _applyPhotoView(){ var bv=$("#btnView"); if(PANEL&&PANEL.photo){ viewMode="phys"; var op=$("#opacity"); if(op&&(+op.value)<80)op.value=92; if(bv){ bv.classList.add("on"); bv.innerHTML="&#128268; Schematic"; } } else { viewMode="sch"; if(bv){ bv.classList.remove("on"); bv.innerHTML="&#128452; Physical"; } } }
 function initLibrary(){ const sel=$('#libsel'); if(!sel)return; const lib=window.PANEL_LIBRARY;
   if(!lib||!Object.keys(lib).length){ sel.style.display='none'; return; }
   sel.style.display='';
@@ -1412,6 +1422,7 @@ function init(){ $('#ver').textContent='v'+VERSION;
     bv.classList.toggle('on',viewMode==='phys'); bv.innerHTML=viewMode==='phys'?'&#128268; Schematic':'&#128452; Physical';
     sel=null;selWire=null; applyView(); render(); renderInspector(); };
   buildPalette(); setMode('build'); applyEnc(); _applyPhotoView(); applyView(); render(); renderInspector();
+  var _pk=$("#physpick"); if(_pk)_pk.onchange=function(){ var c=findComp(_pk.value); sel=c||null; selWire=null; render(); renderInspector(); if(c&&typeof centerOn==="function")centerOn(c); };
   initLibrary();
   initExtras();
   initExtras2();

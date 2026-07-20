@@ -1,6 +1,6 @@
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.2';
+const VERSION='1.3';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -1092,6 +1092,7 @@ function physInfo(c){ if(!c)return''; const nb=wiredNeighbors(c).map(n=>n.label|
 function applyView(){ const dim=(mode==='sim'); const l=document.getElementById('left');
   if(l){ l.style.opacity=dim?'.4':'1'; l.style.pointerEvents=dim?'none':'auto'; } }
 
+function _applyPhotoView(){ var bv=$("#btnView"); if(PANEL&&PANEL.photo){ viewMode="phys"; if(bv){ bv.classList.add("on"); bv.innerHTML="&#128268; Schematic"; } } else { viewMode="sch"; if(bv){ bv.classList.remove("on"); bv.innerHTML="&#128452; Physical"; } } }
 function initLibrary(){ const sel=$('#libsel'); if(!sel)return; const lib=window.PANEL_LIBRARY;
   if(!lib||!Object.keys(lib).length){ sel.style.display='none'; return; }
   sel.style.display='';
@@ -1099,7 +1100,7 @@ function initLibrary(){ const sel=$('#libsel'); if(!sel)return; const lib=window
   sel.onchange=()=>{ const k=sel.value; if(!k){return;} PANEL=JSON.parse(JSON.stringify(lib[k]));
     restoreUid(); sel.selectedIndex=0; $('#stat').textContent=k;
     const s2=$('#libsel'); if(s2)s2.blur();
-    persist(); applyEnc(); applyView(); render(); renderInspector(); toast('Loaded: '+k); };
+    persist(); applyEnc(); _applyPhotoView(); applyView(); render(); renderInspector(); toast('Loaded: '+k); };
 }
 /* ---------- init ---------- */
 function init(){ $('#ver').textContent='v'+VERSION;
@@ -1112,7 +1113,7 @@ function init(){ $('#ver').textContent='v'+VERSION;
   const bv=$('#btnView'); if(bv)bv.onclick=()=>{ viewMode=viewMode==='phys'?'sch':'phys';
     bv.classList.toggle('on',viewMode==='phys'); bv.innerHTML=viewMode==='phys'?'&#128268; Schematic':'&#128452; Physical';
     sel=null;selWire=null; applyView(); render(); renderInspector(); };
-  buildPalette(); setMode('build'); applyEnc(); applyView(); render(); renderInspector();
+  buildPalette(); setMode('build'); applyEnc(); _applyPhotoView(); applyView(); render(); renderInspector();
   initLibrary();
   initExtras();
   initExtras2();

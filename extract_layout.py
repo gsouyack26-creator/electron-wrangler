@@ -8,6 +8,7 @@ physical-view cabinet. Off-page tags are dropped.
 
 Usage: python extract_layout.py [PDF_PATH] [OUT_JSON]
 """
+
 import json
 import os
 import re
@@ -36,7 +37,9 @@ def extract(pdf_path, out_path):
     with fitz.open(pdf_path) as doc:
         for pg1, sec in PAGES.items():
             if pg1 > doc.page_count:
-                print(f"  warn: page {pg1} beyond PDF ({doc.page_count} pages), skipping")
+                print(
+                    f"  warn: page {pg1} beyond PDF ({doc.page_count} pages), skipping"
+                )
                 continue
             pg = doc[pg1 - 1]
             w, h = pg.rect.width, pg.rect.height
@@ -53,15 +56,20 @@ def extract(pdf_path, out_path):
                     continue
                 if word in out:
                     if out[word]["page"] != pg1:
-                        print(f"  dup {word}: keeping p{out[word]['page']}, skipping p{pg1}")
+                        print(
+                            f"  dup {word}: keeping p{out[word]['page']}, skipping p{pg1}"
+                        )
                     continue
                 nx, ny = round(x0 / w, 4), round(y0 / h, 4)
                 if not (0 <= nx <= 1 and 0 <= ny <= 1):
                     continue  # off-page (title-block cross-ref, overflow)
                 out[word] = {
-                    "x": nx, "y": ny,
-                    "w": round((x1 - x0) / w, 4), "h": round((y1 - y0) / h, 4),
-                    "page": pg1, "section": sec,
+                    "x": nx,
+                    "y": ny,
+                    "w": round((x1 - x0) / w, 4),
+                    "h": round((y1 - y0) / h, 4),
+                    "page": pg1,
+                    "section": sec,
                 }
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=1)

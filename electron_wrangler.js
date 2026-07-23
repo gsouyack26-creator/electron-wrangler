@@ -1,6 +1,6 @@
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.6';
+const VERSION='1.7';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 

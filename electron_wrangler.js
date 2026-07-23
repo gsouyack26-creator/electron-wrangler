@@ -1,6 +1,6 @@
 /* RME — Electron Wrangler  |  offline, single-graph electrical simulator */
 'use strict';
-const VERSION='1.5';
+const VERSION='1.6';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -1072,7 +1072,12 @@ function photoMarker(c,onPath){ var w=c.phys.w,h=c.phys.h; var isSel=(sel===c);
   return out;
 }
 function _physPathIds(){ var ids=new Set(); if(!sel)return ids; var d=compDef(sel); if(!d||!(d.load||d.coil))return ids; try{ var r=diagnose(sel,true); (r.path||[]).forEach(function(p){ ids.add(p.comp.id); }); }catch(e){} return ids; }
-function fillPhysPick(){ var pp=$("#physpick"); if(!pp)return; pp.hidden=(viewMode!=="phys"); if(viewMode!=="phys")return;
+function copyPhysCoords(){ var arr=PANEL.components.filter(function(c){return c.phys;}).map(function(c){ return {id:c.id, label:c.label||"", phys:{x:c.phys.x,y:c.phys.y,w:c.phys.w,h:c.phys.h}}; });
+  var txt=JSON.stringify({panel:PANEL.name||"", pw:PANEL.pw, ph:PANEL.ph, markers:arr});
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ toast(arr.length+" marker coords copied \u2014 paste to share"); }, function(){ _copyFallback(txt); }); } else { _copyFallback(txt); }
+}
+function _copyFallback(txt){ try{ var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); toast("Marker coords copied"); }catch(e){ prompt("Copy these marker coordinates:", txt); } }
+function fillPhysPick(){ var pp=$("#physpick"); if(!pp)return; pp.hidden=(viewMode!=="phys"); var _cc=$("#physcopy"); if(_cc)_cc.hidden=(viewMode!=="phys"); if(viewMode!=="phys")return;
   pp.innerHTML=`<option value="">\u25be Select a part\u2026</option>`+PANEL.components.map(function(c){ return `<option value="`+esc(c.id)+`"`+(sel===c?" selected":"")+`>`+esc(c.label||compDef(c).name)+`</option>`; }).join("");
 }
 function physBody(){ autoPhys();
@@ -1129,6 +1134,7 @@ function init(){ $('#ver').textContent='v'+VERSION;
     bv.classList.toggle('on',viewMode==='phys'); bv.innerHTML=viewMode==='phys'?'&#128268; Schematic':'&#128452; Physical';
     sel=null;selWire=null; applyView(); render(); renderInspector(); };
   buildPalette(); setMode('build'); applyEnc(); _applyPhotoView(); applyView(); render(); renderInspector();
+  var _cpc=$("#physcopy"); if(_cpc)_cpc.onclick=copyPhysCoords;
   var _pk=$("#physpick"); if(_pk)_pk.onchange=function(){ var c=findComp(_pk.value); sel=c||null; selWire=null; render(); renderInspector(); if(c&&typeof centerOn==="function")centerOn(c); };
   initLibrary();
   initExtras();
